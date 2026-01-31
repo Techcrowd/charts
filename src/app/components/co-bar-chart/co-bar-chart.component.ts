@@ -196,9 +196,6 @@ export class CoBarChartComponent implements OnInit, OnChanges {
     });
   });
 
-  // Size computed
-  computedBarHeight = '32px';
-
   // Chart configs (dynamic)
   chartConfig!: ApexChart;
   plotOptionsConfig!: ApexPlotOptions;
@@ -223,7 +220,6 @@ export class CoBarChartComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.syncSignals();
-    this.updateSizeValues();
     this.updateChartConfigs();
   }
 
@@ -233,10 +229,6 @@ export class CoBarChartComponent implements OnInit, OnChanges {
   }
 
   // ============ PRIVATE METHODS ============
-
-  private updateSizeValues(): void {
-    this.computedBarHeight = '32px';
-  }
 
   private updateChartConfigs(): void {
     const self = this;
@@ -279,7 +271,7 @@ export class CoBarChartComponent implements OnInit, OnChanges {
     this.plotOptionsConfig = {
       bar: {
         horizontal: true,
-        barHeight: this.computedBarHeight,
+        barHeight: '32px',
         borderRadius: 2,
         borderRadiusApplication: 'end',
         dataLabels: {
@@ -373,7 +365,7 @@ export class CoBarChartComponent implements OnInit, OnChanges {
 
     this.gridConfig = {
       show: this.showGrid,
-      borderColor: '#e5e7eb',
+      borderColor: CHART_COLORS.gridBorder,
       strokeDashArray: 0,
       xaxis: {
         lines: {

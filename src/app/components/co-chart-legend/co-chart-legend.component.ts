@@ -5,7 +5,7 @@ import {
   EventEmitter,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { ValueFormat, ChartSize } from '../../shared/chart-types';
+import { ValueFormat } from '../../shared/chart-types';
 
 /** Item pro legendu */
 export interface ChartLegendItem {
@@ -35,9 +35,6 @@ export class CoChartLegendComponent {
 
   /** Formát hodnot */
   @Input() valueFormat: ValueFormat = 'percent';
-
-  /** Velikostní varianta */
-  @Input() size: ChartSize = 'md';
 
   /** Index aktuálně zvýrazněného itemu (z vnějšku) */
   @Input() highlightedIndex = -1;

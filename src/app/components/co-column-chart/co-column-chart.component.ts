@@ -191,9 +191,6 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
     });
   });
 
-  // Size computed
-  computedColumnWidth = '70%';
-
   // Chart configs (dynamic)
   chartConfig!: ApexChart;
   plotOptionsConfig!: ApexPlotOptions;
@@ -218,7 +215,6 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.syncSignals();
-    this.updateSizeValues();
     this.updateChartConfigs();
   }
 
@@ -228,10 +224,6 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   }
 
   // ============ PRIVATE METHODS ============
-
-  private updateSizeValues(): void {
-    this.computedColumnWidth = '70%';
-  }
 
   private updateChartConfigs(): void {
     const self = this;
@@ -381,7 +373,7 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
     };
 
     this.gridConfig = {
-      borderColor: '#e5e7eb',
+      borderColor: CHART_COLORS.gridBorder,
       strokeDashArray: 0,
       xaxis: {
         lines: {

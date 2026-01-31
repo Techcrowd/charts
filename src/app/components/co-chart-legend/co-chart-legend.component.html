@@ -1,7 +1,5 @@
 <div
   class="co-chart-legend"
-  [class.co-chart-legend--sm]="size === 'sm'"
-  [class.co-chart-legend--lg]="size === 'lg'"
   [class.co-chart-legend--interactive]="interactive"
 >
   @for (item of items; track trackByLabel($index, item); let i = $index) {

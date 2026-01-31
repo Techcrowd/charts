@@ -6,29 +6,6 @@
   justify-content: center;
   gap: $spacing-xs $spacing-md;
   padding: 0 $spacing-md $spacing-md $spacing-md;
-
-  // Size variants
-  &--sm {
-    .co-chart-legend__item {
-      padding: $spacing-xs $spacing-sm;
-      font-size: $font-size-xs;
-    }
-    .co-chart-legend__icon {
-      width: 8px;
-      height: 8px;
-    }
-  }
-
-  &--lg {
-    .co-chart-legend__item {
-      padding: $spacing-sm $spacing-md;
-      font-size: 15px;
-    }
-    .co-chart-legend__icon {
-      width: 12px;
-      height: 12px;
-    }
-  }
 }
 
 .co-chart-legend__item {
