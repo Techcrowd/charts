@@ -1,0 +1,329 @@
+<div class="demo-container">
+  <h1>CO Donut Chart - Demo</h1>
+  <p class="subtitle">Golem Design System - ApexCharts implementation</p>
+
+  <!-- Základní použití -->
+  <section class="demo-section">
+    <h2>Základní použití</h2>
+    <div class="demo-card">
+      <co-donut-chart
+        [data]="fruitData"
+        [showDataLabels]="true"
+        [showTooltip]="true"
+      ></co-donut-chart>
+    </div>
+  </section>
+
+  <!-- Velikostní varianty -->
+  <section class="demo-section">
+    <h2>Velikostní varianty (sm, md, lg)</h2>
+    <div class="demo-grid demo-grid--sizes">
+      <div class="demo-card">
+        <h3>Small (sm)</h3>
+        <co-donut-chart
+          [data]="fruitData"
+          size="sm"
+          centerText="Small"
+        ></co-donut-chart>
+      </div>
+      <div class="demo-card">
+        <h3>Medium (md) - výchozí</h3>
+        <co-donut-chart
+          [data]="fruitData"
+          size="md"
+          centerText="Medium"
+        ></co-donut-chart>
+      </div>
+      <div class="demo-card">
+        <h3>Large (lg)</h3>
+        <co-donut-chart
+          [data]="fruitData"
+          size="lg"
+          centerText="Large"
+        ></co-donut-chart>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vlastní výška -->
+  <section class="demo-section">
+    <h2>Vlastní výška (height input)</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>height="150"</h3>
+        <co-donut-chart
+          [data]="fruitData"
+          [height]="150"
+          centerText="150px"
+        ></co-donut-chart>
+      </div>
+      <div class="demo-card">
+        <h3>height="350"</h3>
+        <co-donut-chart
+          [data]="fruitData"
+          [height]="350"
+          centerText="350px"
+        ></co-donut-chart>
+      </div>
+    </div>
+  </section>
+
+  <!-- Center text -->
+  <section class="demo-section">
+    <h2>Center text (max 3 řádky, pak elipsis)</h2>
+    <div class="demo-card">
+      <h3>Krátký text</h3>
+      <co-donut-chart
+        [data]="fruitData"
+        [centerText]="centerTextShort"
+      ></co-donut-chart>
+    </div>
+    <div class="demo-card" style="margin-top: 24px;">
+      <h3>Střední text</h3>
+      <co-donut-chart
+        [data]="fruitData"
+        [centerText]="centerTextMedium"
+      ></co-donut-chart>
+    </div>
+    <div class="demo-card" style="margin-top: 24px;">
+      <h3>Dlouhý text (s elipsis)</h3>
+      <co-donut-chart
+        [data]="fruitData"
+        [centerText]="centerTextLong"
+      ></co-donut-chart>
+    </div>
+  </section>
+
+  <!-- Tooltip ON/OFF -->
+  <section class="demo-section">
+    <h2>Tooltip (volitelný)</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>S tooltipem</h3>
+        <co-donut-chart
+          [data]="fruitData"
+          [showTooltip]="true"
+          centerText="Hover me"
+        ></co-donut-chart>
+      </div>
+      <div class="demo-card">
+        <h3>Bez tooltipu</h3>
+        <co-donut-chart
+          [data]="fruitData"
+          [showTooltip]="false"
+          centerText="No tooltip"
+        ></co-donut-chart>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data labels ON/OFF -->
+  <section class="demo-section">
+    <h2>Hodnoty na výsečích</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>S hodnotami</h3>
+        <co-donut-chart
+          [data]="fruitData"
+          [showDataLabels]="true"
+          centerText="Ovoce"
+        ></co-donut-chart>
+      </div>
+      <div class="demo-card">
+        <h3>Bez hodnot</h3>
+        <co-donut-chart
+          [data]="fruitData"
+          [showDataLabels]="false"
+          centerText="Ovoce"
+        ></co-donut-chart>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formát hodnot -->
+  <section class="demo-section">
+    <h2>Formát hodnot</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>Procenta</h3>
+        <co-donut-chart
+          [data]="fruitData"
+          valueFormat="percent"
+          centerText="Procenta"
+        ></co-donut-chart>
+      </div>
+      <div class="demo-card">
+        <h3>Absolutní hodnoty</h3>
+        <co-donut-chart
+          [data]="fruitData"
+          valueFormat="absolute"
+          centerText="Absolutní"
+        ></co-donut-chart>
+      </div>
+    </div>
+  </section>
+
+  <!-- Počet sérií -->
+  <section class="demo-section">
+    <h2>Počet sérií v grafu</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>2 série</h3>
+        <co-donut-chart
+          [data]="twoSeriesData"
+          centerText="Status"
+        ></co-donut-chart>
+      </div>
+      <div class="demo-card">
+        <h3>3 série</h3>
+        <co-donut-chart
+          [data]="threeSeriesData"
+          centerText="Stav"
+        ></co-donut-chart>
+      </div>
+      <div class="demo-card">
+        <h3>6 sérií</h3>
+        <co-donut-chart
+          [data]="browserData"
+          centerText="Browsers"
+        ></co-donut-chart>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hover efekt -->
+  <section class="demo-section">
+    <h2>Hover efekt</h2>
+    <p class="demo-note">Najeď myší na segment grafu nebo na položku legendy</p>
+    <div class="demo-card">
+      <co-donut-chart
+        [data]="fruitData"
+        title="Hover demo"
+        centerText="Hover"
+        (segmentHover)="onSegmentHover($event)"
+      ></co-donut-chart>
+      <div class="event-log">
+        <strong>Hovered:</strong> {{ lastAction }}
+      </div>
+    </div>
+  </section>
+
+  <!-- Loading stav -->
+  <section class="demo-section">
+    <h2>Loading stav</h2>
+    <div class="demo-card">
+      <co-donut-chart
+        [data]="fruitData"
+        title="Načítání..."
+        [loading]="true"
+      ></co-donut-chart>
+    </div>
+  </section>
+
+  <!-- Interaktivní -->
+  <section class="demo-section">
+    <h2>Interaktivní (klikni na segment)</h2>
+    <div class="demo-card">
+      <co-donut-chart
+        [data]="fruitData"
+        title="Klikni na segment"
+        [centerText]="selectedCenterText"
+        (segmentClick)="onSegmentClick($event)"
+      ></co-donut-chart>
+      <div class="event-log">
+        <strong>Vybraná položka:</strong> {{ selectedCenterText }}
+      </div>
+    </div>
+  </section>
+
+  <!-- Bez legendy -->
+  <section class="demo-section">
+    <h2>Bez legendy</h2>
+    <div class="demo-card">
+      <co-donut-chart
+        [data]="fruitData"
+        [showLegend]="false"
+        centerText="Bez legendy"
+      ></co-donut-chart>
+    </div>
+  </section>
+
+  <!-- API Reference -->
+  <section class="demo-section">
+    <h2>API Reference</h2>
+    <div class="demo-card api-card">
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Input</th>
+            <th>Typ</th>
+            <th>Default</th>
+            <th>Popis</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>[data]</code></td>
+            <td>DonutChartDataItem[]</td>
+            <td>required</td>
+            <td>Data pro graf</td>
+          </tr>
+          <tr>
+            <td><code>[size]</code></td>
+            <td>'sm' | 'md' | 'lg' | 'auto'</td>
+            <td>'md'</td>
+            <td>Velikostní varianta grafu</td>
+          </tr>
+          <tr>
+            <td><code>[height]</code></td>
+            <td>number</td>
+            <td>-</td>
+            <td>Vlastní výška v px (přepíše size)</td>
+          </tr>
+          <tr>
+            <td><code>[centerText]</code></td>
+            <td>string</td>
+            <td>-</td>
+            <td>Text uprostřed (max 3 řádky, pak elipsis)</td>
+          </tr>
+          <tr>
+            <td><code>[showDataLabels]</code></td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Zobrazit hodnoty na výsečích</td>
+          </tr>
+          <tr>
+            <td><code>[showTooltip]</code></td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Zobrazit tooltip při hoveru</td>
+          </tr>
+          <tr>
+            <td><code>[valueFormat]</code></td>
+            <td>'percent' | 'absolute'</td>
+            <td>'percent'</td>
+            <td>Formát hodnot</td>
+          </tr>
+          <tr>
+            <td><code>[showLegend]</code></td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Zobrazit legendu</td>
+          </tr>
+          <tr>
+            <td><code>[title]</code></td>
+            <td>string</td>
+            <td>-</td>
+            <td>Titulek grafu</td>
+          </tr>
+          <tr>
+            <td><code>[loading]</code></td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Loading stav</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

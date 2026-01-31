@@ -1,0 +1,71 @@
+<div
+  class="co-donut-chart"
+  [class.co-donut-chart--loading]="loading"
+  [class.co-donut-chart--has-title]="title"
+  [class.co-donut-chart--sm]="size === 'sm'"
+  [class.co-donut-chart--md]="size === 'md'"
+  [class.co-donut-chart--lg]="size === 'lg'"
+  [class.co-donut-chart--auto]="size === 'auto'"
+>
+  <!-- Title -->
+  <div *ngIf="title" class="co-donut-chart__title">{{ title }}</div>
+
+  <div class="co-donut-chart__content">
+    <!-- Chart Container -->
+    <div class="co-donut-chart__chart-wrapper">
+      <div *ngIf="loading" class="co-donut-chart__loader">
+        <div class="co-donut-chart__loader-ring"></div>
+      </div>
+
+      <div
+        *ngIf="!loading"
+        class="co-donut-chart__chart-container"
+        [style.width.px]="computedSize"
+        [style.height.px]="computedSize"
+      >
+        <apx-chart
+          #chart
+          [series]="chartSeries"
+          [chart]="chartConfig"
+          [labels]="chartLabels"
+          [colors]="chartColors"
+          [dataLabels]="dataLabelsConfig"
+          [plotOptions]="plotOptionsConfig"
+          [tooltip]="tooltipConfig"
+          [states]="statesConfig"
+          [legend]="legendConfig"
+          [stroke]="strokeConfig"
+          [responsive]="responsiveConfig"
+        ></apx-chart>
+
+        <!-- Center Text Overlay -->
+        <div *ngIf="centerText" class="co-donut-chart__center">
+          <span class="co-donut-chart__center-text">{{ centerText }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Legend -->
+    <div *ngIf="showLegend && !loading" class="co-chart-legend">
+      <button
+        *ngFor="let item of legendItems; let i = index"
+        type="button"
+        class="co-chart-legend__item"
+        [class.co-chart-legend__item--active]="hoveredIndex === i"
+        [class.co-chart-legend__item--dimmed]="hoveredIndex !== -1 && hoveredIndex !== i"
+        (mouseenter)="onLegendItemHover(i)"
+        (mouseleave)="onLegendItemLeave()"
+        (click)="onLegendItemClick(i)"
+      >
+        <span
+          class="co-chart-legend__icon"
+          [style.backgroundColor]="item.color"
+        ></span>
+        <span class="co-chart-legend__label">{{ item.label }}</span>
+        <span *ngIf="showLegendValues" class="co-chart-legend__value">
+          {{ formatLegendValue(item) }}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

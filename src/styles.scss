@@ -1,0 +1,78 @@
+/* Global styles */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #f9fafb;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ApexCharts Tooltip Override */
+.apexcharts-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* ApexCharts Data Labels - white background, gray text */
+.apexcharts-canvas {
+  /* Target ALL rects inside pie chart that could be label backgrounds */
+  .apexcharts-pie-series ~ g rect,
+  .apexcharts-datalabels rect,
+  .apexcharts-datalabels-group rect,
+  g[class*="datalabel"] rect,
+  rect.apexcharts-datalabel-rect {
+    fill: #ffffff !important;
+  }
+
+  /* Target ALL text inside pie chart data labels */
+  .apexcharts-pie-series ~ g text,
+  .apexcharts-datalabels text,
+  .apexcharts-datalabels-group text,
+  text.apexcharts-datalabel-label,
+  text.apexcharts-datalabel-value {
+    fill: #6b7280 !important;
+  }
+}
+
+.co-donut-tooltip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+
+  &__color {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  &__label {
+    color: #1f2937;
+    font-weight: 500;
+  }
+
+  &__value {
+    color: #1f2937;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__percent {
+    color: #6b7280;
+    font-size: 12px;
+  }
+}

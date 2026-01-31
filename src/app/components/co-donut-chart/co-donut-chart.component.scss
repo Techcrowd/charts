@@ -1,0 +1,209 @@
+.co-donut-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  width: 100%;
+
+  // Size variants - adjust text and legend sizes
+  &--sm {
+    .co-donut-chart__center-text {
+      font-size: 12px;
+    }
+    .co-chart-legend__item {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+    .co-chart-legend__icon {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  &--lg {
+    .co-donut-chart__center-text {
+      font-size: 16px;
+    }
+    .co-chart-legend__item {
+      padding: 8px 14px;
+      font-size: 15px;
+    }
+  }
+}
+
+.co-donut-chart__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+}
+
+.co-donut-chart__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.co-donut-chart__chart-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+// Container for the chart - scales down responsively
+.co-donut-chart__chart-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  flex-shrink: 1;
+
+  // Allow chart to shrink with container
+  ::ng-deep {
+    .apexcharts-canvas {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    // Data labels - white background, gray text
+    .apexcharts-datalabels-group {
+      rect {
+        fill: #ffffff !important;
+      }
+      text {
+        fill: #6b7280 !important;
+      }
+    }
+    .apexcharts-data-labels rect {
+      fill: #ffffff !important;
+    }
+    .apexcharts-pie-label {
+      rect, .apexcharts-datalabel-label-rect {
+        fill: #ffffff !important;
+      }
+    }
+  }
+}
+
+// Center Text Overlay
+.co-donut-chart__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55%;
+  height: 55%;
+  pointer-events: none;
+  text-align: center;
+  padding: 8px;
+}
+
+.co-donut-chart__center-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+// Loading
+.co-donut-chart__loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+}
+
+.co-donut-chart__loader-ring {
+  width: 100%;
+  height: 100%;
+  border: 12px solid #e5e7eb;
+  border-radius: 50%;
+  animation: co-donut-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes co-donut-pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+// Legend
+.co-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.co-chart-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  transition: background-color 150ms, opacity 150ms;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+
+  &--active {
+    background-color: #f3f4f6;
+  }
+
+  &--dimmed {
+    opacity: 0.4;
+  }
+}
+
+.co-chart-legend__icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.co-chart-legend__label {
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.co-chart-legend__value {
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+
+// Responsive
+@media (min-width: 640px) {
+  .co-donut-chart__content {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .co-chart-legend {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
