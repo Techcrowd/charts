@@ -60,29 +60,36 @@ $shadow-floating-middle: rgba(33, 33, 33, 0.16);
 $shadow-floating-bottom: rgba(33, 33, 33, 0.24);
 
 // ============ COLORS - CHART ============
-$chart-color-1: #22c55e;  // Green (success/in)
-$chart-color-2: #ef4444;  // Red (alert/out)
-$chart-color-3: #1e3a5f;  // Dark blue
-$chart-color-4: #f97316;  // Orange
-$chart-color-5: #8b5cf6;  // Purple
-$chart-color-6: #06b6d4;  // Cyan
-$chart-color-7: #eab308;  // Yellow
-$chart-color-8: #ec4899;  // Pink
+// Primary chart colors (in/out pattern)
+$chart-in: #267c2e;  // Green - positive/in
+$chart-out: #212121; // Dark - negative/out
 
-// Specific chart tokens from design
-$chart-plot-in: #267c29;
-$chart-plot-in-background-top: rgba(38, 124, 41, 0.19);
-$chart-plot-in-background-bottom: rgba(38, 124, 9, 0);
+// Chart plot colors with backgrounds
+$chart-plot-in: #267c2e;
+$chart-plot-in-background-top: rgba(38, 124, 46, 0.19); // #267c2e30
+$chart-plot-in-background-bottom: rgba(38, 124, 46, 0);  // #267c2e00
 $chart-plot-out: #212121;
-$chart-plot-out-background-bottom: rgba(33, 33, 33, 0.19);
+$chart-plot-out-background-top: rgba(33, 33, 33, 0.19);  // #21212130
+$chart-plot-out-background-bottom: rgba(33, 33, 33, 0);  // #21212100
 
-$chart-evaluation: #f65bd1;
-$chart-stocks: #4e5571;
-$chart-bonds: #902473;
-$chart-neon: #92a703;
-$chart-rusty-red: #e26e52;
-$chart-orangish: #764725;
-$chart-funds: #4e5571;
+// Additional chart colors from design
+$chart-evaluation: #f65bd1;  // Pink/magenta
+$chart-stocks: #4e5571;      // Blue-gray
+$chart-bonds: #902473;       // Purple
+$chart-neon: #92a703;        // Yellow-green
+$chart-rusty-red: #e26e52;   // Coral/rust
+$chart-orangish: #764725;    // Brown/orange
+$chart-funds: #4e5571;       // Blue-gray (same as stocks)
+
+// Default chart color palette (for multi-series)
+$chart-color-1: $chart-in;        // Green
+$chart-color-2: $chart-out;       // Dark
+$chart-color-3: $chart-evaluation; // Pink
+$chart-color-4: $chart-stocks;     // Blue-gray
+$chart-color-5: $chart-bonds;      // Purple
+$chart-color-6: $chart-neon;       // Yellow-green
+$chart-color-7: $chart-rusty-red;  // Coral
+$chart-color-8: $chart-orangish;   // Brown
 
 // ============ TYPOGRAPHY ============
 $font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
