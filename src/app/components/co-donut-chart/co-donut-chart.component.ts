@@ -108,13 +108,16 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   @Input() showDataLabels = true;
 
   /** Zobrazit tooltip při hoveru */
-  @Input() showTooltip = true;
+  @Input() showTooltip = false;
 
   /** Formát hodnot */
   @Input() valueFormat: ValueFormat = 'percent';
 
   /** Text uprostřed grafu (max 3 řádky, pak elipsis) */
   @Input() centerText?: string;
+
+  /** Vlastní barvy (pouze z povolené palety 10 barev) */
+  @Input() colors?: ChartColor[];
 
   /** Minimální hodnota pro seskupení do "Ostatní" */
   @Input() minValue?: number;
@@ -145,6 +148,7 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
 
   // Internal signals for reactive data
   private dataSignal = signal<DonutChartDataItem[]>([]);
+  private colorsSignal = signal<ChartColor[] | undefined>(undefined);
   private minValueSignal = signal<number | undefined>(undefined);
 
   // Computed values
@@ -184,7 +188,12 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   );
 
   chartColors = computed(() => {
+    const colors = this.colorsSignal();
     const dataLength = this.processedData().length;
+
+    if (colors?.length) {
+      return this.chartColorService.getColorsHex(colors);
+    }
     return this.chartColorService.getDefaultColorsHex(dataLength);
   });
 
@@ -232,6 +241,7 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
 
   private syncSignals(): void {
     this.dataSignal.set(this.data);
+    this.colorsSignal.set(this.colors);
     this.minValueSignal.set(this.minValue);
   }
 

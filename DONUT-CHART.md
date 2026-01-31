@@ -11,7 +11,7 @@ npm install ng-apexcharts apexcharts
 ## Import
 
 ```typescript
-import { CoDonutChartComponent, DonutChartDataItem } from './components/co-donut-chart/co-donut-chart.component';
+import { CoDonutChartComponent, DonutChartDataItem, ChartColor } from './components/co-donut-chart/co-donut-chart.component';
 
 @Component({
   imports: [CoDonutChartComponent],
@@ -35,6 +35,27 @@ data: DonutChartDataItem[] = [
   { label: 'Pomeranče', value: 120 },
 ];
 ```
+
+### Vlastní barvy
+
+```html
+<co-donut-chart
+  [data]="data"
+  [colors]="['chart-in', 'chart-stocks', 'chart-bonds', 'chart-neon']"
+/>
+```
+
+Dostupné barvy (ChartColor):
+- `chart-in` - zelená
+- `chart-out` - tmavá
+- `chart-funds` - tyrkysová
+- `chart-cool` - cyan
+- `chart-evaluation` - fialová
+- `chart-stocks` - růžová
+- `chart-bonds` - modro-šedá
+- `chart-neon` - magenta
+- `chart-rusty-red` - korálová
+- `chart-orangish` - hnědá
 
 ### Velikostní varianty
 
@@ -64,14 +85,14 @@ data: DonutChartDataItem[] = [
 ### Data labels a tooltip
 
 ```html
-<!-- S hodnotami na výsečích -->
-<co-donut-chart [data]="data" [showDataLabels]="true" />
+<!-- S hodnotami na výsečích (výchozí) -->
+<co-donut-chart [data]="data" />
 
 <!-- Bez hodnot -->
 <co-donut-chart [data]="data" [showDataLabels]="false" />
 
-<!-- Bez tooltipu -->
-<co-donut-chart [data]="data" [showTooltip]="false" />
+<!-- S tooltipem -->
+<co-donut-chart [data]="data" [showTooltip]="true" />
 ```
 
 ### Formát hodnot
@@ -147,7 +168,7 @@ onSegmentHover(event: { item: DonutChartDataItem; index: number } | null): void 
   [data]="salesData"
   size="lg"
   centerText="Prodeje Q4"
-  [showDataLabels]="true"
+  [colors]="['chart-in', 'chart-stocks', 'chart-bonds']"
   [showTooltip]="true"
   [showLegend]="true"
   [showLegendValues]="true"
@@ -163,11 +184,12 @@ onSegmentHover(event: { item: DonutChartDataItem; index: number } | null): void 
 | Input | Typ | Default | Popis |
 |-------|-----|---------|-------|
 | `data` | `DonutChartDataItem[]` | `[]` | Data pro graf |
+| `colors` | `ChartColor[]` | výchozí paleta | Vlastní barvy z palety |
 | `size` | `'sm' \| 'md' \| 'lg' \| 'auto'` | `'md'` | Velikostní varianta |
 | `height` | `number` | - | Vlastní výška v px |
 | `centerText` | `string` | - | Text uprostřed grafu |
 | `showDataLabels` | `boolean` | `true` | Zobrazit hodnoty na výsečích |
-| `showTooltip` | `boolean` | `true` | Zobrazit tooltip |
+| `showTooltip` | `boolean` | `false` | Zobrazit tooltip |
 | `showLegend` | `boolean` | `true` | Zobrazit legendu |
 | `showLegendValues` | `boolean` | `false` | Zobrazit hodnoty v legendě |
 | `valueFormat` | `'percent' \| 'absolute'` | `'percent'` | Formát hodnot |
@@ -189,6 +211,18 @@ interface DonutChartDataItem {
   label: string;
   value: number;
 }
+
+type ChartColor =
+  | 'chart-in'
+  | 'chart-out'
+  | 'chart-funds'
+  | 'chart-cool'
+  | 'chart-evaluation'
+  | 'chart-stocks'
+  | 'chart-bonds'
+  | 'chart-neon'
+  | 'chart-rusty-red'
+  | 'chart-orangish';
 ```
 
 ## Služby

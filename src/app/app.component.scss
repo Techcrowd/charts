@@ -136,32 +136,21 @@ h1 {
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-// Code block styles
-.code-block {
-  margin-top: 16px;
-  background: #1e1e1e;
+// Code block styles (Prism)
+pre.code-block {
+  margin: 16px 0 0;
+  padding: 12px 16px;
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.5;
 
-  pre {
-    margin: 0;
-    padding: 12px 16px;
-    overflow-x: auto;
-
-    &:not(:last-child) {
-      border-bottom: 1px solid #333;
-    }
-
-    &:first-child {
-      background: #2d2d2d;
-    }
+  &:not(:first-of-type) {
+    margin-top: 8px;
   }
 
   code {
     font-family: 'SF Mono', Monaco, 'Consolas', monospace;
     font-size: 12px;
-    line-height: 1.5;
-    color: #d4d4d4;
-    white-space: pre;
   }
 }

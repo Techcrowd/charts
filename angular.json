@@ -46,13 +46,15 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "allowedCommonJsDependencies": [
-              "apexcharts"
+              "apexcharts",
+              "prismjs"
             ],
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
+              "node_modules/prismjs/themes/prism-tomorrow.css",
               "src/styles.scss"
             ],
             "scripts": []
