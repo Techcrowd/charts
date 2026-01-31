@@ -1,18 +1,20 @@
+@import '../../styles/tokens';
+
 .co-donut-chart {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: $spacing-lg;
   min-height: 0;
   width: 100%;
 
   // Size variants - adjust text and legend sizes
   &--sm {
     .co-donut-chart__center-text {
-      font-size: 12px;
+      font-size: $font-size-xs;
     }
     .co-chart-legend__item {
-      padding: 4px 8px;
-      font-size: 12px;
+      padding: $spacing-xs $spacing-sm;
+      font-size: $font-size-xs;
     }
     .co-chart-legend__icon {
       width: 10px;
@@ -22,19 +24,19 @@
 
   &--lg {
     .co-donut-chart__center-text {
-      font-size: 16px;
+      font-size: $font-size-lg;
     }
     .co-chart-legend__item {
-      padding: 8px 14px;
+      padding: $spacing-sm $spacing-md;
       font-size: 15px;
     }
   }
 }
 
 .co-donut-chart__title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1f2937;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-content-primary;
   text-align: center;
 }
 
@@ -42,7 +44,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: $spacing-xl;
 }
 
 .co-donut-chart__chart-wrapper {
@@ -72,18 +74,18 @@
     // Data labels - white background, gray text
     .apexcharts-datalabels-group {
       rect {
-        fill: #ffffff !important;
+        fill: $color-background-surface !important;
       }
       text {
-        fill: #6b7280 !important;
+        fill: $color-content-secondary !important;
       }
     }
     .apexcharts-data-labels rect {
-      fill: #ffffff !important;
+      fill: $color-background-surface !important;
     }
     .apexcharts-pie-label {
       rect, .apexcharts-datalabel-label-rect {
-        fill: #ffffff !important;
+        fill: $color-background-surface !important;
       }
     }
   }
@@ -102,14 +104,14 @@
   height: 55%;
   pointer-events: none;
   text-align: center;
-  padding: 8px;
+  padding: $spacing-sm;
 }
 
 .co-donut-chart__center-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1f2937;
-  line-height: 1.3;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-content-primary;
+  line-height: $line-height-normal;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -130,7 +132,7 @@
 .co-donut-chart__loader-ring {
   width: 100%;
   height: 100%;
-  border: 12px solid #e5e7eb;
+  border: 12px solid $color-background-border;
   border-radius: 50%;
   animation: co-donut-pulse 1.5s ease-in-out infinite;
 }
@@ -149,28 +151,28 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
+  gap: $spacing-sm;
 }
 
 .co-chart-legend__item {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 6px $spacing-md;
   border: none;
-  border-radius: 6px;
+  border-radius: $border-radius-lg;
   background: transparent;
   cursor: pointer;
   font-family: inherit;
-  font-size: 14px;
-  transition: background-color 150ms, opacity 150ms;
+  font-size: $font-size-md;
+  transition: $transition-fast;
 
   &:hover {
-    background-color: #f3f4f6;
+    background-color: $color-background-surface-secondary;
   }
 
   &--active {
-    background-color: #f3f4f6;
+    background-color: $color-background-surface-secondary;
   }
 
   &--dimmed {
@@ -181,17 +183,17 @@
 .co-chart-legend__icon {
   width: 12px;
   height: 12px;
-  border-radius: 3px;
+  border-radius: $border-radius-sm;
   flex-shrink: 0;
 }
 
 .co-chart-legend__label {
-  color: #1f2937;
-  font-weight: 500;
+  color: $color-content-primary;
+  font-weight: $font-weight-medium;
 }
 
 .co-chart-legend__value {
-  color: #6b7280;
+  color: $color-content-secondary;
   font-variant-numeric: tabular-nums;
 }
 

@@ -1,0 +1,180 @@
+// ============================================
+// GOLEM DESIGN TOKENS
+// Generated from Figma design specifications
+// ============================================
+
+// ============ COLORS - CONTENT ============
+$color-content-primary: #212121;
+$color-content-secondary: #717171;
+$color-content-tertiary: #adadad;
+$color-content-quaternary: #dadada;
+$color-content-disabled: #dadada;
+
+// ============ COLORS - BACKGROUND ============
+$color-background-surface: #ffffff;
+$color-background-surface-secondary: #f5f5f5;
+$color-background-surface-tertiary: #ededed;
+$color-background-body-loading: #dadada;
+$color-background-highlighted: #f5f5f5;
+$color-background-table-zebra: rgba(33, 33, 33, 0.04); // #2121210a
+$color-background-divider: #717171;
+$color-background-border: #dadada;
+$color-background-border-highlighted: rgba(173, 173, 173, 0.5); // #adadad80
+
+// ============ COLORS - INTERACTIVE ============
+$color-interactive-primary: #be0000;
+$color-interactive-primary-hover: #a00000;
+$color-interactive-primary-active: #800000;
+$color-interactive-on-primary: #ffffff;
+
+$color-interactive-secondary: #212121;
+$color-interactive-secondary-hover: rgba(33, 33, 33, 0.08);
+$color-interactive-secondary-active: rgba(33, 33, 33, 0.12);
+$color-interactive-on-secondary: #212121;
+
+// ============ COLORS - ATTENTION/STATUS ============
+$color-attention-alert: #b53022;
+$color-attention-alert-surface: #ffede8;
+
+$color-attention-success: #207c29;
+$color-attention-success-surface: #e2f5de;
+
+$color-attention-processing: #ff8d18;
+$color-attention-processing-surface: #fff4e6;
+
+$color-attention-information: #212121;
+$color-attention-information-surface: #ededed;
+
+// ============ COLORS - DIALOG/OVERLAY ============
+$color-dialog-overlay: rgba(33, 33, 33, 0.4); // #21212166
+$color-dialog-surface: #ffffff;
+
+// ============ COLORS - SHADOW ============
+$shadow-panel-top: rgba(33, 33, 33, 0.08);
+$shadow-panel-middle: rgba(33, 33, 33, 0.06);
+$shadow-highlighted-top: rgba(33, 33, 33, 0.08);
+$shadow-highlighted-middle: rgba(33, 33, 33, 0.16);
+$shadow-highlighted-bottom: rgba(33, 33, 33, 0.32);
+$shadow-floating-top: rgba(33, 33, 33, 0.05);
+$shadow-floating-middle: rgba(33, 33, 33, 0.16);
+$shadow-floating-bottom: rgba(33, 33, 33, 0.24);
+
+// ============ COLORS - CHART ============
+$chart-color-1: #22c55e;  // Green (success/in)
+$chart-color-2: #ef4444;  // Red (alert/out)
+$chart-color-3: #1e3a5f;  // Dark blue
+$chart-color-4: #f97316;  // Orange
+$chart-color-5: #8b5cf6;  // Purple
+$chart-color-6: #06b6d4;  // Cyan
+$chart-color-7: #eab308;  // Yellow
+$chart-color-8: #ec4899;  // Pink
+
+// Specific chart tokens from design
+$chart-plot-in: #267c29;
+$chart-plot-in-background-top: rgba(38, 124, 41, 0.19);
+$chart-plot-in-background-bottom: rgba(38, 124, 9, 0);
+$chart-plot-out: #212121;
+$chart-plot-out-background-bottom: rgba(33, 33, 33, 0.19);
+
+$chart-evaluation: #f65bd1;
+$chart-stocks: #4e5571;
+$chart-bonds: #902473;
+$chart-neon: #92a703;
+$chart-rusty-red: #e26e52;
+$chart-orangish: #764725;
+$chart-funds: #4e5571;
+
+// ============ TYPOGRAPHY ============
+$font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-family-mono: 'SF Mono', Monaco, 'Courier New', monospace;
+
+// Font sizes
+$font-size-xs: 11px;
+$font-size-sm: 13px;
+$font-size-md: 14px;
+$font-size-lg: 16px;
+$font-size-xl: 18px;
+$font-size-2xl: 20px;
+$font-size-3xl: 24px;
+
+// Font weights
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// Line heights
+$line-height-tight: 1.2;
+$line-height-normal: 1.4;
+$line-height-relaxed: 1.6;
+
+// ============ SPACING ============
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+$spacing-xl: 24px;
+$spacing-2xl: 32px;
+$spacing-3xl: 48px;
+
+// ============ BORDER RADIUS ============
+$border-radius-sm: 2px;
+$border-radius-md: 4px;
+$border-radius-lg: 8px;
+$border-radius-xl: 12px;
+$border-radius-full: 9999px;
+
+// ============ TRANSITIONS ============
+$transition-fast: 150ms ease;
+$transition-normal: 200ms ease;
+$transition-slow: 300ms ease;
+
+// ============ Z-INDEX ============
+$z-index-dropdown: 100;
+$z-index-sticky: 200;
+$z-index-modal: 300;
+$z-index-tooltip: 400;
+
+// ============ CSS CUSTOM PROPERTIES ============
+:root {
+  // Content colors
+  --color-content-primary: #{$color-content-primary};
+  --color-content-secondary: #{$color-content-secondary};
+  --color-content-tertiary: #{$color-content-tertiary};
+  --color-content-disabled: #{$color-content-disabled};
+
+  // Background colors
+  --color-background-surface: #{$color-background-surface};
+  --color-background-surface-secondary: #{$color-background-surface-secondary};
+  --color-background-divider: #{$color-background-divider};
+  --color-background-border: #{$color-background-border};
+
+  // Interactive colors
+  --color-interactive-primary: #{$color-interactive-primary};
+  --color-interactive-on-primary: #{$color-interactive-on-primary};
+  --color-interactive-secondary: #{$color-interactive-secondary};
+
+  // Status colors
+  --color-attention-alert: #{$color-attention-alert};
+  --color-attention-success: #{$color-attention-success};
+  --color-attention-processing: #{$color-attention-processing};
+
+  // Chart colors
+  --chart-color-1: #{$chart-color-1};
+  --chart-color-2: #{$chart-color-2};
+  --chart-color-3: #{$chart-color-3};
+  --chart-color-4: #{$chart-color-4};
+  --chart-color-5: #{$chart-color-5};
+  --chart-color-6: #{$chart-color-6};
+  --chart-color-7: #{$chart-color-7};
+  --chart-color-8: #{$chart-color-8};
+
+  // Typography
+  --font-family-base: #{$font-family-base};
+  --font-family-mono: #{$font-family-mono};
+
+  // Border radius
+  --border-radius-sm: #{$border-radius-sm};
+  --border-radius-md: #{$border-radius-md};
+  --border-radius-lg: #{$border-radius-lg};
+}

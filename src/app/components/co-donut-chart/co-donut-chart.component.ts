@@ -142,9 +142,16 @@ export class CoDonutChartComponent implements OnChanges, OnDestroy {
 
   // ============ PRIVATE ============
 
+  // Chart colors from design tokens
   private readonly defaultColors = [
-    '#22c55e', '#ef4444', '#1e3a5f', '#f97316',
-    '#8b5cf6', '#06b6d4', '#eab308', '#ec4899',
+    '#267c29', // chart-plot-in (green)
+    '#b53022', // attention-alert (red)
+    '#1e3a5f', // dark blue
+    '#f97316', // orange
+    '#8b5cf6', // purple
+    '#06b6d4', // cyan
+    '#eab308', // yellow
+    '#ec4899', // pink
   ];
 
   constructor(private cdr: ChangeDetectorRef) {}
