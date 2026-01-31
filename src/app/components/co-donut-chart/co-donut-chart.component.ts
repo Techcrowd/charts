@@ -146,6 +146,8 @@ export class CoDonutChartComponent implements OnChanges, OnDestroy {
   private readonly defaultColors = [
     '#267c2e', // chart-in (green)
     '#212121', // chart-out (dark)
+    '#3b82f6', // chart-funds (blue)
+    '#06b6d4', // chart-cool (cyan)
     '#f65bd1', // chart-evaluation (pink)
     '#4e5571', // chart-stocks (blue-gray)
     '#902473', // chart-bonds (purple)
@@ -402,5 +404,9 @@ export class CoDonutChartComponent implements OnChanges, OnDestroy {
   onLegendItemClick(index: number): void {
     const item = this.processedData[index];
     this.segmentClick.emit({ item, index });
+  }
+
+  trackByLabel(index: number, item: ChartLegendItem): string {
+    return item.label;
   }
 }
