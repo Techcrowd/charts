@@ -4,12 +4,16 @@ import {
   Output,
   EventEmitter,
   ViewChild,
-  OnDestroy,
+  ElementRef,
   OnChanges,
-  SimpleChanges,
+  OnInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
+  PLATFORM_ID,
+  signal,
+  computed,
+  inject,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import {
   ApexNonAxisChartSeries,
   ApexChart,
@@ -21,60 +25,75 @@ import {
   ApexResponsive,
   ApexStroke,
   ChartComponent,
+  NgApexchartsModule,
 } from 'ng-apexcharts';
+import { ChartColorService, ChartColor } from '../../services/chart-color.service';
+import { CoChartLegendComponent, ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
+import { ValueFormat, ChartSize, CHART_COLORS } from '../../shared/chart-types';
 
 // ============ TYPES ============
 
-/** Typ formátu hodnot */
-export type ValueFormat = 'absolute' | 'percent';
+/** Velikostní varianta grafu (rozšířená o 'auto') */
+export type DonutChartSize = ChartSize | 'auto';
 
-/** Velikostní varianta grafu */
-export type ChartSize = 'sm' | 'md' | 'lg' | 'auto';
+// Re-export types for consumers of this component
+export { ChartColor } from '../../services/chart-color.service';
+export { ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
+export { ValueFormat, ChartSize } from '../../shared/chart-types';
 
 /** Data pro jednotlivou sérii */
 export interface DonutChartDataItem {
   label: string;
   value: number;
-  color?: string;
-}
-
-/** Item pro legendu */
-export interface ChartLegendItem {
-  label: string;
-  value: number;
-  color: string;
-  percent: number;
 }
 
 /** Konfigurace velikostí */
-const SIZE_CONFIG: Record<Exclude<ChartSize, 'auto'>, { height: number; donutSize: string; fontSize: string }> = {
-  sm: { height: 180, donutSize: '60%', fontSize: '11px' },
-  md: { height: 280, donutSize: '65%', fontSize: '13px' },
-  lg: { height: 380, donutSize: '70%', fontSize: '14px' },
+const SIZE_CONFIG: Record<ChartSize, { height: number; donutSize: string }> = {
+  sm: { height: 180, donutSize: '60%' },
+  md: { height: 280, donutSize: '65%' },
+  lg: { height: 380, donutSize: '70%' },
 };
+
+/** Statické ApexCharts konfigurace */
+const STATES_CONFIG: ApexStates = {
+  hover: { filter: { type: 'none' } },
+  active: { allowMultipleDataPointsSelection: false, filter: { type: 'none' } },
+};
+
+const STROKE_CONFIG: ApexStroke = {
+  show: true,
+  width: 2,
+  colors: [CHART_COLORS.backgroundSurface],
+};
+
+const LEGEND_CONFIG: ApexLegend = { show: false };
 
 // ============ COMPONENT ============
 
 @Component({
-    selector: 'co-donut-chart',
-    templateUrl: './co-donut-chart.component.html',
-    styleUrls: ['./co-donut-chart.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'co-donut-chart',
+  standalone: true,
+  imports: [NgApexchartsModule, CoChartLegendComponent],
+  templateUrl: './co-donut-chart.component.html',
+  styleUrls: ['./co-donut-chart.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CoDonutChartComponent implements OnChanges, OnDestroy {
+export class CoDonutChartComponent implements OnInit, OnChanges {
   @ViewChild('chart') chartComponent?: ChartComponent;
+
+  // ============ INJECTED ============
+  private elementRef = inject(ElementRef);
+  private chartColorService = inject(ChartColorService);
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
 
   // ============ INPUTS ============
 
   /** Data pro graf */
   @Input() data: DonutChartDataItem[] = [];
 
-  /** Titulek grafu */
-  @Input() title?: string;
-
   /** Velikostní varianta (sm, md, lg, auto) */
-  @Input() size: ChartSize = 'md';
+  @Input() size: DonutChartSize = 'md';
 
   /** Vlastní výška grafu v px (přepíše size) */
   @Input() height?: number;
@@ -83,7 +102,7 @@ export class CoDonutChartComponent implements OnChanges, OnDestroy {
   @Input() showLegend = true;
 
   /** Zobrazit hodnoty v legendě */
-  @Input() showLegendValues = true;
+  @Input() showLegendValues = false;
 
   /** Zobrazit hodnoty na výsečích */
   @Input() showDataLabels = true;
@@ -97,14 +116,19 @@ export class CoDonutChartComponent implements OnChanges, OnDestroy {
   /** Text uprostřed grafu (max 3 řádky, pak elipsis) */
   @Input() centerText?: string;
 
-  /** Vlastní barvy */
-  @Input() colors?: string[];
-
   /** Minimální hodnota pro seskupení do "Ostatní" */
   @Input() minValue?: number;
 
   /** Loading stav */
   @Input() loading = false;
+
+  /** Počet skeleton položek legendy při loading */
+  @Input() skeletonLegendCount = 4;
+
+  /** Pole pro skeleton legend items */
+  get skeletonItems(): number[] {
+    return Array.from({ length: this.skeletonLegendCount }, (_, i) => i);
+  }
 
   // ============ OUTPUTS ============
 
@@ -116,132 +140,114 @@ export class CoDonutChartComponent implements OnChanges, OnDestroy {
 
   // ============ INTERNAL STATE ============
 
-  hoveredIndex = -1;
+  hoveredIndex = signal(-1);
+  isLegendHover = signal(false);
+
+  // Internal signals for reactive data
+  private dataSignal = signal<DonutChartDataItem[]>([]);
+  private minValueSignal = signal<number | undefined>(undefined);
 
   // Computed values
-  processedData: DonutChartDataItem[] = [];
-  total = 0;
-  chartSeries: ApexNonAxisChartSeries = [];
-  chartLabels: string[] = [];
-  chartColors: string[] = [];
-  legendItems: ChartLegendItem[] = [];
+  processedData = computed(() => {
+    const data = this.dataSignal();
+    const minValue = this.minValueSignal();
+
+    if (!minValue) return [...data];
+
+    const mainItems: DonutChartDataItem[] = [];
+    let otherValue = 0;
+
+    for (const item of data) {
+      if (item.value >= minValue) {
+        mainItems.push(item);
+      } else {
+        otherValue += item.value;
+      }
+    }
+
+    if (otherValue > 0) {
+      mainItems.push({ label: 'Ostatní', value: otherValue });
+    }
+    return mainItems;
+  });
+
+  total = computed(() =>
+    this.processedData().reduce((sum, item) => sum + item.value, 0)
+  );
+
+  chartSeries = computed<ApexNonAxisChartSeries>(() =>
+    this.processedData().map(item => item.value)
+  );
+
+  chartLabels = computed(() =>
+    this.processedData().map(item => item.label)
+  );
+
+  chartColors = computed(() => {
+    const dataLength = this.processedData().length;
+    return this.chartColorService.getDefaultColorsHex(dataLength);
+  });
+
+  legendItems = computed<ChartLegendItem[]>(() => {
+    const processed = this.processedData();
+    const colors = this.chartColors();
+    const total = this.total();
+
+    return processed.map((item, i) => ({
+      label: item.label,
+      value: item.value,
+      color: colors[i],
+      percent: total > 0 ? (item.value / total) * 100 : 0,
+    }));
+  });
 
   // Size computed
   computedSize = 280;
   computedDonutSize = '65%';
-  computedFontSize = '13px';
 
-  // Chart configs
+  // Chart configs (dynamic)
   chartConfig!: ApexChart;
   plotOptionsConfig!: ApexPlotOptions;
   dataLabelsConfig!: ApexDataLabels;
   tooltipConfig!: ApexTooltip;
-  statesConfig!: ApexStates;
-  legendConfig!: ApexLegend;
-  strokeConfig!: ApexStroke;
   responsiveConfig!: ApexResponsive[];
 
-  // ============ PRIVATE ============
-
-  // Chart colors from design tokens
-  private readonly defaultColors = [
-    '#267c2e', // chart-in (green)
-    '#212121', // chart-out (dark)
-    '#3b82f6', // chart-funds (blue)
-    '#06b6d4', // chart-cool (cyan)
-    '#f65bd1', // chart-evaluation (pink)
-    '#4e5571', // chart-stocks (blue-gray)
-    '#902473', // chart-bonds (purple)
-    '#92a703', // chart-neon (yellow-green)
-    '#e26e52', // chart-rusty-red (coral)
-    '#764725', // chart-orangish (brown)
-  ];
-
-  constructor(private cdr: ChangeDetectorRef) {}
+  // Chart configs (static) - use constants
+  readonly statesConfig = STATES_CONFIG;
+  readonly strokeConfig = STROKE_CONFIG;
+  readonly legendConfig = LEGEND_CONFIG;
 
   // ============ LIFECYCLE ============
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.updateSizeValues();
-    this.updateComputedValues();
+  ngOnInit(): void {
+    this.syncSignals();
     this.updateChartConfigs();
   }
 
-  ngOnDestroy(): void {
-    // Chart cleanup handled by ng-apexcharts
+  ngOnChanges(): void {
+    this.syncSignals();
+    this.updateSizeValues();
+    this.updateChartConfigs();
+  }
+
+  private syncSignals(): void {
+    this.dataSignal.set(this.data);
+    this.minValueSignal.set(this.minValue);
   }
 
   // ============ PRIVATE METHODS ============
 
   private updateSizeValues(): void {
-    // Custom height overrides size preset
     if (this.height !== undefined) {
       this.computedSize = this.height;
       this.computedDonutSize = '65%';
-      this.computedFontSize = '13px';
       return;
     }
 
-    // Auto size - use medium defaults
-    if (this.size === 'auto') {
-      this.computedSize = 280;
-      this.computedDonutSize = '65%';
-      this.computedFontSize = '13px';
-      return;
-    }
-
-    // Preset sizes
-    const config = SIZE_CONFIG[this.size];
+    const sizeKey = this.size === 'auto' ? 'md' : this.size;
+    const config = SIZE_CONFIG[sizeKey];
     this.computedSize = config.height;
     this.computedDonutSize = config.donutSize;
-    this.computedFontSize = config.fontSize;
-  }
-
-  private updateComputedValues(): void {
-    // Process data (group small values)
-    if (this.minValue) {
-      const mainItems: DonutChartDataItem[] = [];
-      let otherValue = 0;
-
-      for (const item of this.data) {
-        if (item.value >= this.minValue) {
-          mainItems.push(item);
-        } else {
-          otherValue += item.value;
-        }
-      }
-
-      if (otherValue > 0) {
-        mainItems.push({ label: 'Ostatní', value: otherValue, color: '#9ca3af' });
-      }
-      this.processedData = mainItems;
-    } else {
-      this.processedData = [...this.data];
-    }
-
-    // Calculate total
-    this.total = this.processedData.reduce((sum, item) => sum + item.value, 0);
-
-    // Chart series and labels
-    this.chartSeries = this.processedData.map(item => item.value);
-    this.chartLabels = this.processedData.map(item => item.label);
-
-    // Colors
-    if (this.colors?.length) {
-      this.chartColors = this.colors;
-    } else {
-      this.chartColors = this.processedData.map((item, i) =>
-        item.color ?? this.defaultColors[i % this.defaultColors.length]
-      );
-    }
-
-    // Legend items
-    this.legendItems = this.processedData.map((item, i) => ({
-      label: item.label,
-      value: item.value,
-      color: this.chartColors[i],
-      percent: this.total > 0 ? (item.value / this.total) * 100 : 0,
-    }));
   }
 
   private updateChartConfigs(): void {
@@ -259,19 +265,17 @@ export class CoDonutChartComponent implements OnChanges, OnDestroy {
       },
       events: {
         dataPointSelection: (event: any, chartContext: any, config: any) => {
-          const item = self.processedData[config.dataPointIndex];
+          const item = self.processedData()[config.dataPointIndex];
           self.segmentClick.emit({ item, index: config.dataPointIndex });
         },
         dataPointMouseEnter: (event: any, chartContext: any, config: any) => {
-          self.hoveredIndex = config.dataPointIndex;
-          const item = self.processedData[config.dataPointIndex];
+          self.hoveredIndex.set(config.dataPointIndex);
+          const item = self.processedData()[config.dataPointIndex];
           self.segmentHover.emit({ item, index: config.dataPointIndex });
-          self.cdr.markForCheck();
         },
         dataPointMouseLeave: () => {
-          self.hoveredIndex = -1;
+          self.hoveredIndex.set(-1);
           self.segmentHover.emit(null);
-          self.cdr.markForCheck();
         },
       },
     };
@@ -294,17 +298,17 @@ export class CoDonutChartComponent implements OnChanges, OnDestroy {
         if (this.valueFormat === 'percent') {
           return `${val.toFixed(0)}%`;
         }
-        const value = this.processedData[opts.seriesIndex]?.value ?? 0;
+        const value = this.processedData()[opts.seriesIndex]?.value ?? 0;
         return this.formatValue(value);
       },
       style: {
-        fontSize: this.computedFontSize,
-        fontWeight: 500,
-        colors: ['#6b7280'],
+        fontSize: '10px',
+        fontWeight: 400,
+        colors: [CHART_COLORS.contentTertiary],
       },
       background: {
         enabled: true,
-        foreColor: '#6b7280',
+        foreColor: CHART_COLORS.contentTertiary,
         borderRadius: 2,
         padding: 6,
         opacity: 1,
@@ -321,43 +325,15 @@ export class CoDonutChartComponent implements OnChanges, OnDestroy {
       custom: ({ series, seriesIndex, w }: any) => {
         const label = w.config.labels[seriesIndex];
         const value = series[seriesIndex];
-        const percent = this.total > 0 ? ((value / this.total) * 100).toFixed(1) : '0';
-        const color = this.chartColors[seriesIndex];
 
         return `
           <div class="co-donut-tooltip">
-            <span class="co-donut-tooltip__color" style="background-color: ${color}"></span>
             <span class="co-donut-tooltip__label">${label}</span>
-            <span class="co-donut-tooltip__value">${this.formatValue(value)}</span>
-            <span class="co-donut-tooltip__percent">(${percent}%)</span>
+            <span class="co-donut-tooltip__value">${this.formatValue(value)} ks</span>
           </div>
         `;
       },
     };
-
-    this.statesConfig = {
-      hover: {
-        filter: {
-          type: 'darken',
-          value: 0.15,
-        },
-      },
-      active: {
-        allowMultipleDataPointsSelection: false,
-        filter: {
-          type: 'darken',
-          value: 0.2,
-        },
-      },
-    };
-
-    this.strokeConfig = {
-      show: true,
-      width: 2,
-      colors: ['#ffffff'],
-    };
-
-    this.legendConfig = { show: false };
 
     this.responsiveConfig = [
       {
@@ -379,35 +355,37 @@ export class CoDonutChartComponent implements OnChanges, OnDestroy {
     return value.toLocaleString('cs-CZ');
   }
 
-  formatLegendValue(item: ChartLegendItem): string {
-    if (this.valueFormat === 'percent') {
-      return `${item.percent.toFixed(1)}%`;
-    }
-    return this.formatValue(item.value);
-  }
-
   onLegendItemHover(index: number): void {
-    this.hoveredIndex = index;
-    const chart = this.chartComponent?.chart as any;
-    if (chart?.toggleDataPointSelection) {
-      chart.toggleDataPointSelection(index);
-    }
+    this.hoveredIndex.set(index);
+    this.isLegendHover.set(true);
+    this.highlightSegment(index);
   }
 
   onLegendItemLeave(): void {
-    this.hoveredIndex = -1;
-    const chart = this.chartComponent?.chart as any;
-    if (chart?.resetSeries) {
-      chart.resetSeries();
-    }
+    this.hoveredIndex.set(-1);
+    this.isLegendHover.set(false);
+    this.highlightSegment(-1);
   }
 
   onLegendItemClick(index: number): void {
-    const item = this.processedData[index];
+    const item = this.processedData()[index];
     this.segmentClick.emit({ item, index });
   }
 
-  trackByLabel(index: number, item: ChartLegendItem): string {
-    return item.label;
+  private highlightSegment(activeIndex: number): void {
+    if (!this.isBrowser) return;
+
+    const hostEl = this.elementRef.nativeElement as HTMLElement;
+    const segments = hostEl.querySelectorAll('.apexcharts-pie-area');
+
+    segments.forEach((segment, i) => {
+      const el = segment as SVGPathElement;
+      if (activeIndex === -1) {
+        // Remove inline style so CSS can take over
+        el.style.removeProperty('opacity');
+      } else {
+        el.style.opacity = i === activeIndex ? '1' : '0.35';
+      }
+    });
   }
 }

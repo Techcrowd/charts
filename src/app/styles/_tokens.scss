@@ -5,8 +5,8 @@
 
 // ============ COLORS - CONTENT ============
 $color-content-primary: #212121;
-$color-content-secondary: #717171;
-$color-content-tertiary: #adadad;
+$color-content-secondary: #454545;
+$color-content-tertiary: #717171;
 $color-content-quaternary: #dadada;
 $color-content-disabled: #dadada;
 
@@ -30,6 +30,7 @@ $color-interactive-on-primary: #ffffff;
 $color-interactive-secondary: #212121;
 $color-interactive-secondary-hover: rgba(33, 33, 33, 0.08);
 $color-interactive-secondary-active: rgba(33, 33, 33, 0.12);
+$color-interactive-secondary-action: rgba(33, 33, 33, 0.08);
 $color-interactive-on-secondary: #212121;
 
 // ============ COLORS - ATTENTION/STATUS ============
@@ -61,25 +62,25 @@ $shadow-floating-bottom: rgba(33, 33, 33, 0.24);
 
 // ============ COLORS - CHART ============
 // Primary chart colors (in/out pattern)
-$chart-in: #267c2e;  // Green - positive/in
+$chart-in: #267c29;  // Green - positive/in
 $chart-out: #212121; // Dark - negative/out
 
 // Chart plot colors with backgrounds
-$chart-plot-in: #267c2e;
-$chart-plot-in-background-top: rgba(38, 124, 46, 0.19); // #267c2e30
-$chart-plot-in-background-bottom: rgba(38, 124, 46, 0);  // #267c2e00
+$chart-plot-in: #267c29;
+$chart-plot-in-background-top: rgba(38, 124, 41, 0.19); // #267c2930
+$chart-plot-in-background-bottom: rgba(38, 124, 41, 0);  // #267c2900
 $chart-plot-out: #212121;
 $chart-plot-out-background-top: rgba(33, 33, 33, 0.19);  // #21212130
 $chart-plot-out-background-bottom: rgba(33, 33, 33, 0);  // #21212100
 
 // Additional chart colors from design
-$chart-evaluation: #f65bd1;  // Pink/magenta
-$chart-stocks: #4e5571;      // Blue-gray
-$chart-bonds: #902473;       // Purple
-$chart-neon: #92a703;        // Yellow-green
+$chart-evaluation: #43167c;  // Purple/violet
+$chart-stocks: #f45b6d;      // Pink/salmon
+$chart-bonds: #4e5571;       // Blue-gray
+$chart-neon: #9a2760;        // Magenta/wine
 $chart-rusty-red: #e26e52;   // Coral/rust
-$chart-orangish: #764725;    // Brown/orange
-$chart-funds: #3b82f6;       // Blue (funds)
+$chart-orangish: #7e472f;    // Brown/orange
+$chart-funds: #02a473;       // Teal/green
 $chart-cool: #06b6d4;        // Cyan (cool)
 
 // Default chart color palette (for multi-series)
@@ -115,6 +116,75 @@ $font-weight-bold: 700;
 $line-height-tight: 1.2;
 $line-height-normal: 1.4;
 $line-height-relaxed: 1.6;
+
+// ============ TYPOGRAPHY STYLES (Mixins) ============
+// Caption Primary
+@mixin caption-primary {
+  font-family: $font-family-base;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-regular;
+  line-height: $line-height-normal;
+  letter-spacing: -0.01em;
+}
+
+@mixin caption-primary-bold {
+  font-family: $font-family-base;
+  font-size: 12px;
+  font-weight: $font-weight-medium; // 500
+  line-height: 16px;
+  letter-spacing: -0.06px;
+}
+
+// Caption Secondary
+@mixin caption-secondary {
+  font-family: $font-family-base;
+  font-size: 10px;
+  font-weight: $font-weight-regular;
+  line-height: 16px;
+  letter-spacing: 0;
+}
+
+@mixin caption-secondary-bold {
+  font-family: $font-family-base;
+  font-size: 10px;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-normal;
+  letter-spacing: 0;
+}
+
+// Body Primary
+@mixin body-primary {
+  font-family: $font-family-base;
+  font-size: $font-size-md;
+  font-weight: $font-weight-regular;
+  line-height: $line-height-relaxed;
+  letter-spacing: -0.01em;
+}
+
+@mixin body-primary-bold {
+  font-family: $font-family-base;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-relaxed;
+  letter-spacing: -0.01em;
+}
+
+// Body Secondary
+@mixin body-secondary {
+  font-family: $font-family-base;
+  font-size: $font-size-md;
+  font-weight: $font-weight-regular;
+  line-height: 20px;
+  letter-spacing: -0.14px;
+}
+
+@mixin body-secondary-bold {
+  font-family: $font-family-base;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  line-height: 20px;
+  letter-spacing: -0.14px;
+}
 
 // ============ SPACING ============
 $spacing-xs: 4px;
@@ -167,7 +237,19 @@ $z-index-tooltip: 400;
   --color-attention-success: #{$color-attention-success};
   --color-attention-processing: #{$color-attention-processing};
 
-  // Chart colors
+  // Chart colors - individual
+  --chart-in: #{$chart-in};
+  --chart-out: #{$chart-out};
+  --chart-funds: #{$chart-funds};
+  --chart-cool: #{$chart-cool};
+  --chart-evaluation: #{$chart-evaluation};
+  --chart-stocks: #{$chart-stocks};
+  --chart-bonds: #{$chart-bonds};
+  --chart-neon: #{$chart-neon};
+  --chart-rusty-red: #{$chart-rusty-red};
+  --chart-orangish: #{$chart-orangish};
+
+  // Chart colors - palette
   --chart-color-1: #{$chart-color-1};
   --chart-color-2: #{$chart-color-2};
   --chart-color-3: #{$chart-color-3};

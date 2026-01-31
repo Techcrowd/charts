@@ -21,9 +21,14 @@ body {
   border: none !important;
   box-shadow: none !important;
   padding: 0 !important;
+  overflow: visible !important;
 }
 
-/* ApexCharts Data Labels - white background, gray text */
+.apexcharts-tooltip-custom {
+  overflow: visible !important;
+}
+
+/* ApexCharts Data Labels - white background, caption-secondary style */
 .apexcharts-canvas {
   /* Target ALL rects inside pie chart that could be label backgrounds */
   .apexcharts-pie-series ~ g rect,
@@ -34,48 +39,53 @@ body {
     fill: #ffffff !important;
   }
 
-  /* Target ALL text inside pie chart data labels */
+  /* Target ALL text inside pie chart data labels - caption-secondary style */
   .apexcharts-pie-series ~ g text,
   .apexcharts-datalabels text,
   .apexcharts-datalabels-group text,
   text.apexcharts-datalabel-label,
   text.apexcharts-datalabel-value {
-    fill: #6b7280 !important;
+    fill: $color-content-tertiary !important;
+    font-size: 10px !important;
+    font-weight: $font-weight-regular !important;
   }
 }
 
 .co-donut-tooltip {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: $spacing-sm;
+  gap: 2px;
   padding: $spacing-sm $spacing-md;
-  background: $color-background-surface;
-  border: 1px solid $color-background-border;
+  margin-bottom: 8px;
+  background: $color-content-secondary;
   border-radius: $border-radius-lg;
-  box-shadow: 0 4px 6px -1px $shadow-floating-middle, 0 2px 4px -1px $shadow-floating-top;
-  font-family: $font-family-base;
-  font-size: $font-size-sm;
+  @include caption-primary-bold;
+  color: $color-interactive-on-primary;
 
-  &__color {
-    width: 10px;
-    height: 10px;
-    border-radius: $border-radius-sm;
-    flex-shrink: 0;
+  // Arrow pointing down
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid $color-content-secondary;
   }
 
   &__label {
-    color: $color-content-primary;
-    font-weight: $font-weight-medium;
+    color: $color-interactive-on-primary;
+    font-weight: $font-weight-semibold;
   }
 
   &__value {
-    color: $color-content-primary;
-    font-weight: $font-weight-semibold;
+    color: $color-interactive-on-primary;
+    font-weight: $font-weight-regular;
     font-variant-numeric: tabular-nums;
-  }
-
-  &__percent {
-    color: $color-content-secondary;
-    font-size: $font-size-xs;
   }
 }

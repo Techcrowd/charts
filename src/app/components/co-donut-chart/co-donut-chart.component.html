@@ -1,23 +1,32 @@
 <div
   class="co-donut-chart"
   [class.co-donut-chart--loading]="loading"
-  [class.co-donut-chart--has-title]="title"
+  [class.co-donut-chart--hovering]="hoveredIndex() !== -1 && !isLegendHover()"
   [class.co-donut-chart--sm]="size === 'sm'"
   [class.co-donut-chart--md]="size === 'md'"
   [class.co-donut-chart--lg]="size === 'lg'"
   [class.co-donut-chart--auto]="size === 'auto'"
 >
-  <!-- Title -->
-  @if (title) {
-    <div class="co-donut-chart__title">{{ title }}</div>
-  }
-
   <div class="co-donut-chart__content">
     <!-- Chart Container -->
     <div class="co-donut-chart__chart-wrapper">
       @if (loading) {
-        <div class="co-donut-chart__loader">
-          <div class="co-donut-chart__loader-ring"></div>
+        <div class="co-donut-chart__skeleton">
+          <svg class="co-donut-chart__skeleton-donut" viewBox="0 0 100 100">
+            <!-- Donut segments skeleton -->
+            <circle cx="50" cy="50" r="40" fill="none" stroke-width="18"
+              class="co-donut-chart__skeleton-segment co-donut-chart__skeleton-segment--1"
+              stroke-dasharray="62.8 188.4" stroke-dashoffset="0" />
+            <circle cx="50" cy="50" r="40" fill="none" stroke-width="18"
+              class="co-donut-chart__skeleton-segment co-donut-chart__skeleton-segment--2"
+              stroke-dasharray="50.2 200.9" stroke-dashoffset="-62.8" />
+            <circle cx="50" cy="50" r="40" fill="none" stroke-width="18"
+              class="co-donut-chart__skeleton-segment co-donut-chart__skeleton-segment--3"
+              stroke-dasharray="75.4 175.8" stroke-dashoffset="-113" />
+            <circle cx="50" cy="50" r="40" fill="none" stroke-width="18"
+              class="co-donut-chart__skeleton-segment co-donut-chart__skeleton-segment--4"
+              stroke-dasharray="62.8 188.4" stroke-dashoffset="-188.4" />
+          </svg>
         </div>
       } @else {
         <div
@@ -27,10 +36,10 @@
         >
           <apx-chart
             #chart
-            [series]="chartSeries"
+            [series]="chartSeries()"
             [chart]="chartConfig"
-            [labels]="chartLabels"
-            [colors]="chartColors"
+            [labels]="chartLabels()"
+            [colors]="chartColors()"
             [dataLabels]="dataLabelsConfig"
             [plotOptions]="plotOptionsConfig"
             [tooltip]="tooltipConfig"
@@ -50,32 +59,28 @@
       }
     </div>
 
-    <!-- Custom Legend -->
-    @if (showLegend && !loading) {
-      <div class="co-chart-legend">
-        @for (item of legendItems; track item.label; let i = $index) {
-          <button
-            type="button"
-            class="co-chart-legend__item"
-            [class.co-chart-legend__item--active]="hoveredIndex === i"
-            [class.co-chart-legend__item--dimmed]="hoveredIndex !== -1 && hoveredIndex !== i"
-            (mouseenter)="onLegendItemHover(i)"
-            (mouseleave)="onLegendItemLeave()"
-            (click)="onLegendItemClick(i)"
-          >
-            <span
-              class="co-chart-legend__icon"
-              [style.backgroundColor]="item.color"
-            ></span>
-            <span class="co-chart-legend__label">{{ item.label }}</span>
-            @if (showLegendValues) {
-              <span class="co-chart-legend__value">
-                {{ formatLegendValue(item) }}
-              </span>
-            }
-          </button>
-        }
-      </div>
+    <!-- Legend -->
+    @if (showLegend) {
+      @if (loading) {
+        <div class="co-chart-legend-skeleton">
+          @for (i of skeletonItems; track i) {
+            <div class="co-chart-legend-skeleton__item">
+              <span class="co-chart-legend-skeleton__dot"></span>
+              <span class="co-chart-legend-skeleton__text"></span>
+            </div>
+          }
+        </div>
+      } @else {
+        <co-chart-legend
+          [items]="legendItems()"
+          [showValues]="showLegendValues"
+          [valueFormat]="valueFormat"
+          [size]="size === 'sm' ? 'sm' : size === 'lg' ? 'lg' : 'md'"
+          (itemHover)="onLegendItemHover($event)"
+          (itemLeave)="onLegendItemLeave()"
+          (itemClick)="onLegendItemClick($event.index)"
+        />
+      }
     }
   </div>
 </div>

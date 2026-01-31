@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../styles/tokens' as *;
 
 .co-donut-chart {
@@ -7,18 +8,10 @@
   min-height: 0;
   width: 100%;
 
-  // Size variants - adjust text and legend sizes
+  // Size variants - adjust center text size
   &--sm {
     .co-donut-chart__center-text {
       font-size: $font-size-xs;
-    }
-    .co-chart-legend__item {
-      padding: $spacing-xs $spacing-sm;
-      font-size: $font-size-xs;
-    }
-    .co-chart-legend__icon {
-      width: 10px;
-      height: 10px;
     }
   }
 
@@ -26,18 +19,7 @@
     .co-donut-chart__center-text {
       font-size: $font-size-lg;
     }
-    .co-chart-legend__item {
-      padding: $spacing-sm $spacing-md;
-      font-size: 15px;
-    }
   }
-}
-
-.co-donut-chart__title {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-semibold;
-  color: $color-content-primary;
-  text-align: center;
 }
 
 .co-donut-chart__content {
@@ -71,6 +53,11 @@
       max-height: 100%;
     }
 
+    // Pie segments - smooth opacity transition
+    .apexcharts-pie-area {
+      transition: opacity $transition-fast;
+    }
+
     // Data labels - white background, gray text
     .apexcharts-datalabels-group {
       rect {
@@ -87,6 +74,23 @@
       rect, .apexcharts-datalabel-label-rect {
         fill: $color-background-surface !important;
       }
+    }
+  }
+}
+
+// Transition for smooth opacity changes (both CSS and JS hover)
+.co-donut-chart__chart-container ::ng-deep .apexcharts-pie-area {
+  transition: opacity $transition-fast;
+}
+
+// Hover state - dim non-hovered segments (chart hover via CSS)
+.co-donut-chart--hovering {
+  .co-donut-chart__chart-container ::ng-deep {
+    .apexcharts-pie-area {
+      opacity: 0.35;
+    }
+    .apexcharts-pie-area:hover {
+      opacity: 1;
     }
   }
 }
@@ -108,10 +112,8 @@
 }
 
 .co-donut-chart__center-text {
-  font-size: $font-size-md;
-  font-weight: $font-weight-semibold;
+  @include body-secondary-bold;
   color: $color-content-primary;
-  line-height: $line-height-normal;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -120,92 +122,65 @@
   word-break: break-word;
 }
 
-// Loading
-.co-donut-chart__loader {
+// Skeleton Loading
+.co-donut-chart__skeleton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 120px;
-  height: 120px;
+  width: 200px;
+  height: 200px;
 }
 
-.co-donut-chart__loader-ring {
+.co-donut-chart__skeleton-donut {
   width: 100%;
   height: 100%;
-  border: 12px solid $color-background-border;
-  border-radius: 50%;
-  animation: co-donut-pulse 1.5s ease-in-out infinite;
+  animation: co-skeleton-pulse 1.5s ease-in-out infinite;
 }
 
-@keyframes co-donut-pulse {
+.co-donut-chart__skeleton-segment {
+  stroke: $color-background-border;
+
+  &--1 { stroke: color.adjust($color-background-border, $lightness: -5%); }
+  &--2 { stroke: $color-background-border; }
+  &--3 { stroke: color.adjust($color-background-border, $lightness: -8%); }
+  &--4 { stroke: color.adjust($color-background-border, $lightness: 3%); }
+}
+
+// Legend Skeleton
+.co-chart-legend-skeleton {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: $spacing-xs $spacing-lg;
+}
+
+.co-chart-legend-skeleton__item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  animation: co-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.co-chart-legend-skeleton__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: $border-radius-full;
+  background-color: $color-background-border;
+}
+
+.co-chart-legend-skeleton__text {
+  width: 60px;
+  height: 12px;
+  border-radius: $border-radius-sm;
+  background-color: $color-background-border;
+}
+
+@keyframes co-skeleton-pulse {
   0%, 100% {
-    opacity: 0.4;
+    opacity: 0.5;
   }
   50% {
     opacity: 1;
   }
 }
 
-// Legend
-.co-chart-legend {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: $spacing-sm;
-}
-
-.co-chart-legend__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px $spacing-md;
-  border: none;
-  border-radius: $border-radius-lg;
-  background: transparent;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: $font-size-md;
-  transition: $transition-fast;
-
-  &:hover {
-    background-color: $color-background-surface-secondary;
-  }
-
-  &--active {
-    background-color: $color-background-surface-secondary;
-  }
-
-  &--dimmed {
-    opacity: 0.4;
-  }
-}
-
-.co-chart-legend__icon {
-  width: 12px;
-  height: 12px;
-  border-radius: $border-radius-sm;
-  flex-shrink: 0;
-}
-
-.co-chart-legend__label {
-  color: $color-content-primary;
-  font-weight: $font-weight-medium;
-}
-
-.co-chart-legend__value {
-  color: $color-content-secondary;
-  font-variant-numeric: tabular-nums;
-}
-
-// Responsive
-@media (min-width: 640px) {
-  .co-donut-chart__content {
-    flex-direction: row;
-    justify-content: center;
-  }
-
-  .co-chart-legend {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}

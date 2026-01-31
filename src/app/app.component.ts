@@ -1,13 +1,17 @@
-import { Component } from '@angular/core';
-import { DonutChartDataItem } from './components/co-donut-chart/co-donut-chart.component';
+import { Component, inject } from '@angular/core';
+import { CoDonutChartComponent, DonutChartDataItem } from './components/co-donut-chart/co-donut-chart.component';
+import { ChartColorService, ChartColor } from './services/chart-color.service';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    standalone: false
+  selector: 'app-root',
+  standalone: true,
+  imports: [CoDonutChartComponent],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  private chartColorService = inject(ChartColorService);
+
   // Data pro grafy
   fruitData: DonutChartDataItem[] = [
     { label: 'Jablka', value: 450 },
@@ -36,14 +40,19 @@ export class AppComponent {
     { label: 'Ostatní', value: 2 },
   ];
 
-  // Center text examples
-  centerTextShort = 'Ovoce';
-  centerTextMedium = 'Celkový počet kusů ovoce';
-  centerTextLong = 'Toto je velmi dlouhý text který se nevejde na tři řádky a proto bude oříznut s elipsis na konci';
+  // Dostupné barvy pro zobrazení
+  availableColors = this.chartColorService.availableColors;
 
-  // Interactive state
+  // Center text
+  centerTextLong = 'Toto je velmi dlouhý text který se nevejde na tři řádky a proto bude oříznut';
+
+  // Interaktivní state
   lastAction = 'Žádná';
   selectedCenterText = 'Vyber položku';
+
+  getColorHex(color: ChartColor): string {
+    return this.chartColorService.getColorHex(color);
+  }
 
   onSegmentClick(event: { item: DonutChartDataItem; index: number }): void {
     this.lastAction = `Klik: ${event.item.label} (${event.item.value})`;

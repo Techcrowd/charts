@@ -1,0 +1,30 @@
+<div
+  class="co-chart-legend"
+  [class.co-chart-legend--sm]="size === 'sm'"
+  [class.co-chart-legend--lg]="size === 'lg'"
+  [class.co-chart-legend--interactive]="interactive"
+>
+  @for (item of items; track trackByLabel($index, item); let i = $index) {
+    <button
+      type="button"
+      class="co-chart-legend__item"
+      [class.co-chart-legend__item--active]="isActive(i)"
+      [class.co-chart-legend__item--dimmed]="isDimmed(i)"
+      [disabled]="!interactive"
+      (mouseenter)="onItemHover(i)"
+      (mouseleave)="onItemLeave()"
+      (click)="onItemClick(i)"
+    >
+      <span
+        class="co-chart-legend__icon"
+        [style.backgroundColor]="item.color"
+      ></span>
+      <span class="co-chart-legend__label">{{ item.label }}</span>
+      @if (showValues) {
+        <span class="co-chart-legend__value">
+          {{ formatValue(item) }}
+        </span>
+      }
+    </button>
+  }
+</div>
