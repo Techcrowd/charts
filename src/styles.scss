@@ -1,5 +1,5 @@
 /* Import design tokens */
-@import 'app/styles/tokens';
+@use 'app/styles/tokens' as *;
 
 /* Global styles */
 

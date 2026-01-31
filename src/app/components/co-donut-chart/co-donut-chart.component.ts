@@ -56,10 +56,11 @@ const SIZE_CONFIG: Record<Exclude<ChartSize, 'auto'>, { height: number; donutSiz
 // ============ COMPONENT ============
 
 @Component({
-  selector: 'co-donut-chart',
-  templateUrl: './co-donut-chart.component.html',
-  styleUrls: ['./co-donut-chart.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'co-donut-chart',
+    templateUrl: './co-donut-chart.component.html',
+    styleUrls: ['./co-donut-chart.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CoDonutChartComponent implements OnChanges, OnDestroy {
   @ViewChild('chart') chartComponent?: ChartComponent;

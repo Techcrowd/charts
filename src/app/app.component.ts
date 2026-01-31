@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { DonutChartDataItem } from './components/co-donut-chart/co-donut-chart.component';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent {
   // Data pro grafy
