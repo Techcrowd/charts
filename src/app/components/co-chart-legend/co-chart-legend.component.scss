@@ -5,6 +5,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: $spacing-xs $spacing-md;
+  padding: 0 $spacing-md $spacing-md $spacing-md;
 
   // Size variants
   &--sm {

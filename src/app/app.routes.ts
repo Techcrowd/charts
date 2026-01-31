@@ -1,0 +1,24 @@
+import { Routes } from '@angular/router';
+import { LayoutComponent } from './layout/layout.component';
+
+export const routes: Routes = [
+  {
+    path: '',
+    component: LayoutComponent,
+    children: [
+      { path: '', redirectTo: 'donut-chart', pathMatch: 'full' },
+      {
+        path: 'donut-chart',
+        loadComponent: () => import('./pages/donut-chart/donut-chart.page').then(m => m.DonutChartPage),
+      },
+      {
+        path: 'bar-chart',
+        loadComponent: () => import('./pages/bar-chart/bar-chart.page').then(m => m.BarChartPage),
+      },
+      {
+        path: 'column-chart',
+        loadComponent: () => import('./pages/column-chart/column-chart.page').then(m => m.ColumnChartPage),
+      },
+    ],
+  },
+];

@@ -1,0 +1,26 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <h1 class="sidebar__title">Golem Charts</h1>
+      <p class="sidebar__subtitle">Design System</p>
+    </div>
+    <nav class="sidebar__nav">
+      @for (item of menuItems; track item.path) {
+        <a
+          class="sidebar__link"
+          [routerLink]="item.path"
+          routerLinkActive="sidebar__link--active"
+          [class.sidebar__link--disabled]="!item.ready"
+        >
+          {{ item.label }}
+          @if (!item.ready) {
+            <span class="sidebar__badge">Soon</span>
+          }
+        </a>
+      }
+    </nav>
+  </aside>
+  <main class="main">
+    <router-outlet />
+  </main>
+</div>

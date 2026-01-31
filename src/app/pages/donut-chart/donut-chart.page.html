@@ -1,0 +1,234 @@
+<div class="page">
+  <h1 class="page__title">Donut Chart</h1>
+  <p class="page__subtitle">co-donut-chart component</p>
+
+  <!-- Základní použití -->
+  <section class="demo-section">
+    <h2>Základní použití</h2>
+    <div class="demo-card">
+      <co-donut-chart [data]="fruitData" />
+      <markdown clipboard class="code-block" [data]="code.basic | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.basicTs | language : 'typescript'"></markdown>
+    </div>
+  </section>
+
+  <!-- Vlastní barvy -->
+  <section class="demo-section">
+    <h2>Vlastní barvy</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>Výchozí paleta</h3>
+        <co-donut-chart [data]="fruitData" />
+        <markdown clipboard class="code-block" [data]="code.defaultPalette | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Vlastní barvy z palety</h3>
+        <co-donut-chart [data]="fruitData" [colors]="customColors" />
+        <markdown clipboard class="code-block" [data]="code.customColors | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Velikostní varianty -->
+  <section class="demo-section">
+    <h2>Velikostní varianty</h2>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>Small (sm)</h3>
+        <co-donut-chart [data]="fruitData" size="sm" />
+        <markdown clipboard class="code-block" [data]="code.sizeSm | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Medium (md) - výchozí</h3>
+        <co-donut-chart [data]="fruitData" size="md" />
+        <markdown clipboard class="code-block" [data]="code.sizeMd | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Large (lg)</h3>
+        <co-donut-chart [data]="fruitData" size="lg" />
+        <markdown clipboard class="code-block" [data]="code.sizeLg | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vlastní výška -->
+  <section class="demo-section">
+    <h2>Vlastní výška</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>height="150"</h3>
+        <co-donut-chart [data]="fruitData" [height]="150" />
+        <markdown clipboard class="code-block" [data]="code.height150 | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>height="350"</h3>
+        <co-donut-chart [data]="fruitData" [height]="350" />
+        <markdown clipboard class="code-block" [data]="code.height350 | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Center text -->
+  <section class="demo-section">
+    <h2>Center text</h2>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>Krátký text</h3>
+        <co-donut-chart [data]="fruitData" centerText="Ovoce" />
+        <markdown clipboard class="code-block" [data]="code.centerShort | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Střední text</h3>
+        <co-donut-chart [data]="fruitData" centerText="Celkový počet kusů" />
+        <markdown clipboard class="code-block" [data]="code.centerMedium | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Dlouhý text (elipsis)</h3>
+        <co-donut-chart [data]="fruitData" [centerText]="centerTextLong" />
+        <markdown clipboard class="code-block" [data]="code.centerLong | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Počet sérií -->
+  <section class="demo-section">
+    <h2>Počet sérií</h2>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>2 série</h3>
+        <co-donut-chart [data]="twoSeriesData" />
+        <markdown clipboard class="code-block" [data]="code.twoSeries | language : 'typescript'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>3 série</h3>
+        <co-donut-chart [data]="threeSeriesData" />
+        <markdown clipboard class="code-block" [data]="code.threeSeries | language : 'typescript'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>6 sérií</h3>
+        <co-donut-chart [data]="browserData" />
+        <markdown clipboard class="code-block" [data]="code.sixSeries | language : 'typescript'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data labels & Tooltip -->
+  <section class="demo-section">
+    <h2>Data labels & Tooltip</h2>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>S hodnotami (výchozí)</h3>
+        <co-donut-chart [data]="fruitData" />
+        <markdown clipboard class="code-block" [data]="code.labelsDefault | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Bez hodnot na výsečích</h3>
+        <co-donut-chart [data]="fruitData" [showDataLabels]="false" />
+        <markdown clipboard class="code-block" [data]="code.labelsOff | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>S tooltipem</h3>
+        <co-donut-chart [data]="fruitData" [showTooltip]="true" />
+        <markdown clipboard class="code-block" [data]="code.tooltipOn | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formát hodnot -->
+  <section class="demo-section">
+    <h2>Formát hodnot</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>Procenta (výchozí)</h3>
+        <co-donut-chart [data]="fruitData" valueFormat="percent" [showLegendValues]="true" />
+        <markdown clipboard class="code-block" [data]="code.formatPercent | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Absolutní hodnoty</h3>
+        <co-donut-chart [data]="fruitData" valueFormat="absolute" [showLegendValues]="true" />
+        <markdown clipboard class="code-block" [data]="code.formatAbsolute | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Legenda -->
+  <section class="demo-section">
+    <h2>Legenda</h2>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>S legendou (výchozí)</h3>
+        <co-donut-chart [data]="fruitData" />
+        <markdown clipboard class="code-block" [data]="code.legendDefault | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>S hodnotami v legendě</h3>
+        <co-donut-chart [data]="fruitData" [showLegendValues]="true" />
+        <markdown clipboard class="code-block" [data]="code.legendValues | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Bez legendy</h3>
+        <co-donut-chart [data]="fruitData" [showLegend]="false" />
+        <markdown clipboard class="code-block" [data]="code.legendOff | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interakce -->
+  <section class="demo-section">
+    <h2>Interakce</h2>
+    <p class="demo-note">Najeď myší na segment nebo legendu, klikni pro výběr</p>
+    <div class="demo-card">
+      <co-donut-chart
+        [data]="fruitData"
+        [centerText]="selectedCenterText"
+        (segmentClick)="onSegmentClick($event)"
+        (segmentHover)="onSegmentHover($event)"
+      />
+      <div class="event-log">
+        <strong>Akce:</strong> {{ lastAction }}
+      </div>
+      <markdown clipboard class="code-block" [data]="code.interaction | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.interactionTs | language : 'typescript'"></markdown>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <section class="demo-section">
+    <h2>Loading stav</h2>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>Loading (4 položky)</h3>
+        <co-donut-chart [data]="fruitData" [loading]="true" [skeletonLegendCount]="4" />
+        <markdown clipboard class="code-block" [data]="code.loading4 | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Loading (2 položky)</h3>
+        <co-donut-chart [data]="twoSeriesData" [loading]="true" [skeletonLegendCount]="2" />
+        <markdown clipboard class="code-block" [data]="code.loading2 | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Loading (6 položek)</h3>
+        <co-donut-chart [data]="browserData" [loading]="true" [skeletonLegendCount]="6" />
+        <markdown clipboard class="code-block" [data]="code.loading6 | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- API Reference -->
+  <section class="demo-section">
+    <h2>API Reference</h2>
+    <div class="demo-card api-card">
+      <markdown clipboard src="/assets/docs/api-reference.md"></markdown>
+
+      <h3 style="margin-top: 24px;">Dostupné barvy</h3>
+      <div class="color-palette">
+        @for (color of availableColors; track color) {
+          <div class="color-swatch">
+            <span class="color-box" [style.backgroundColor]="getColorHex(color)"></span>
+            <code>{{ color }}</code>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+</div>

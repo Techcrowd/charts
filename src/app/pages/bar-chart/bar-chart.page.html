@@ -1,0 +1,258 @@
+<div class="page">
+  <h1 class="page__title">Bar Chart</h1>
+  <p class="page__subtitle">co-bar-chart component (horizontální sloupcový graf)</p>
+
+  <!-- Základní použití -->
+  <section class="demo-section">
+    <h2>Základní použití</h2>
+    <div class="demo-card">
+      <co-bar-chart [data]="countryData" [showLegend]="false" />
+      <markdown clipboard class="code-block" [data]="code.basic | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.basicTs | language : 'typescript'"></markdown>
+    </div>
+  </section>
+
+  <!-- Vlastní výška -->
+  <section class="demo-section">
+    <h2>Vlastní výška</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>height="250"</h3>
+        <co-bar-chart [data]="countryData" [height]="250" [showLegend]="false" />
+        <markdown clipboard class="code-block" [data]="code.height250 | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>height="400"</h3>
+        <co-bar-chart [data]="countryData" [height]="400" [showLegend]="false" />
+        <markdown clipboard class="code-block" [data]="code.height400 | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data labels & Grid -->
+  <section class="demo-section">
+    <h2>Data labels & Grid</h2>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>S hodnotami (výchozí)</h3>
+        <co-bar-chart [data]="countryData" [showLegend]="false" />
+        <markdown clipboard class="code-block" [data]="code.labelsDefault | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Bez hodnot</h3>
+        <co-bar-chart [data]="countryData" [showDataLabels]="false" [showLegend]="false" />
+        <markdown clipboard class="code-block" [data]="code.labelsOff | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Bez gridu</h3>
+        <co-bar-chart [data]="countryData" [showGrid]="false" [showLegend]="false" />
+        <markdown clipboard class="code-block" [data]="code.gridOff | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vlastní barvy -->
+  <section class="demo-section">
+    <h2>Vlastní barvy</h2>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>chart-bonds (výchozí)</h3>
+        <co-bar-chart [data]="countryData" [showLegend]="false" />
+        <markdown clipboard class="code-block" [data]="code.colorBonds | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>chart-in</h3>
+        <co-bar-chart [data]="countryData" [colors]="['chart-in']" [showLegend]="false" />
+        <markdown clipboard class="code-block" [data]="code.colorIn | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>chart-stocks</h3>
+        <co-bar-chart [data]="countryData" [colors]="['chart-stocks']" [showLegend]="false" />
+        <markdown clipboard class="code-block" [data]="code.colorStocks | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tooltip -->
+  <section class="demo-section">
+    <h2>Tooltip</h2>
+    <div class="demo-card">
+      <h3>S tooltipem</h3>
+      <co-bar-chart [data]="countryData" [showTooltip]="true" [showLegend]="false" />
+      <markdown clipboard class="code-block" [data]="code.tooltipOn | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Legenda -->
+  <section class="demo-section">
+    <h2>Legenda</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>S legendou</h3>
+        <co-bar-chart [data]="countryData" [showLegend]="true" />
+        <markdown clipboard class="code-block" [data]="code.legendOn | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Bez legendy (výchozí)</h3>
+        <co-bar-chart [data]="countryData" [showLegend]="false" />
+        <markdown clipboard class="code-block" [data]="code.legendOff | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Více kategorií -->
+  <section class="demo-section">
+    <h2>Více kategorií</h2>
+    <div class="demo-card">
+      <co-bar-chart [data]="manyRowsData" [height]="350" [showLegend]="false" />
+    </div>
+  </section>
+
+  <!-- Interakce -->
+  <section class="demo-section">
+    <h2>Interakce</h2>
+    <p class="demo-note">Najeď myší na bar, klikni pro výběr</p>
+    <div class="demo-card">
+      <co-bar-chart
+        [data]="countryData"
+        [showLegend]="false"
+        (barClick)="onBarClick($event)"
+        (barHover)="onBarHover($event)"
+      />
+      <div class="event-log">
+        <strong>Akce:</strong> {{ lastAction }}
+      </div>
+      <markdown clipboard class="code-block" [data]="code.interaction | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.interactionTs | language : 'typescript'"></markdown>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <section class="demo-section">
+    <h2>Loading stav</h2>
+    <div class="demo-card">
+      <co-bar-chart
+        [data]="countryData"
+        [loading]="true"
+        [skeletonRowCount]="5"
+      />
+      <markdown clipboard class="code-block" [data]="code.loading5 | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- API Reference -->
+  <section class="demo-section">
+    <h2>API Reference</h2>
+    <div class="demo-card api-card">
+      <h2>Inputs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Input</th>
+            <th>Typ</th>
+            <th>Výchozí</th>
+            <th>Popis</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>data</code></td>
+            <td><code>BarChartData</code></td>
+            <td><code>&#123; categories: [], series: [] &#125;</code></td>
+            <td>Data pro graf (kategorie + série)</td>
+          </tr>
+          <tr>
+            <td><code>height</code></td>
+            <td><code>number</code></td>
+            <td><code>300</code></td>
+            <td>Výška grafu v px</td>
+          </tr>
+          <tr>
+            <td><code>showLegend</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>Zobrazit legendu</td>
+          </tr>
+          <tr>
+            <td><code>showDataLabels</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Zobrazit hodnoty na barech</td>
+          </tr>
+          <tr>
+            <td><code>showTooltip</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>Zobrazit tooltip při hoveru</td>
+          </tr>
+          <tr>
+            <td><code>showGrid</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Zobrazit grid osy X</td>
+          </tr>
+          <tr>
+            <td><code>valueUnit</code></td>
+            <td><code>string</code></td>
+            <td>-</td>
+            <td>Jednotka pro hodnoty (v tooltipu)</td>
+          </tr>
+          <tr>
+            <td><code>colors</code></td>
+            <td><code>ChartColor[]</code></td>
+            <td><code>['chart-bonds']</code></td>
+            <td>Vlastní barvy z palety</td>
+          </tr>
+          <tr>
+            <td><code>loading</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>Loading stav</td>
+          </tr>
+          <tr>
+            <td><code>skeletonRowCount</code></td>
+            <td><code>number</code></td>
+            <td><code>5</code></td>
+            <td>Počet skeleton řádků</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Outputs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Output</th>
+            <th>Typ</th>
+            <th>Popis</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>barClick</code></td>
+            <td><code>&#123; seriesIndex, dataPointIndex, value, category, seriesName &#125;</code></td>
+            <td>Emituje při kliknutí na bar</td>
+          </tr>
+          <tr>
+            <td><code>barHover</code></td>
+            <td><code>&#123; ... &#125; | null</code></td>
+            <td>Emituje při hoveru nad barem</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Typy</h2>
+      <markdown clipboard class="code-block" [data]="'interface BarChartData {\n  categories: string[];\n  series: BarChartSeries[];\n}\n\ninterface BarChartSeries {\n  name: string;\n  data: number[];\n}' | language : 'typescript'"></markdown>
+
+      <h3 style="margin-top: 24px;">Dostupné barvy</h3>
+      <div class="color-palette">
+        @for (color of availableColors; track color) {
+          <div class="color-swatch">
+            <span class="color-box" [style.backgroundColor]="getColorHex(color)"></span>
+            <code>{{ color }}</code>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+</div>
