@@ -2,15 +2,11 @@
   class="co-column-chart"
   [class.co-column-chart--loading]="loading"
   [class.co-column-chart--hovering]="hoveredSeriesIndex() !== -1 && !isLegendHover()"
-  [class.co-column-chart--sm]="size === 'sm'"
-  [class.co-column-chart--md]="size === 'md'"
-  [class.co-column-chart--lg]="size === 'lg'"
-  [class.co-column-chart--auto]="size === 'auto'"
 >
   <!-- Chart Container -->
   <div class="co-column-chart__chart-wrapper">
     @if (loading) {
-      <div class="co-column-chart__skeleton" [style.height.px]="computedHeight">
+      <div class="co-column-chart__skeleton" [style.height.px]="height">
         <!-- Y Axis skeleton -->
         <div class="co-column-chart__skeleton-yaxis">
           <span class="co-column-chart__skeleton-yaxis-label"></span>
@@ -70,7 +66,6 @@
         [items]="legendItems()"
         [showValues]="false"
         [valueFormat]="valueFormat"
-        [size]="size === 'sm' ? 'sm' : size === 'lg' ? 'lg' : 'md'"
         (itemHover)="onLegendItemHover($event)"
         (itemLeave)="onLegendItemLeave()"
         (itemClick)="onLegendItemClick($event.index)"

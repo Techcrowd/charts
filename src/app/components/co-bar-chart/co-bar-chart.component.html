@@ -2,15 +2,11 @@
   class="co-bar-chart"
   [class.co-bar-chart--loading]="loading"
   [class.co-bar-chart--hovering]="hoveredSeriesIndex() !== -1 && !isLegendHover()"
-  [class.co-bar-chart--sm]="size === 'sm'"
-  [class.co-bar-chart--md]="size === 'md'"
-  [class.co-bar-chart--lg]="size === 'lg'"
-  [class.co-bar-chart--auto]="size === 'auto'"
 >
   <!-- Chart Container -->
   <div class="co-bar-chart__chart-wrapper">
     @if (loading) {
-      <div class="co-bar-chart__skeleton" [style.height.px]="computedHeight">
+      <div class="co-bar-chart__skeleton" [style.height.px]="height">
         <!-- Y Axis skeleton (categories) -->
         <div class="co-bar-chart__skeleton-yaxis">
           @for (row of skeletonRows; track row) {
@@ -69,7 +65,6 @@
         [items]="legendItems()"
         [showValues]="false"
         [valueFormat]="valueFormat"
-        [size]="size === 'sm' ? 'sm' : size === 'lg' ? 'lg' : 'md'"
         (itemHover)="onLegendItemHover($event)"
         (itemLeave)="onLegendItemLeave()"
         (itemClick)="onLegendItemClick($event.index)"

@@ -32,17 +32,14 @@ import {
 } from 'ng-apexcharts';
 import { ChartColorService, ChartColor } from '../../services/chart-color.service';
 import { CoChartLegendComponent, ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
-import { ValueFormat, ChartSize, CHART_COLORS } from '../../shared/chart-types';
+import { ValueFormat, CHART_COLORS } from '../../shared/chart-types';
 
 // ============ TYPES ============
-
-/** Velikostní varianta grafu */
-export type BarChartSize = ChartSize | 'auto';
 
 // Re-export types for consumers of this component
 export { ChartColor } from '../../services/chart-color.service';
 export { ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
-export { ValueFormat, ChartSize } from '../../shared/chart-types';
+export { ValueFormat } from '../../shared/chart-types';
 
 /** Jednotlivá série dat */
 export interface BarChartSeries {
@@ -55,13 +52,6 @@ export interface BarChartData {
   categories: string[];
   series: BarChartSeries[];
 }
-
-/** Konfigurace velikostí */
-const SIZE_CONFIG: Record<ChartSize, { height: number; barHeight: string }> = {
-  sm: { height: 200, barHeight: '24px' },
-  md: { height: 300, barHeight: '32px' },
-  lg: { height: 400, barHeight: '40px' },
-};
 
 /** Statické ApexCharts konfigurace */
 const STATES_CONFIG: ApexStates = {
@@ -95,11 +85,8 @@ export class CoBarChartComponent implements OnInit, OnChanges {
   /** Data pro graf */
   @Input() data: BarChartData = { categories: [], series: [] };
 
-  /** Velikostní varianta (sm, md, lg, auto) */
-  @Input() size: BarChartSize = 'md';
-
-  /** Vlastní výška grafu v px (přepíše size) */
-  @Input() height?: number;
+  /** Výška grafu v px */
+  @Input() height = 300;
 
   /** Zobrazit legendu */
   @Input() showLegend = false;
@@ -210,7 +197,6 @@ export class CoBarChartComponent implements OnInit, OnChanges {
   });
 
   // Size computed
-  computedHeight = 300;
   computedBarHeight = '32px';
 
   // Chart configs (dynamic)
@@ -249,16 +235,7 @@ export class CoBarChartComponent implements OnInit, OnChanges {
   // ============ PRIVATE METHODS ============
 
   private updateSizeValues(): void {
-    if (this.height !== undefined) {
-      this.computedHeight = this.height;
-      this.computedBarHeight = '32px';
-      return;
-    }
-
-    const sizeKey = this.size === 'auto' ? 'md' : this.size;
-    const config = SIZE_CONFIG[sizeKey];
-    this.computedHeight = config.height;
-    this.computedBarHeight = config.barHeight;
+    this.computedBarHeight = '32px';
   }
 
   private updateChartConfigs(): void {
@@ -266,7 +243,7 @@ export class CoBarChartComponent implements OnInit, OnChanges {
 
     this.chartConfig = {
       type: 'bar',
-      height: this.computedHeight,
+      height: this.height,
       fontFamily: 'inherit',
       toolbar: {
         show: false,

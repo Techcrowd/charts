@@ -32,17 +32,14 @@ import {
 } from 'ng-apexcharts';
 import { ChartColorService, ChartColor } from '../../services/chart-color.service';
 import { CoChartLegendComponent, ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
-import { ValueFormat, ChartSize, CHART_COLORS } from '../../shared/chart-types';
+import { ValueFormat, CHART_COLORS } from '../../shared/chart-types';
 
 // ============ TYPES ============
-
-/** Velikostní varianta grafu */
-export type ColumnChartSize = ChartSize | 'auto';
 
 // Re-export types for consumers of this component
 export { ChartColor } from '../../services/chart-color.service';
 export { ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
-export { ValueFormat, ChartSize } from '../../shared/chart-types';
+export { ValueFormat } from '../../shared/chart-types';
 
 /** Jednotlivá série dat */
 export interface ColumnChartSeries {
@@ -55,13 +52,6 @@ export interface ColumnChartData {
   categories: string[];
   series: ColumnChartSeries[];
 }
-
-/** Konfigurace velikostí */
-const SIZE_CONFIG: Record<ChartSize, { height: number; columnWidth: string }> = {
-  sm: { height: 200, columnWidth: '40%' },
-  md: { height: 300, columnWidth: '50%' },
-  lg: { height: 400, columnWidth: '55%' },
-};
 
 /** Statické ApexCharts konfigurace */
 const STATES_CONFIG: ApexStates = {
@@ -95,11 +85,8 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   /** Data pro graf */
   @Input() data: ColumnChartData = { categories: [], series: [] };
 
-  /** Velikostní varianta (sm, md, lg, auto) */
-  @Input() size: ColumnChartSize = 'md';
-
-  /** Vlastní výška grafu v px (přepíše size) */
-  @Input() height?: number;
+  /** Výška grafu v px */
+  @Input() height = 300;
 
   /** Zobrazit legendu */
   @Input() showLegend = false;
@@ -205,7 +192,6 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   });
 
   // Size computed
-  computedHeight = 300;
   computedColumnWidth = '70%';
 
   // Chart configs (dynamic)
@@ -244,16 +230,7 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   // ============ PRIVATE METHODS ============
 
   private updateSizeValues(): void {
-    if (this.height !== undefined) {
-      this.computedHeight = this.height;
-      this.computedColumnWidth = '70%';
-      return;
-    }
-
-    const sizeKey = this.size === 'auto' ? 'md' : this.size;
-    const config = SIZE_CONFIG[sizeKey];
-    this.computedHeight = config.height;
-    this.computedColumnWidth = config.columnWidth;
+    this.computedColumnWidth = '70%';
   }
 
   private updateChartConfigs(): void {
@@ -261,7 +238,7 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
 
     this.chartConfig = {
       type: 'bar',
-      height: this.computedHeight,
+      height: this.height,
       fontFamily: 'inherit',
       toolbar: {
         show: false,

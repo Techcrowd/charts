@@ -4,8 +4,7 @@
 |-------|-----|---------|-------|
 | `[data]` | DonutChartDataItem[] | [] | Data pro graf |
 | `[colors]` | ChartColor[] | výchozí paleta | Vlastní barvy z palety |
-| `[size]` | 'sm' \| 'md' \| 'lg' \| 'auto' | 'md' | Velikostní varianta |
-| `[height]` | number | - | Vlastní výška v px |
+| `[height]` | number | 280 | Výška grafu v px |
 | `[centerText]` | string | - | Text uprostřed grafu |
 | `[showDataLabels]` | boolean | true | Zobrazit hodnoty na výsečích |
 | `[showTooltip]` | boolean | false | Zobrazit tooltip |

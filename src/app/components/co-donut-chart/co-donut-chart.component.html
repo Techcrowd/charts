@@ -2,10 +2,6 @@
   class="co-donut-chart"
   [class.co-donut-chart--loading]="loading"
   [class.co-donut-chart--hovering]="hoveredIndex() !== -1 && !isLegendHover()"
-  [class.co-donut-chart--sm]="size === 'sm'"
-  [class.co-donut-chart--md]="size === 'md'"
-  [class.co-donut-chart--lg]="size === 'lg'"
-  [class.co-donut-chart--auto]="size === 'auto'"
 >
   <div class="co-donut-chart__content">
     <!-- Chart Container -->
@@ -31,8 +27,8 @@
       } @else {
         <div
           class="co-donut-chart__chart-container"
-          [style.width.px]="computedSize"
-          [style.height.px]="computedSize"
+          [style.width.px]="height"
+          [style.height.px]="height"
         >
           <apx-chart
             #chart
@@ -75,7 +71,6 @@
           [items]="legendItems()"
           [showValues]="showLegendValues"
           [valueFormat]="valueFormat"
-          [size]="size === 'sm' ? 'sm' : size === 'lg' ? 'lg' : 'md'"
           (itemHover)="onLegendItemHover($event)"
           (itemLeave)="onLegendItemLeave()"
           (itemClick)="onLegendItemClick($event.index)"

@@ -67,9 +67,6 @@ export class DonutChartPage {
   [data]="data"
   [colors]="['chart-in', 'chart-stocks', 'chart-bonds', 'chart-neon']"
 />`,
-    sizeSm: `<co-donut-chart [data]="data" size="sm" />`,
-    sizeMd: `<co-donut-chart [data]="data" size="md" />`,
-    sizeLg: `<co-donut-chart [data]="data" size="lg" />`,
     height150: `<co-donut-chart [data]="data" [height]="150" />`,
     height350: `<co-donut-chart [data]="data" [height]="350" />`,
     centerShort: `<co-donut-chart [data]="data" centerText="Ovoce" />`,

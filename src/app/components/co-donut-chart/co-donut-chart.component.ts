@@ -29,30 +29,20 @@ import {
 } from 'ng-apexcharts';
 import { ChartColorService, ChartColor } from '../../services/chart-color.service';
 import { CoChartLegendComponent, ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
-import { ValueFormat, ChartSize, CHART_COLORS } from '../../shared/chart-types';
+import { ValueFormat, CHART_COLORS } from '../../shared/chart-types';
 
 // ============ TYPES ============
-
-/** Velikostní varianta grafu (rozšířená o 'auto') */
-export type DonutChartSize = ChartSize | 'auto';
 
 // Re-export types for consumers of this component
 export { ChartColor } from '../../services/chart-color.service';
 export { ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
-export { ValueFormat, ChartSize } from '../../shared/chart-types';
+export { ValueFormat } from '../../shared/chart-types';
 
 /** Data pro jednotlivou sérii */
 export interface DonutChartDataItem {
   label: string;
   value: number;
 }
-
-/** Konfigurace velikostí */
-const SIZE_CONFIG: Record<ChartSize, { height: number; donutSize: string }> = {
-  sm: { height: 180, donutSize: '60%' },
-  md: { height: 280, donutSize: '65%' },
-  lg: { height: 380, donutSize: '70%' },
-};
 
 /** Statické ApexCharts konfigurace */
 const STATES_CONFIG: ApexStates = {
@@ -92,11 +82,8 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   /** Data pro graf */
   @Input() data: DonutChartDataItem[] = [];
 
-  /** Velikostní varianta (sm, md, lg, auto) */
-  @Input() size: DonutChartSize = 'md';
-
-  /** Vlastní výška grafu v px (přepíše size) */
-  @Input() height?: number;
+  /** Vlastní výška grafu v px */
+  @Input() height = 280;
 
   /** Zobrazit legendu */
   @Input() showLegend = true;
@@ -211,7 +198,6 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   });
 
   // Size computed
-  computedSize = 280;
   computedDonutSize = '65%';
 
   // Chart configs (dynamic)
@@ -248,16 +234,7 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   // ============ PRIVATE METHODS ============
 
   private updateSizeValues(): void {
-    if (this.height !== undefined) {
-      this.computedSize = this.height;
-      this.computedDonutSize = '65%';
-      return;
-    }
-
-    const sizeKey = this.size === 'auto' ? 'md' : this.size;
-    const config = SIZE_CONFIG[sizeKey];
-    this.computedSize = config.height;
-    this.computedDonutSize = config.donutSize;
+    this.computedDonutSize = '65%';
   }
 
   private updateChartConfigs(): void {
@@ -265,8 +242,8 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
 
     this.chartConfig = {
       type: 'donut',
-      width: this.computedSize,
-      height: this.computedSize,
+      width: this.height,
+      height: this.height,
       fontFamily: 'inherit',
       animations: {
         enabled: true,
