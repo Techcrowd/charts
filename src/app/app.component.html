@@ -6,9 +6,11 @@
   <section class="demo-section">
     <h2>Základní použití</h2>
     <div class="demo-card">
-      <co-donut-chart
-        [data]="fruitData"
-      />
+      <co-donut-chart [data]="fruitData" />
+      <div class="code-block">
+        <pre><code>&lt;co-donut-chart [data]="chartData" /&gt;</code></pre>
+        <pre><code>{{fruitDataCode}}</code></pre>
+      </div>
     </div>
   </section>
 
@@ -18,24 +20,24 @@
     <div class="demo-grid demo-grid--sizes">
       <div class="demo-card">
         <h3>Small (sm)</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          size="sm"
-        />
+        <co-donut-chart [data]="fruitData" size="sm" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" size="sm" /&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>Medium (md) - výchozí</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          size="md"
-        />
+        <co-donut-chart [data]="fruitData" size="md" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" size="md" /&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>Large (lg)</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          size="lg"
-        />
+        <co-donut-chart [data]="fruitData" size="lg" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" size="lg" /&gt;</code></pre>
+        </div>
       </div>
     </div>
   </section>
@@ -46,17 +48,17 @@
     <div class="demo-grid">
       <div class="demo-card">
         <h3>height="150"</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          [height]="150"
-        />
+        <co-donut-chart [data]="fruitData" [height]="150" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" [height]="150" /&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>height="350"</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          [height]="350"
-        />
+        <co-donut-chart [data]="fruitData" [height]="350" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" [height]="350" /&gt;</code></pre>
+        </div>
       </div>
     </div>
   </section>
@@ -67,24 +69,24 @@
     <div class="demo-grid">
       <div class="demo-card">
         <h3>Krátký text</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          centerText="Ovoce"
-        />
+        <co-donut-chart [data]="fruitData" centerText="Ovoce" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" centerText="Ovoce" /&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>Střední text</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          centerText="Celkový počet kusů"
-        />
+        <co-donut-chart [data]="fruitData" centerText="Celkový počet kusů" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" centerText="Celkový počet kusů" /&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>Dlouhý text (elipsis)</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          [centerText]="centerTextLong"
-        />
+        <co-donut-chart [data]="fruitData" [centerText]="centerTextLong" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" [centerText]="longText" /&gt;</code></pre>
+        </div>
       </div>
     </div>
   </section>
@@ -95,21 +97,27 @@
     <div class="demo-grid">
       <div class="demo-card">
         <h3>2 série</h3>
-        <co-donut-chart
-          [data]="twoSeriesData"
-        />
+        <co-donut-chart [data]="twoSeriesData" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" /&gt;</code></pre>
+          <pre><code>{{twoSeriesDataCode}}</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>3 série</h3>
-        <co-donut-chart
-          [data]="threeSeriesData"
-        />
+        <co-donut-chart [data]="threeSeriesData" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" /&gt;</code></pre>
+          <pre><code>{{threeSeriesDataCode}}</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>6 sérií</h3>
-        <co-donut-chart
-          [data]="browserData"
-        />
+        <co-donut-chart [data]="browserData" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" /&gt;</code></pre>
+          <pre><code>{{browserDataCode}}</code></pre>
+        </div>
       </div>
     </div>
   </section>
@@ -119,26 +127,29 @@
     <h2>Data labels & Tooltip</h2>
     <div class="demo-grid">
       <div class="demo-card">
-        <h3>S hodnotami a tooltipem</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          [showDataLabels]="true"
-          [showTooltip]="true"
-        />
+        <h3>S hodnotami a tooltipem (výchozí)</h3>
+        <co-donut-chart [data]="fruitData" [showDataLabels]="true" [showTooltip]="true" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart
+  [data]="data"
+  [showDataLabels]="true"
+  [showTooltip]="true"
+/&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>Bez hodnot</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          [showDataLabels]="false"
-        />
+        <co-donut-chart [data]="fruitData" [showDataLabels]="false" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" [showDataLabels]="false" /&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>Bez tooltipu</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          [showTooltip]="false"
-        />
+        <co-donut-chart [data]="fruitData" [showTooltip]="false" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" [showTooltip]="false" /&gt;</code></pre>
+        </div>
       </div>
     </div>
   </section>
@@ -149,19 +160,25 @@
     <div class="demo-grid">
       <div class="demo-card">
         <h3>Procenta (výchozí)</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          valueFormat="percent"
-          [showLegendValues]="true"
-        />
+        <co-donut-chart [data]="fruitData" valueFormat="percent" [showLegendValues]="true" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart
+  [data]="data"
+  valueFormat="percent"
+  [showLegendValues]="true"
+/&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>Absolutní hodnoty</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          valueFormat="absolute"
-          [showLegendValues]="true"
-        />
+        <co-donut-chart [data]="fruitData" valueFormat="absolute" [showLegendValues]="true" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart
+  [data]="data"
+  valueFormat="absolute"
+  [showLegendValues]="true"
+/&gt;</code></pre>
+        </div>
       </div>
     </div>
   </section>
@@ -172,24 +189,24 @@
     <div class="demo-grid">
       <div class="demo-card">
         <h3>S legendou (výchozí)</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          [showLegend]="true"
-        />
+        <co-donut-chart [data]="fruitData" [showLegend]="true" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" [showLegend]="true" /&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>S hodnotami v legendě</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          [showLegendValues]="true"
-        />
+        <co-donut-chart [data]="fruitData" [showLegendValues]="true" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" [showLegendValues]="true" /&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>Bez legendy</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          [showLegend]="false"
-        />
+        <co-donut-chart [data]="fruitData" [showLegend]="false" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart [data]="data" [showLegend]="false" /&gt;</code></pre>
+        </div>
       </div>
     </div>
   </section>
@@ -208,6 +225,15 @@
       <div class="event-log">
         <strong>Akce:</strong> {{ lastAction }}
       </div>
+      <div class="code-block">
+        <pre><code>&lt;co-donut-chart
+  [data]="data"
+  [centerText]="selectedLabel"
+  (segmentClick)="onSegmentClick($event)"
+  (segmentHover)="onSegmentHover($event)"
+/&gt;</code></pre>
+        <pre><code>{{interactionCode}}</code></pre>
+      </div>
     </div>
   </section>
 
@@ -217,27 +243,36 @@
     <div class="demo-grid">
       <div class="demo-card">
         <h3>Loading (4 položky)</h3>
-        <co-donut-chart
-          [data]="fruitData"
-          [loading]="true"
-          [skeletonLegendCount]="4"
-        />
+        <co-donut-chart [data]="fruitData" [loading]="true" [skeletonLegendCount]="4" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart
+  [data]="data"
+  [loading]="true"
+  [skeletonLegendCount]="4"
+/&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>Loading (2 položky)</h3>
-        <co-donut-chart
-          [data]="twoSeriesData"
-          [loading]="true"
-          [skeletonLegendCount]="2"
-        />
+        <co-donut-chart [data]="twoSeriesData" [loading]="true" [skeletonLegendCount]="2" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart
+  [data]="data"
+  [loading]="true"
+  [skeletonLegendCount]="2"
+/&gt;</code></pre>
+        </div>
       </div>
       <div class="demo-card">
         <h3>Loading (6 položek)</h3>
-        <co-donut-chart
-          [data]="browserData"
-          [loading]="true"
-          [skeletonLegendCount]="6"
-        />
+        <co-donut-chart [data]="browserData" [loading]="true" [skeletonLegendCount]="6" />
+        <div class="code-block">
+          <pre><code>&lt;co-donut-chart
+  [data]="data"
+  [loading]="true"
+  [skeletonLegendCount]="6"
+/&gt;</code></pre>
+        </div>
       </div>
     </div>
   </section>
@@ -280,12 +315,6 @@
             <td>string</td>
             <td>-</td>
             <td>Text uprostřed grafu</td>
-          </tr>
-          <tr>
-            <td><code>[colors]</code></td>
-            <td>ChartColor[]</td>
-            <td>-</td>
-            <td>Vlastní barvy z palety</td>
           </tr>
           <tr>
             <td><code>[showDataLabels]</code></td>

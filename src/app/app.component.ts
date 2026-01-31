@@ -50,6 +50,46 @@ export class AppComponent {
   lastAction = 'Žádná';
   selectedCenterText = 'Vyber položku';
 
+  // Code examples
+  fruitDataCode = `data = [
+  { label: 'Jablka', value: 450 },
+  { label: 'Jahody', value: 300 },
+  { label: 'Hrušky', value: 180 },
+  { label: 'Pomeranče', value: 120 },
+];`;
+
+  twoSeriesDataCode = `data = [
+  { label: 'Aktivní', value: 750 },
+  { label: 'Neaktivní', value: 250 },
+];`;
+
+  threeSeriesDataCode = `data = [
+  { label: 'Schváleno', value: 60 },
+  { label: 'Čeká', value: 25 },
+  { label: 'Zamítnuto', value: 15 },
+];`;
+
+  browserDataCode = `data = [
+  { label: 'Chrome', value: 65 },
+  { label: 'Safari', value: 19 },
+  { label: 'Firefox', value: 8 },
+  { label: 'Edge', value: 4 },
+  { label: 'Opera', value: 2 },
+  { label: 'Ostatní', value: 2 },
+];`;
+
+  interactionCode = `selectedLabel = 'Vyber položku';
+
+onSegmentClick(event) {
+  this.selectedLabel = event.item.label;
+}
+
+onSegmentHover(event) {
+  if (event) {
+    console.log('Hover:', event.item);
+  }
+}`;
+
   getColorHex(color: ChartColor): string {
     return this.chartColorService.getColorHex(color);
   }
