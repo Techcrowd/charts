@@ -129,6 +129,13 @@ export class ValuePerformanceChartPageComponent {
   // Hovered point data
   hoveredPoint: { timestamp: Date | number | string; value: number; invested?: number } | null = null;
 
+  // Date format for the chart
+  dateFormat: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  };
+
   // ============ CODE EXAMPLES ============
 
   basicExample = `<co-value-performance-chart
@@ -163,14 +170,15 @@ export class ValuePerformanceChartPageComponent {
 
   hoverExample = `<co-value-performance-chart
   [data]="chartData"
+  [dateFormat]="{ day: '2-digit', month: 'short', year: 'numeric' }"
   (pointHover)="onPointHover($event)"
 />
 
 <!-- Zobrazení hodnot mimo komponentu -->
 @if (hoveredPoint) {
   <div class="hover-values">
-    <span>{{ hoveredPoint.timestamp | date }}</span>
-    <span>{{ hoveredPoint.value | number }}</span>
+    <span>{{ formatDate(hoveredPoint.timestamp) }}</span>
+    <span>{{ formatNumber(hoveredPoint.value) }}</span>
   </div>
 }`;
 
@@ -206,6 +214,11 @@ interface ValuePerformanceData {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
+  }
+
+  formatDate(timestamp: Date | number | string): string {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('cs-CZ', this.dateFormat);
   }
 
   toggleLoading(): void {

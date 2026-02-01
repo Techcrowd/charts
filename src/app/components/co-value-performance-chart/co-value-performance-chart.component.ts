@@ -123,6 +123,13 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   /** Jednotka hodnoty (měna) */
   @Input() valueUnit = '';
 
+  /** Formát datumu pro tooltip a emitované hodnoty */
+  @Input() dateFormat: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  };
+
   /** Barva pro pozitivní trend */
   @Input() positiveColor: ChartColor = 'chart-in';
 
@@ -604,13 +611,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   }
 
   formatDate(date: Date): string {
-    return date.toLocaleDateString('cs-CZ', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return date.toLocaleDateString('cs-CZ', this.dateFormat);
   }
 
   onLegendItemHover(index: number): void {

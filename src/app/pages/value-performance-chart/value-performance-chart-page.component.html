@@ -15,7 +15,7 @@
         @if (hoveredPoint) {
           <div class="hover-values-display__item">
             <span class="hover-values-display__label">Datum:</span>
-            <span class="hover-values-display__value">{{ hoveredPoint.timestamp | date:'dd.MM.yyyy' }}</span>
+            <span class="hover-values-display__value">{{ formatDate(hoveredPoint.timestamp) }}</span>
           </div>
           <div class="hover-values-display__item">
             <span class="hover-values-display__label">Hodnota:</span>
@@ -37,6 +37,7 @@
         [showLegend]="true"
         [showInvestedLine]="true"
         [valueUnit]="'USD'"
+        [dateFormat]="dateFormat"
         (pointHover)="onPointHover($event)"
       />
     </div>
@@ -229,6 +230,12 @@
             <td>string</td>
             <td>''</td>
             <td>Jednotka hodnoty (měna)</td>
+          </tr>
+          <tr>
+            <td><code>[dateFormat]</code></td>
+            <td>Intl.DateTimeFormatOptions</td>
+            <td>{{ '{ day, month, year }' }}</td>
+            <td>Formát datumu pro tooltip</td>
           </tr>
           <tr>
             <td><code>[positiveColor]</code></td>
