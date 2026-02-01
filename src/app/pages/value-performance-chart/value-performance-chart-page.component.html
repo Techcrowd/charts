@@ -103,6 +103,47 @@
     </div>
   </section>
 
+  <!-- Stepline Variant -->
+  <section class="demo-section">
+    <h2>Stepline křivka</h2>
+    <p class="demo-note">
+      Schodovitá křivka pro diskrétní změny hodnot - vhodné např. pro zobrazení NAV fondu.
+    </p>
+    <div class="demo-card">
+      <co-value-performance-chart
+        [data]="steplineData"
+        [height]="300"
+        [curveType]="'stepline'"
+        [showLegend]="true"
+        [showInvestedLine]="true"
+        [valueUnit]="'Kč'"
+      />
+    </div>
+    <div class="code-block">
+      <pre><code class="language-html">{{ steplineExample }}</code></pre>
+    </div>
+  </section>
+
+  <!-- Volatile Data -->
+  <section class="demo-section">
+    <h2>Volatilní data</h2>
+    <p class="demo-note">
+      Graf s velkými výkyvy hodnot - zobrazení rizikových investic.
+    </p>
+    <div class="demo-card">
+      <co-value-performance-chart
+        [data]="volatileData"
+        [height]="300"
+        [showLegend]="true"
+        [showInvestedLine]="true"
+        [valueUnit]="'Kč'"
+      />
+    </div>
+    <div class="code-block">
+      <pre><code class="language-html">{{ volatileExample }}</code></pre>
+    </div>
+  </section>
+
   <!-- Minimal Variant -->
   <section class="demo-section">
     <h2>Minimální varianta</h2>
@@ -117,9 +158,6 @@
         [showHighLowValues]="false"
         [showClosingValue]="false"
       />
-    </div>
-    <div class="code-block">
-      <pre><code class="language-html">{{ minimalExample }}</code></pre>
     </div>
   </section>
 

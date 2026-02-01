@@ -5,99 +5,132 @@ import {
   ValuePerformanceData,
 } from '../../components/co-value-performance-chart/co-value-performance-chart.component';
 
-// ============ HELPER FUNCTIONS ============
+// ============ STATIC DATA ============
 
-/** Generate mock data for 1 year */
-function generateMockData(): ValuePerformanceData {
-  const now = new Date();
-  const points: { timestamp: Date; value: number; invested?: number }[] = [];
-  const startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-  const pointCount = 120;
-  const intervalMs = (365 * 24 * 60 * 60 * 1000) / 120;
+/** Basic data with invested line - stable growth */
+const BASIC_DATA: ValuePerformanceData = {
+  points: [
+    { timestamp: '2025-01-01', value: 10000, invested: 10000 },
+    { timestamp: '2025-01-15', value: 10250, invested: 10000 },
+    { timestamp: '2025-02-01', value: 10180, invested: 10000 },
+    { timestamp: '2025-02-15', value: 10520, invested: 10500 },
+    { timestamp: '2025-03-01', value: 10890, invested: 10500 },
+    { timestamp: '2025-03-15', value: 10750, invested: 10500 },
+    { timestamp: '2025-04-01', value: 11200, invested: 11000 },
+    { timestamp: '2025-04-15', value: 11450, invested: 11000 },
+    { timestamp: '2025-05-01', value: 11320, invested: 11000 },
+    { timestamp: '2025-05-15', value: 11680, invested: 11500 },
+    { timestamp: '2025-06-01', value: 12100, invested: 11500 },
+    { timestamp: '2025-06-15', value: 11950, invested: 11500 },
+    { timestamp: '2025-07-01', value: 12400, invested: 12000 },
+    { timestamp: '2025-07-15', value: 12750, invested: 12000 },
+    { timestamp: '2025-08-01', value: 12580, invested: 12000 },
+    { timestamp: '2025-08-15', value: 12920, invested: 12500 },
+    { timestamp: '2025-09-01', value: 13200, invested: 12500 },
+    { timestamp: '2025-09-15', value: 13050, invested: 12500 },
+    { timestamp: '2025-10-01', value: 13480, invested: 13000 },
+    { timestamp: '2025-10-15', value: 13750, invested: 13000 },
+    { timestamp: '2025-11-01', value: 13620, invested: 13000 },
+    { timestamp: '2025-11-15', value: 14100, invested: 13500 },
+    { timestamp: '2025-12-01', value: 14450, invested: 13500 },
+    { timestamp: '2025-12-15', value: 14280, invested: 13500 },
+  ],
+};
 
-  // Generate random walk data
-  let value = 10000 + Math.random() * 5000;
-  let invested = 8000;
+/** Positive trend data */
+const POSITIVE_TREND_DATA: ValuePerformanceData = {
+  points: [
+    { timestamp: '2025-01-01', value: 10000 },
+    { timestamp: '2025-02-01', value: 10800 },
+    { timestamp: '2025-03-01', value: 11200 },
+    { timestamp: '2025-04-01', value: 12500 },
+    { timestamp: '2025-05-01', value: 13100 },
+    { timestamp: '2025-06-01', value: 14200 },
+    { timestamp: '2025-07-01', value: 14800 },
+    { timestamp: '2025-08-01', value: 15600 },
+    { timestamp: '2025-09-01', value: 16400 },
+    { timestamp: '2025-10-01', value: 17200 },
+    { timestamp: '2025-11-01', value: 17800 },
+    { timestamp: '2025-12-01', value: 18500 },
+  ],
+};
 
-  for (let i = 0; i < pointCount; i++) {
-    const timestamp = new Date(startDate.getTime() + i * intervalMs);
+/** Negative trend data */
+const NEGATIVE_TREND_DATA: ValuePerformanceData = {
+  points: [
+    { timestamp: '2025-01-01', value: 15000 },
+    { timestamp: '2025-02-01', value: 14200 },
+    { timestamp: '2025-03-01', value: 13800 },
+    { timestamp: '2025-04-01', value: 12500 },
+    { timestamp: '2025-05-01', value: 12100 },
+    { timestamp: '2025-06-01', value: 11200 },
+    { timestamp: '2025-07-01', value: 10800 },
+    { timestamp: '2025-08-01', value: 10200 },
+    { timestamp: '2025-09-01', value: 9600 },
+    { timestamp: '2025-10-01', value: 9200 },
+    { timestamp: '2025-11-01', value: 8800 },
+    { timestamp: '2025-12-01', value: 8500 },
+  ],
+};
 
-    // Random walk for value
-    const change = (Math.random() - 0.48) * value * 0.03;
-    value = Math.max(value + change, 1000);
+/** Volatile data with big swings */
+const VOLATILE_DATA: ValuePerformanceData = {
+  points: [
+    { timestamp: '2025-01-01', value: 10000, invested: 10000 },
+    { timestamp: '2025-01-15', value: 11500, invested: 10000 },
+    { timestamp: '2025-02-01', value: 8500, invested: 10000 },
+    { timestamp: '2025-02-15', value: 12000, invested: 10000 },
+    { timestamp: '2025-03-01', value: 9000, invested: 10000 },
+    { timestamp: '2025-03-15', value: 13500, invested: 10000 },
+    { timestamp: '2025-04-01', value: 7500, invested: 10000 },
+    { timestamp: '2025-04-15', value: 14000, invested: 10000 },
+    { timestamp: '2025-05-01', value: 10500, invested: 10000 },
+    { timestamp: '2025-05-15', value: 15500, invested: 10000 },
+    { timestamp: '2025-06-01', value: 8000, invested: 10000 },
+    { timestamp: '2025-06-15', value: 16000, invested: 10000 },
+    { timestamp: '2025-07-01', value: 11000, invested: 10000 },
+    { timestamp: '2025-07-15', value: 6500, invested: 10000 },
+    { timestamp: '2025-08-01', value: 14500, invested: 10000 },
+    { timestamp: '2025-08-15', value: 9500, invested: 10000 },
+    { timestamp: '2025-09-01', value: 17000, invested: 10000 },
+    { timestamp: '2025-09-15', value: 7000, invested: 10000 },
+    { timestamp: '2025-10-01', value: 13000, invested: 10000 },
+    { timestamp: '2025-10-15', value: 10000, invested: 10000 },
+    { timestamp: '2025-11-01', value: 15000, invested: 10000 },
+    { timestamp: '2025-11-15', value: 8500, invested: 10000 },
+    { timestamp: '2025-12-01', value: 12500, invested: 10000 },
+  ],
+};
 
-    // Gradual increase for invested (occasional deposits)
-    if (Math.random() > 0.95) {
-      invested += Math.random() * 1000;
-    }
-
-    points.push({
-      timestamp,
-      value: Math.round(value * 100) / 100,
-      invested: Math.round(invested * 100) / 100,
-    });
-  }
-
-  return { points };
-}
-
-/** Generate positive trend data */
-function generatePositiveTrendData(): ValuePerformanceData {
-  const points: { timestamp: Date; value: number; invested?: number }[] = [];
-  const now = new Date();
-  const startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-  const pointCount = 100;
-  const intervalMs = (365 * 24 * 60 * 60 * 1000) / pointCount;
-
-  let value = 10000;
-  let invested = 10000;
-
-  for (let i = 0; i < pointCount; i++) {
-    const timestamp = new Date(startDate.getTime() + i * intervalMs);
-
-    // Upward trend with noise
-    const trend = (i / pointCount) * 8000;
-    const noise = (Math.random() - 0.5) * 2000;
-    value = 10000 + trend + noise;
-
-    points.push({
-      timestamp,
-      value: Math.round(value * 100) / 100,
-      invested,
-    });
-  }
-
-  return { points };
-}
-
-/** Generate negative trend data */
-function generateNegativeTrendData(): ValuePerformanceData {
-  const points: { timestamp: Date; value: number; invested?: number }[] = [];
-  const now = new Date();
-  const startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-  const pointCount = 100;
-  const intervalMs = (365 * 24 * 60 * 60 * 1000) / pointCount;
-
-  let value = 15000;
-  let invested = 10000;
-
-  for (let i = 0; i < pointCount; i++) {
-    const timestamp = new Date(startDate.getTime() + i * intervalMs);
-
-    // Downward trend with noise
-    const trend = (i / pointCount) * -5000;
-    const noise = (Math.random() - 0.5) * 1500;
-    value = 15000 + trend + noise;
-
-    points.push({
-      timestamp,
-      value: Math.max(Math.round(value * 100) / 100, 5000),
-      invested,
-    });
-  }
-
-  return { points };
-}
+/** Stepline data - discrete value changes */
+const STEPLINE_DATA: ValuePerformanceData = {
+  points: [
+    { timestamp: '2025-01-01', value: 10000, invested: 10000 },
+    { timestamp: '2025-01-20', value: 10000, invested: 10000 },
+    { timestamp: '2025-01-21', value: 10500, invested: 10000 },
+    { timestamp: '2025-02-15', value: 10500, invested: 10000 },
+    { timestamp: '2025-02-16', value: 11200, invested: 11000 },
+    { timestamp: '2025-03-10', value: 11200, invested: 11000 },
+    { timestamp: '2025-03-11', value: 10800, invested: 11000 },
+    { timestamp: '2025-04-05', value: 10800, invested: 11000 },
+    { timestamp: '2025-04-06', value: 12000, invested: 12000 },
+    { timestamp: '2025-05-01', value: 12000, invested: 12000 },
+    { timestamp: '2025-05-02', value: 12800, invested: 12000 },
+    { timestamp: '2025-06-01', value: 12800, invested: 12000 },
+    { timestamp: '2025-06-02', value: 11500, invested: 12000 },
+    { timestamp: '2025-07-01', value: 11500, invested: 12000 },
+    { timestamp: '2025-07-02', value: 13500, invested: 13000 },
+    { timestamp: '2025-08-01', value: 13500, invested: 13000 },
+    { timestamp: '2025-08-02', value: 14200, invested: 13000 },
+    { timestamp: '2025-09-01', value: 14200, invested: 13000 },
+    { timestamp: '2025-09-02', value: 13800, invested: 13000 },
+    { timestamp: '2025-10-01', value: 13800, invested: 13000 },
+    { timestamp: '2025-10-02', value: 15000, invested: 14000 },
+    { timestamp: '2025-11-01', value: 15000, invested: 14000 },
+    { timestamp: '2025-11-02', value: 15800, invested: 14000 },
+    { timestamp: '2025-12-01', value: 15800, invested: 14000 },
+  ],
+};
 
 // ============ COMPONENT ============
 
@@ -112,16 +145,13 @@ function generateNegativeTrendData(): ValuePerformanceData {
 export class ValuePerformanceChartPageComponent {
   private cdr = inject(ChangeDetectorRef);
 
-  // ============ DATA ============
+  // ============ STATIC DATA ============
 
-  // Basic demo data
-  basicData = generateMockData();
-
-  // Positive trend data
-  positiveTrendData = generatePositiveTrendData();
-
-  // Negative trend data
-  negativeTrendData = generateNegativeTrendData();
+  readonly basicData = BASIC_DATA;
+  readonly positiveTrendData = POSITIVE_TREND_DATA;
+  readonly negativeTrendData = NEGATIVE_TREND_DATA;
+  readonly volatileData = VOLATILE_DATA;
+  readonly steplineData = STEPLINE_DATA;
 
   // Loading state
   isLoading = true;
@@ -137,31 +167,35 @@ export class ValuePerformanceChartPageComponent {
   basicExample = `<co-value-performance-chart
   [data]="chartData"
   [height]="300"
-  [valueUnit]="'USD'"
+  [valueUnit]="'Kč'"
 />`;
 
   positiveTrendExample = `<co-value-performance-chart
   [data]="positiveData"
   [trend]="'positive'"
-  [positiveColor]="'chart-in'"
 />`;
 
   negativeTrendExample = `<co-value-performance-chart
   [data]="negativeData"
   [trend]="'negative'"
-  [negativeColor]="'chart-out'"
 />`;
 
   withInvestedExample = `<co-value-performance-chart
   [data]="chartData"
   [showInvestedLine]="true"
-  [investedColor]="'chart-bonds'"
+  [showLegend]="true"
 />`;
 
-  minimalExample = `<co-value-performance-chart
+  steplineExample = `<co-value-performance-chart
   [data]="chartData"
-  [showHighLowValues]="false"
-  [showClosingValue]="false"
+  [curveType]="'stepline'"
+  [showLegend]="true"
+/>`;
+
+  volatileExample = `<co-value-performance-chart
+  [data]="volatileData"
+  [showInvestedLine]="true"
+  [showLegend]="true"
 />`;
 
   hoverExample = `<co-value-performance-chart
