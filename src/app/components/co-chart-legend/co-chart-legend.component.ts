@@ -4,7 +4,9 @@ import {
   Output,
   EventEmitter,
   ChangeDetectionStrategy,
+  inject,
 } from '@angular/core';
+import { DateTimeService } from '../../services/date-time.service';
 import { ValueFormat } from '../../shared/chart-types';
 
 /** Item pro legendu */
@@ -25,6 +27,9 @@ export interface ChartLegendItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoChartLegendComponent {
+  // ============ INJECTED ============
+  private dateTimeService = inject(DateTimeService);
+
   // ============ INPUTS ============
 
   /** Data pro legendu */
@@ -69,7 +74,7 @@ export class CoChartLegendComponent {
     if (this.valueFormat === 'percent') {
       return `${item.percent.toFixed(1)}%`;
     }
-    return item.value.toLocaleString('cs-CZ');
+    return this.dateTimeService.formatNumber(item.value, 0);
   }
 
   onItemHover(index: number): void {
