@@ -1,0 +1,305 @@
+<div class="page">
+  <h1 class="page__title">Value Performance Chart</h1>
+  <p class="page__subtitle">
+    Graf pro zobrazení vývoje hodnoty investice v čase s volitelnou křivkou investované částky.
+  </p>
+
+  <!-- Basic Example -->
+  <section class="demo-section">
+    <h2>Základní použití</h2>
+    <p class="demo-note">
+      Graf s časovým selektorem, legendou a tooltipem. Klikněte na časový interval pro změnu dat.
+    </p>
+    <div class="demo-card">
+      <co-value-performance-chart
+        [data]="basicData"
+        [height]="350"
+        [showLegend]="true"
+        [showTooltip]="true"
+        [showInvestedLine]="true"
+        [activeTimeInterval]="activeInterval"
+        [valueUnit]="'USD'"
+        (timeIntervalChange)="onIntervalChange($event)"
+        (pointHover)="onPointHover($event)"
+        (pointClick)="onPointClick($event)"
+      />
+      @if (lastEvent) {
+        <div class="event-log">{{ lastEvent }}</div>
+      }
+    </div>
+    <div class="code-block">
+      <pre><code class="language-html">{{ basicExample }}</code></pre>
+    </div>
+  </section>
+
+  <!-- Trend Variants -->
+  <section class="demo-section">
+    <h2>Barevné varianty podle trendu</h2>
+    <p class="demo-note">
+      Barva grafu se automaticky mění podle trendu (pozitivní = zelená, negativní = černá).
+      Lze také nastavit manuálně pomocí <code>trend</code> inputu.
+    </p>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>Pozitivní trend</h3>
+        <co-value-performance-chart
+          [data]="positiveTrendData"
+          [height]="250"
+          [showLegend]="true"
+          [showTooltip]="true"
+          [showInvestedLine]="false"
+          [showTimeIntervalSelector]="false"
+          [valueUnit]="'Kč'"
+        />
+      </div>
+      <div class="demo-card">
+        <h3>Negativní trend</h3>
+        <co-value-performance-chart
+          [data]="negativeTrendData"
+          [height]="250"
+          [showLegend]="true"
+          [showTooltip]="true"
+          [showInvestedLine]="false"
+          [showTimeIntervalSelector]="false"
+          [valueUnit]="'Kč'"
+        />
+      </div>
+    </div>
+    <div class="demo-grid">
+      <div class="code-block">
+        <pre><code class="language-html">{{ positiveTrendExample }}</code></pre>
+      </div>
+      <div class="code-block">
+        <pre><code class="language-html">{{ negativeTrendExample }}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- With Invested Line -->
+  <section class="demo-section">
+    <h2>S křivkou investované částky</h2>
+    <p class="demo-note">
+      Volitelná čárkovaná čára zobrazující vývoj investované částky.
+    </p>
+    <div class="demo-card">
+      <co-value-performance-chart
+        [data]="basicData"
+        [height]="300"
+        [showLegend]="true"
+        [showTooltip]="true"
+        [showInvestedLine]="true"
+        [showTimeIntervalSelector]="false"
+        [valueUnit]="'USD'"
+      />
+    </div>
+    <div class="code-block">
+      <pre><code class="language-html">{{ withInvestedExample }}</code></pre>
+    </div>
+  </section>
+
+  <!-- Minimal Variant -->
+  <section class="demo-section">
+    <h2>Minimální varianta</h2>
+    <p class="demo-note">
+      Graf bez legendy, časového selektoru a anotací - jen čistá křivka.
+    </p>
+    <div class="demo-card">
+      <co-value-performance-chart
+        [data]="positiveTrendData"
+        [height]="200"
+        [showLegend]="false"
+        [showTooltip]="true"
+        [showInvestedLine]="false"
+        [showTimeIntervalSelector]="false"
+        [showHighLowValues]="false"
+        [showClosingValue]="false"
+      />
+    </div>
+    <div class="code-block">
+      <pre><code class="language-html">{{ minimalExample }}</code></pre>
+    </div>
+  </section>
+
+  <!-- Loading State -->
+  <section class="demo-section">
+    <h2>Loading stav</h2>
+    <p class="demo-note">
+      Skeleton zobrazený během načítání dat.
+      <button class="toggle-btn" (click)="toggleLoading()">
+        {{ isLoading ? 'Zobrazit data' : 'Zobrazit skeleton' }}
+      </button>
+    </p>
+    <div class="demo-card">
+      <co-value-performance-chart
+        [data]="basicData"
+        [height]="300"
+        [loading]="isLoading"
+        [showLegend]="true"
+        [showInvestedLine]="true"
+      />
+    </div>
+  </section>
+
+  <!-- Data Type Reference -->
+  <section class="demo-section">
+    <h2>Datové typy</h2>
+    <div class="demo-card">
+      <pre><code class="language-typescript">{{ dataTypeExample }}</code></pre>
+    </div>
+  </section>
+
+  <!-- API Reference -->
+  <section class="demo-section">
+    <h2>API Reference</h2>
+    <div class="demo-card api-card">
+      <h2>Inputs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Input</th>
+            <th>Typ</th>
+            <th>Default</th>
+            <th>Popis</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>[data]</code></td>
+            <td>ValuePerformanceData</td>
+            <td>{{ '{ points: [] }' }}</td>
+            <td>Data pro graf</td>
+          </tr>
+          <tr>
+            <td><code>[height]</code></td>
+            <td>number</td>
+            <td>300</td>
+            <td>Výška grafu v px</td>
+          </tr>
+          <tr>
+            <td><code>[showInvestedLine]</code></td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Zobrazit křivku investované částky</td>
+          </tr>
+          <tr>
+            <td><code>[showHighLowValues]</code></td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Zobrazit high/low anotace</td>
+          </tr>
+          <tr>
+            <td><code>[showClosingValue]</code></td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Zobrazit zavírací hodnotu</td>
+          </tr>
+          <tr>
+            <td><code>[showLegend]</code></td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Zobrazit legendu</td>
+          </tr>
+          <tr>
+            <td><code>[showTooltip]</code></td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Zobrazit tooltip</td>
+          </tr>
+          <tr>
+            <td><code>[showTimeIntervalSelector]</code></td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Zobrazit selektor časového intervalu</td>
+          </tr>
+          <tr>
+            <td><code>[activeTimeInterval]</code></td>
+            <td>TimeInterval</td>
+            <td>'1Y'</td>
+            <td>Aktivní časový interval</td>
+          </tr>
+          <tr>
+            <td><code>[trend]</code></td>
+            <td>'positive' | 'negative' | 'auto'</td>
+            <td>'auto'</td>
+            <td>Trend grafu (auto = podle dat)</td>
+          </tr>
+          <tr>
+            <td><code>[valueUnit]</code></td>
+            <td>string</td>
+            <td>''</td>
+            <td>Jednotka hodnoty (měna)</td>
+          </tr>
+          <tr>
+            <td><code>[positiveColor]</code></td>
+            <td>ChartColor</td>
+            <td>'chart-in'</td>
+            <td>Barva pro pozitivní trend</td>
+          </tr>
+          <tr>
+            <td><code>[negativeColor]</code></td>
+            <td>ChartColor</td>
+            <td>'chart-out'</td>
+            <td>Barva pro negativní trend</td>
+          </tr>
+          <tr>
+            <td><code>[investedColor]</code></td>
+            <td>ChartColor</td>
+            <td>'chart-bonds'</td>
+            <td>Barva křivky investované částky</td>
+          </tr>
+          <tr>
+            <td><code>[loading]</code></td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Loading stav</td>
+          </tr>
+          <tr>
+            <td><code>[nonce]</code></td>
+            <td>string</td>
+            <td>-</td>
+            <td>CSP nonce pro inline styly</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Outputs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Output</th>
+            <th>Typ</th>
+            <th>Popis</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>(timeIntervalChange)</code></td>
+            <td>TimeInterval</td>
+            <td>Změna časového intervalu</td>
+          </tr>
+          <tr>
+            <td><code>(pointHover)</code></td>
+            <td>{{ '{ timestamp, value, invested? }' }} | null</td>
+            <td>Hover nad bodem</td>
+          </tr>
+          <tr>
+            <td><code>(pointClick)</code></td>
+            <td>{{ '{ timestamp, value, invested? }' }}</td>
+            <td>Kliknutí na bod</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>TimeInterval</h2>
+      <ul>
+        <li><code>'1D'</code> - Jeden den</li>
+        <li><code>'5D'</code> - Pět dní</li>
+        <li><code>'1M'</code> - Jeden měsíc</li>
+        <li><code>'6M'</code> - Šest měsíců</li>
+        <li><code>'1Y'</code> - Jeden rok</li>
+        <li><code>'5Y'</code> - Pět let</li>
+        <li><code>'ALL'</code> - Celá historie</li>
+      </ul>
+    </div>
+  </section>
+</div>

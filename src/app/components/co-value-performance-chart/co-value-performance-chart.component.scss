@@ -1,0 +1,178 @@
+@use '../../styles/tokens' as *;
+
+.co-value-performance-chart {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  width: 100%;
+}
+
+// ============ TIME INTERVAL SELECTOR ============
+
+.co-value-performance-chart__intervals {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+}
+
+.co-value-performance-chart__interval {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 32px;
+  padding: 0 $spacing-sm;
+  border: 1px solid $color-background-border;
+  border-radius: $border-radius-sm;
+  background: transparent;
+  @include caption-primary-bold;
+  color: $color-content-secondary;
+  cursor: pointer;
+  transition: $transition-fast;
+
+  &:hover {
+    background-color: $color-interactive-secondary-action;
+    border-color: $color-background-border-highlighted;
+  }
+
+  &--active {
+    background-color: $color-interactive-primary;
+    border-color: $color-interactive-primary;
+    color: $color-interactive-on-primary;
+
+    &:hover {
+      background-color: $color-interactive-primary-hover;
+      border-color: $color-interactive-primary-hover;
+    }
+  }
+}
+
+.co-value-performance-chart__interval-skeleton {
+  width: 40px;
+  height: 32px;
+  border-radius: $border-radius-sm;
+  background: linear-gradient(
+    90deg,
+    $color-background-surface-tertiary 25%,
+    $color-background-surface-secondary 50%,
+    $color-background-surface-tertiary 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+// ============ CHART CONTAINER ============
+
+.co-value-performance-chart__chart-wrapper {
+  width: 100%;
+  position: relative;
+}
+
+.co-value-performance-chart__chart-container {
+  width: 100%;
+}
+
+// ============ SKELETON ============
+
+.co-value-performance-chart__skeleton {
+  display: flex;
+  gap: $spacing-sm;
+  width: 100%;
+}
+
+.co-value-performance-chart__skeleton-yaxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: $spacing-sm 0;
+  width: 50px;
+  flex-shrink: 0;
+}
+
+.co-value-performance-chart__skeleton-yaxis-label {
+  width: 35px;
+  height: 12px;
+  border-radius: $border-radius-sm;
+  background: linear-gradient(
+    90deg,
+    $color-background-surface-tertiary 25%,
+    $color-background-surface-secondary 50%,
+    $color-background-surface-tertiary 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.co-value-performance-chart__skeleton-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.co-value-performance-chart__skeleton-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.co-value-performance-chart__skeleton-path {
+  fill: $color-background-surface-tertiary;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+// ============ TREND MODIFIERS ============
+
+.co-value-performance-chart--positive {
+  // Positive trend styling (handled by chart colors)
+}
+
+.co-value-performance-chart--negative {
+  // Negative trend styling (handled by chart colors)
+}
+
+// ============ LOADING STATE ============
+
+.co-value-performance-chart--loading {
+  pointer-events: none;
+}
+
+// ============ ANIMATIONS ============
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// ============ APEXCHARTS OVERRIDES ============
+
+:host ::ng-deep {
+  .apexcharts-tooltip {
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border-radius: $border-radius-lg !important;
+    overflow: hidden;
+  }
+
+  .apexcharts-xaxistooltip {
+    display: none !important;
+  }
+
+  .apexcharts-annotation-label {
+    font-family: inherit !important;
+  }
+}

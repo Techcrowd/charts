@@ -1,0 +1,99 @@
+<div
+  class="co-value-performance-chart"
+  [class.co-value-performance-chart--loading]="loading"
+  [class.co-value-performance-chart--positive]="computedTrend() === 'positive'"
+  [class.co-value-performance-chart--negative]="computedTrend() === 'negative'"
+>
+  <!-- Time Interval Selector -->
+  @if (showTimeIntervalSelector) {
+    <div class="co-value-performance-chart__intervals">
+      @if (loading) {
+        @for (i of [1, 2, 3, 4, 5, 6, 7]; track i) {
+          <span class="co-value-performance-chart__interval-skeleton"></span>
+        }
+      } @else {
+        @for (interval of timeIntervals; track interval.value) {
+          <button
+            type="button"
+            class="co-value-performance-chart__interval"
+            [class.co-value-performance-chart__interval--active]="isActiveInterval(interval.value)"
+            (click)="onTimeIntervalClick(interval.value)"
+          >
+            {{ interval.label }}
+          </button>
+        }
+      }
+    </div>
+  }
+
+  <!-- Chart Container -->
+  <div class="co-value-performance-chart__chart-wrapper">
+    @if (loading) {
+      <div class="co-value-performance-chart__skeleton" [style.height.px]="height">
+        <!-- Y Axis skeleton -->
+        <div class="co-value-performance-chart__skeleton-yaxis">
+          <span class="co-value-performance-chart__skeleton-yaxis-label"></span>
+          <span class="co-value-performance-chart__skeleton-yaxis-label"></span>
+          <span class="co-value-performance-chart__skeleton-yaxis-label"></span>
+          <span class="co-value-performance-chart__skeleton-yaxis-label"></span>
+        </div>
+        <!-- Chart area skeleton -->
+        <div class="co-value-performance-chart__skeleton-area">
+          <svg viewBox="0 0 100 50" preserveAspectRatio="none" class="co-value-performance-chart__skeleton-svg">
+            <path
+              d="M0,40 Q10,38 20,35 T40,30 T60,25 T80,20 T100,15 L100,50 L0,50 Z"
+              class="co-value-performance-chart__skeleton-path"
+            />
+          </svg>
+        </div>
+      </div>
+    } @else {
+      <div class="co-value-performance-chart__chart-container">
+        <apx-chart
+          #chart
+          [series]="chartSeries()"
+          [chart]="chartConfig"
+          [colors]="chartColors()"
+          [stroke]="strokeConfig"
+          [fill]="fillConfig"
+          [markers]="markersConfig"
+          [xaxis]="xAxisConfig"
+          [yaxis]="yAxisConfig"
+          [grid]="gridConfig"
+          [tooltip]="tooltipConfig"
+          [dataLabels]="dataLabelsConfig"
+          [annotations]="annotationsConfig"
+          [states]="statesConfig"
+          [legend]="legendConfig"
+        />
+      </div>
+    }
+  </div>
+
+  <!-- Legend -->
+  @if (showLegend) {
+    @if (loading) {
+      <div class="co-chart-legend-skeleton">
+        <div class="co-chart-legend-skeleton__item">
+          <span class="co-chart-legend-skeleton__dot"></span>
+          <span class="co-chart-legend-skeleton__text"></span>
+        </div>
+        @if (showInvestedLine) {
+          <div class="co-chart-legend-skeleton__item">
+            <span class="co-chart-legend-skeleton__dot"></span>
+            <span class="co-chart-legend-skeleton__text"></span>
+          </div>
+        }
+      </div>
+    } @else {
+      <co-chart-legend
+        [items]="legendItems()"
+        [showValues]="false"
+        [valueFormat]="'absolute'"
+        (itemHover)="onLegendItemHover($event)"
+        (itemLeave)="onLegendItemLeave()"
+        (itemClick)="onLegendItemClick($event.index)"
+      />
+    }
+  }
+</div>
