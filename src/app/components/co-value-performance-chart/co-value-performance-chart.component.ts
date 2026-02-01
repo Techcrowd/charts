@@ -123,12 +123,8 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   /** Jednotka hodnoty (měna) */
   @Input() valueUnit = '';
 
-  /** Formát datumu pro tooltip a emitované hodnoty */
-  @Input() dateFormat: Intl.DateTimeFormatOptions = {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  };
+  /** Formát datumu (dd = den, MM = měsíc, MMM = měsíc slovně, yyyy = rok, HH = hodina, mm = minuta) */
+  @Input() dateFormat = 'dd.MM.yyyy';
 
   /** Barva pro pozitivní trend */
   @Input() positiveColor: ChartColor = 'chart-in';
@@ -494,11 +490,9 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
           fontWeight: 600,
         },
         datetimeUTC: false,
-        datetimeFormatter: {
-          year: 'yyyy',
-          month: "MMM 'yy",
-          day: 'dd MMM',
-          hour: 'HH:mm',
+        formatter: (value: string) => {
+          const date = new Date(value);
+          return this.formatDate(date);
         },
       },
       axisBorder: {
@@ -611,7 +605,16 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   }
 
   formatDate(date: Date): string {
-    return date.toLocaleDateString('cs-CZ', this.dateFormat);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const months = ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'];
+
+    return this.dateFormat
+      .replace('yyyy', date.getFullYear().toString())
+      .replace('MM', pad(date.getMonth() + 1))
+      .replace('MMM', months[date.getMonth()])
+      .replace('dd', pad(date.getDate()))
+      .replace('HH', pad(date.getHours()))
+      .replace('mm', pad(date.getMinutes()));
   }
 
   onLegendItemHover(index: number): void {

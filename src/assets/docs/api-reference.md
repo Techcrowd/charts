@@ -131,7 +131,7 @@ interface ColumnChartSeries {
 | `[showYAxis]` | boolean | false | Zobrazit Y osu |
 | `[trend]` | 'positive' \| 'negative' \| 'auto' | 'auto' | Trend grafu (auto = podle dat) |
 | `[valueUnit]` | string | '' | Jednotka hodnoty (měna) |
-| `[dateFormat]` | Intl.DateTimeFormatOptions | { day: '2-digit', month: '2-digit', year: 'numeric' } | Formát datumu |
+| `[dateFormat]` | string | 'dd.MM.yyyy' | Formát datumu (dd, MM, MMM, yyyy, HH, mm) |
 | `[positiveColor]` | ChartColor | 'chart-in' | Barva pro pozitivní trend |
 | `[negativeColor]` | ChartColor | 'chart-out' | Barva pro negativní trend |
 | `[investedColor]` | ChartColor | 'chart-bonds' | Barva křivky investované částky |

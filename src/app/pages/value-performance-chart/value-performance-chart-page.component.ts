@@ -130,11 +130,7 @@ export class ValuePerformanceChartPageComponent {
   hoveredPoint: { timestamp: Date | number | string; value: number; invested?: number } | null = null;
 
   // Date format for the chart
-  dateFormat: Intl.DateTimeFormatOptions = {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  };
+  dateFormat = 'dd.MM.yyyy';
 
   // ============ CODE EXAMPLES ============
 
@@ -170,7 +166,7 @@ export class ValuePerformanceChartPageComponent {
 
   hoverExample = `<co-value-performance-chart
   [data]="chartData"
-  [dateFormat]="{ day: '2-digit', month: 'short', year: 'numeric' }"
+  [dateFormat]="'dd.MM.yyyy'"
   (pointHover)="onPointHover($event)"
 />
 
@@ -218,7 +214,13 @@ interface ValuePerformanceData {
 
   formatDate(timestamp: Date | number | string): string {
     const date = new Date(timestamp);
-    return date.toLocaleDateString('cs-CZ', this.dateFormat);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return this.dateFormat
+      .replace('yyyy', date.getFullYear().toString())
+      .replace('MM', pad(date.getMonth() + 1))
+      .replace('dd', pad(date.getDate()))
+      .replace('HH', pad(date.getHours()))
+      .replace('mm', pad(date.getMinutes()));
   }
 
   toggleLoading(): void {
