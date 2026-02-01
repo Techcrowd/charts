@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   CoValuePerformanceChartComponent,
@@ -110,6 +110,8 @@ function generateNegativeTrendData(): ValuePerformanceData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ValuePerformanceChartPageComponent {
+  private cdr = inject(ChangeDetectorRef);
+
   // ============ DATA ============
 
   // Basic demo data
@@ -196,6 +198,7 @@ interface ValuePerformanceData {
 
   onPointHover(event: { timestamp: Date | number | string; value: number; invested?: number } | null): void {
     this.hoveredPoint = event;
+    this.cdr.markForCheck();
   }
 
   toggleLoading(): void {
