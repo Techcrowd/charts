@@ -19,17 +19,21 @@ import {
   ApexChart,
   ApexDataLabels,
   ApexPlotOptions,
-  ApexLegend,
   ApexTooltip,
-  ApexStates,
   ApexResponsive,
-  ApexStroke,
   ChartComponent,
   NgApexchartsModule,
 } from 'ng-apexcharts';
 import { ChartColorService, ChartColor } from '../../services/chart-color.service';
+import { DateTimeService } from '../../services/date-time.service';
 import { CoChartLegendComponent, ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
-import { ValueFormat, CHART_COLORS } from '../../shared/chart-types';
+import {
+  ValueFormat,
+  CHART_COLORS,
+  CHART_STATES_CONFIG,
+  CHART_LEGEND_CONFIG,
+  CHART_DONUT_STROKE_CONFIG,
+} from '../../shared/chart-types';
 
 // ============ TYPES ============
 
@@ -43,20 +47,6 @@ export interface DonutChartDataItem {
   label: string;
   value: number;
 }
-
-/** Statické ApexCharts konfigurace */
-const STATES_CONFIG: ApexStates = {
-  hover: { filter: { type: 'none' } },
-  active: { allowMultipleDataPointsSelection: false, filter: { type: 'none' } },
-};
-
-const STROKE_CONFIG: ApexStroke = {
-  show: true,
-  width: 2,
-  colors: [CHART_COLORS.backgroundSurface],
-};
-
-const LEGEND_CONFIG: ApexLegend = { show: false };
 
 // ============ COMPONENT ============
 
@@ -74,6 +64,7 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   // ============ INJECTED ============
   private elementRef = inject(ElementRef);
   private chartColorService = inject(ChartColorService);
+  private dateTimeService = inject(DateTimeService);
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
 
@@ -212,10 +203,10 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   tooltipConfig!: ApexTooltip;
   responsiveConfig!: ApexResponsive[];
 
-  // Chart configs (static) - use constants
-  readonly statesConfig = STATES_CONFIG;
-  readonly strokeConfig = STROKE_CONFIG;
-  readonly legendConfig = LEGEND_CONFIG;
+  // Chart configs (static) - use shared constants
+  readonly statesConfig = CHART_STATES_CONFIG;
+  readonly strokeConfig = CHART_DONUT_STROKE_CONFIG;
+  readonly legendConfig = CHART_LEGEND_CONFIG;
 
   // ============ LIFECYCLE ============
 
@@ -345,7 +336,7 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   // ============ PUBLIC METHODS ============
 
   formatValue(value: number): string {
-    return value.toLocaleString('cs-CZ');
+    return this.dateTimeService.formatNumber(value, 0);
   }
 
   onLegendItemHover(index: number): void {

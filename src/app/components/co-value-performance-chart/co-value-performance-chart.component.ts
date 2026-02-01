@@ -26,8 +26,6 @@ import {
   ApexTooltip,
   ApexStroke,
   ApexGrid,
-  ApexLegend,
-  ApexStates,
   ApexAnnotations,
   ChartComponent,
   NgApexchartsModule,
@@ -35,7 +33,11 @@ import {
 import { ChartColorService, ChartColor } from '../../services/chart-color.service';
 import { DateTimeService } from '../../services/date-time.service';
 import { CoChartLegendComponent, ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
-import { CHART_COLORS } from '../../shared/chart-types';
+import {
+  CHART_COLORS,
+  CHART_STATES_CONFIG,
+  CHART_LEGEND_CONFIG,
+} from '../../shared/chart-types';
 
 // ============ TYPES ============
 
@@ -70,14 +72,6 @@ export interface ChartLine {
   /** Data pro tuto čáru */
   data: ChartDataPoint[];
 }
-
-/** Statické konfigurace */
-const STATES_CONFIG: ApexStates = {
-  hover: { filter: { type: 'none' } },
-  active: { allowMultipleDataPointsSelection: false, filter: { type: 'none' } },
-};
-
-const LEGEND_CONFIG: ApexLegend = { show: false };
 
 // ============ COMPONENT ============
 
@@ -276,8 +270,9 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   annotationsConfig!: ApexAnnotations;
 
   // Chart configs (static)
-  readonly statesConfig = STATES_CONFIG;
-  readonly legendConfig = LEGEND_CONFIG;
+  // Chart configs (static) - use shared constants
+  readonly statesConfig = CHART_STATES_CONFIG;
+  readonly legendConfig = CHART_LEGEND_CONFIG;
 
   // ============ LIFECYCLE ============
 

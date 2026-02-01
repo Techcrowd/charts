@@ -1,0 +1,86 @@
+@use 'tokens' as *;
+
+// ============ SHARED SKELETON ANIMATION ============
+
+@keyframes co-skeleton-pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+// ============ SHARED LEGEND SKELETON ============
+
+.co-chart-legend-skeleton {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: $spacing-xs $spacing-lg;
+}
+
+.co-chart-legend-skeleton__item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  animation: co-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.co-chart-legend-skeleton__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: $border-radius-full;
+  background-color: $color-background-border;
+}
+
+.co-chart-legend-skeleton__text {
+  width: 60px;
+  height: 12px;
+  border-radius: $border-radius-sm;
+  background-color: $color-background-border;
+}
+
+// ============ SHARED APEX CHART STYLES ============
+
+// Mixin for chart container with common ApexCharts overrides
+@mixin chart-container-base {
+  width: 100%;
+
+  ::ng-deep {
+    .apexcharts-canvas {
+      width: 100% !important;
+    }
+
+    // Smooth opacity transitions for series
+    .apexcharts-series {
+      transition: opacity $transition-fast;
+    }
+
+    // Data labels styling
+    .apexcharts-data-labels text,
+    .apexcharts-datalabel {
+      fill: $color-content-tertiary !important;
+      font-size: 10px !important;
+      font-weight: $font-weight-regular !important;
+    }
+
+    // Data label background with outer shadow
+    .apexcharts-datalabels-group rect,
+    .apexcharts-data-labels rect {
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    }
+  }
+}
+
+// Mixin for hover state dimming
+@mixin chart-hover-dimming($selector: '.apexcharts-series') {
+  ::ng-deep {
+    #{$selector} {
+      opacity: 0.35;
+    }
+    #{$selector}:hover {
+      opacity: 1;
+    }
+  }
+}

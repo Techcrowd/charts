@@ -19,9 +19,7 @@ import {
   ApexChart,
   ApexDataLabels,
   ApexPlotOptions,
-  ApexLegend,
   ApexTooltip,
-  ApexStates,
   ApexXAxis,
   ApexYAxis,
   ApexGrid,
@@ -31,8 +29,14 @@ import {
   NgApexchartsModule,
 } from 'ng-apexcharts';
 import { ChartColorService, ChartColor } from '../../services/chart-color.service';
+import { DateTimeService } from '../../services/date-time.service';
 import { CoChartLegendComponent, ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
-import { ValueFormat, CHART_COLORS } from '../../shared/chart-types';
+import {
+  ValueFormat,
+  CHART_COLORS,
+  CHART_STATES_CONFIG,
+  CHART_LEGEND_CONFIG,
+} from '../../shared/chart-types';
 
 // ============ TYPES ============
 
@@ -53,14 +57,6 @@ export interface ColumnChartData {
   series: ColumnChartSeries[];
 }
 
-/** Statické ApexCharts konfigurace */
-const STATES_CONFIG: ApexStates = {
-  hover: { filter: { type: 'none' } },
-  active: { allowMultipleDataPointsSelection: false, filter: { type: 'none' } },
-};
-
-const LEGEND_CONFIG: ApexLegend = { show: false };
-
 // ============ COMPONENT ============
 
 @Component({
@@ -77,6 +73,7 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   // ============ INJECTED ============
   private elementRef = inject(ElementRef);
   private chartColorService = inject(ChartColorService);
+  private dateTimeService = inject(DateTimeService);
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
 
@@ -207,9 +204,9 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   strokeConfig!: ApexStroke;
   responsiveConfig!: ApexResponsive[];
 
-  // Chart configs (static)
-  readonly statesConfig = STATES_CONFIG;
-  readonly legendConfig = LEGEND_CONFIG;
+  // Chart configs (static) - use shared constants
+  readonly statesConfig = CHART_STATES_CONFIG;
+  readonly legendConfig = CHART_LEGEND_CONFIG;
 
   // ============ LIFECYCLE ============
 
@@ -414,7 +411,7 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   // ============ PUBLIC METHODS ============
 
   formatValue(value: number): string {
-    return value.toLocaleString('cs-CZ');
+    return this.dateTimeService.formatNumber(value, 0);
   }
 
   onLegendItemHover(index: number): void {

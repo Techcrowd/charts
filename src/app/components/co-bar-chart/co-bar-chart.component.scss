@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use '../../styles/tokens' as *;
+@use '../../styles/chart-skeleton' as *;
 
 .co-bar-chart {
   display: flex;
@@ -15,33 +16,9 @@
 }
 
 .co-bar-chart__chart-container {
-  width: 100%;
+  @include chart-container-base;
 
   ::ng-deep {
-    .apexcharts-canvas {
-      width: 100% !important;
-    }
-
-    // Smooth opacity transitions for series
-    .apexcharts-series {
-      transition: opacity $transition-fast;
-    }
-
-    // Data labels styling
-    .apexcharts-data-labels text,
-    .apexcharts-datalabel {
-      fill: $color-content-tertiary !important;
-      font-size: 10px !important;
-      font-weight: $font-weight-regular !important;
-    }
-
-    // Data label background with outer shadow
-    .apexcharts-datalabels-group rect,
-    .apexcharts-data-labels rect {
-      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
-    }
-
-    // Bar border radius
     .apexcharts-bar-area {
       transition: opacity $transition-fast;
     }
@@ -50,13 +27,8 @@
 
 // Hover state - dim non-hovered series
 .co-bar-chart--hovering {
-  .co-bar-chart__chart-container ::ng-deep {
-    .apexcharts-series {
-      opacity: 0.35;
-    }
-    .apexcharts-series:hover {
-      opacity: 1;
-    }
+  .co-bar-chart__chart-container {
+    @include chart-hover-dimming;
   }
 }
 
@@ -113,40 +85,3 @@
   }
 }
 
-// Legend Skeleton
-.co-chart-legend-skeleton {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: $spacing-xs $spacing-lg;
-}
-
-.co-chart-legend-skeleton__item {
-  display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-  animation: co-skeleton-pulse 1.5s ease-in-out infinite;
-}
-
-.co-chart-legend-skeleton__dot {
-  width: 10px;
-  height: 10px;
-  border-radius: $border-radius-full;
-  background-color: $color-background-border;
-}
-
-.co-chart-legend-skeleton__text {
-  width: 60px;
-  height: 12px;
-  border-radius: $border-radius-sm;
-  background-color: $color-background-border;
-}
-
-@keyframes co-skeleton-pulse {
-  0%, 100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
-}
