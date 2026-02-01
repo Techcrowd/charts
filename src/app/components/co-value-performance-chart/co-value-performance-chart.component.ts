@@ -46,6 +46,9 @@ export type TimeInterval = '1D' | '5D' | '1M' | '6M' | '1Y' | '5Y' | 'ALL';
 /** Trend grafu */
 export type ChartTrend = 'positive' | 'negative' | 'auto';
 
+/** Typ křivky */
+export type CurveType = 'smooth' | 'stepline';
+
 /** Datový bod pro graf */
 export interface ValuePerformanceDataPoint {
   timestamp: Date | number | string;
@@ -125,6 +128,9 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
 
   /** Formát datumu (dd = den, MM = měsíc, MMM = měsíc slovně, yyyy = rok, HH = hodina, mm = minuta) */
   @Input() dateFormat = 'dd.MM.yyyy';
+
+  /** Typ křivky */
+  @Input() curveType: CurveType = 'smooth';
 
   /** Barva pro pozitivní trend */
   @Input() positiveColor: ChartColor = 'chart-in';
@@ -445,7 +451,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
     };
 
     this.strokeConfig = {
-      curve: 'smooth',
+      curve: this.curveType,
       width: [2, 2],
       dashArray: [0, 5], // solid for value, dashed for invested
     };

@@ -132,6 +132,7 @@ interface ColumnChartSeries {
 | `[trend]` | 'positive' \| 'negative' \| 'auto' | 'auto' | Trend grafu (auto = podle dat) |
 | `[valueUnit]` | string | '' | Jednotka hodnoty (měna) |
 | `[dateFormat]` | string | 'dd.MM.yyyy' | Formát datumu (dd, MM, MMM, yyyy, HH, mm) |
+| `[curveType]` | 'smooth' \| 'stepline' | 'smooth' | Typ křivky |
 | `[positiveColor]` | ChartColor | 'chart-in' | Barva pro pozitivní trend |
 | `[negativeColor]` | ChartColor | 'chart-out' | Barva pro negativní trend |
 | `[investedColor]` | ChartColor | 'chart-bonds' | Barva křivky investované částky |
