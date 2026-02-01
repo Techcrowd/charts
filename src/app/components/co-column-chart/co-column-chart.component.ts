@@ -36,6 +36,7 @@ import {
   CHART_COLORS,
   CHART_STATES_CONFIG,
   CHART_LEGEND_CONFIG,
+  highlightChartSeries,
 } from '../../shared/chart-types';
 
 // ============ TYPES ============
@@ -442,17 +443,6 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
 
   private highlightSeries(activeIndex: number): void {
     if (!this.isBrowser) return;
-
-    const hostEl = this.elementRef.nativeElement as HTMLElement;
-    const seriesGroups = hostEl.querySelectorAll('.apexcharts-series');
-
-    seriesGroups.forEach((group, i) => {
-      const el = group as SVGGElement;
-      if (activeIndex === -1) {
-        el.style.removeProperty('opacity');
-      } else {
-        el.style.opacity = i === activeIndex ? '1' : '0.35';
-      }
-    });
+    highlightChartSeries(this.elementRef.nativeElement, activeIndex);
   }
 }

@@ -32,3 +32,29 @@ export const CHART_DONUT_STROKE_CONFIG: ApexStroke = {
   width: 2,
   colors: [CHART_COLORS.backgroundSurface],
 };
+
+// ============ SHARED UTILITIES ============
+
+/**
+ * Zvýrazní sérii v grafu podle indexu.
+ * Používá se pro legend hover interakci.
+ * @param hostEl - Host element komponenty
+ * @param activeIndex - Index aktivní série (-1 = reset)
+ * @param selector - CSS selector pro série (default: '.apexcharts-series')
+ */
+export function highlightChartSeries(
+  hostEl: HTMLElement,
+  activeIndex: number,
+  selector = '.apexcharts-series'
+): void {
+  const seriesGroups = hostEl.querySelectorAll(selector);
+
+  seriesGroups.forEach((group, i) => {
+    const el = group as SVGGElement;
+    if (activeIndex === -1) {
+      el.style.removeProperty('opacity');
+    } else {
+      el.style.opacity = i === activeIndex ? '1' : '0.35';
+    }
+  });
+}

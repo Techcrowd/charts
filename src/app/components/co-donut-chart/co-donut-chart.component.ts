@@ -33,6 +33,7 @@ import {
   CHART_STATES_CONFIG,
   CHART_LEGEND_CONFIG,
   CHART_DONUT_STROKE_CONFIG,
+  highlightChartSeries,
 } from '../../shared/chart-types';
 
 // ============ TYPES ============
@@ -358,18 +359,6 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
 
   private highlightSegment(activeIndex: number): void {
     if (!this.isBrowser) return;
-
-    const hostEl = this.elementRef.nativeElement as HTMLElement;
-    const segments = hostEl.querySelectorAll('.apexcharts-pie-area');
-
-    segments.forEach((segment, i) => {
-      const el = segment as SVGPathElement;
-      if (activeIndex === -1) {
-        // Remove inline style so CSS can take over
-        el.style.removeProperty('opacity');
-      } else {
-        el.style.opacity = i === activeIndex ? '1' : '0.35';
-      }
-    });
+    highlightChartSeries(this.elementRef.nativeElement, activeIndex, '.apexcharts-pie-area');
   }
 }
