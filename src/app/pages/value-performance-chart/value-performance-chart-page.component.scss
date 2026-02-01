@@ -16,3 +16,40 @@
     background: #e5e7eb;
   }
 }
+
+.hover-values-display {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  min-height: 48px;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+  }
+
+  &__value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__placeholder {
+    font-size: 13px;
+    color: #9ca3af;
+    font-style: italic;
+  }
+}

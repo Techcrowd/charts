@@ -4,13 +4,33 @@
     Graf pro zobrazení vývoje hodnoty investice v čase s volitelnou křivkou investované částky.
   </p>
 
-  <!-- Basic Example -->
+  <!-- Basic Example with Hover Values -->
   <section class="demo-section">
-    <h2>Základní použití</h2>
+    <h2>Základní použití s hover hodnotami</h2>
     <p class="demo-note">
-      Graf s legendou. Pro vlastní ovládací prvky (např. co-tab) použijte ng-content slot.
+      Hover nad grafem zobrazí puntík a hodnoty jsou emitovány mimo komponentu přes <code>(pointHover)</code> event.
     </p>
     <div class="demo-card">
+      <div class="hover-values-display">
+        @if (hoveredPoint) {
+          <div class="hover-values-display__item">
+            <span class="hover-values-display__label">Datum:</span>
+            <span class="hover-values-display__value">{{ hoveredPoint.timestamp | date:'dd.MM.yyyy' }}</span>
+          </div>
+          <div class="hover-values-display__item">
+            <span class="hover-values-display__label">Hodnota:</span>
+            <span class="hover-values-display__value">{{ hoveredPoint.value | number:'1.2-2':'cs' }} USD</span>
+          </div>
+          @if (hoveredPoint.invested) {
+            <div class="hover-values-display__item">
+              <span class="hover-values-display__label">Investováno:</span>
+              <span class="hover-values-display__value">{{ hoveredPoint.invested | number:'1.2-2':'cs' }} USD</span>
+            </div>
+          }
+        } @else {
+          <div class="hover-values-display__placeholder">Najeďte myší na graf</div>
+        }
+      </div>
       <co-value-performance-chart
         [data]="basicData"
         [height]="350"
@@ -18,14 +38,10 @@
         [showInvestedLine]="true"
         [valueUnit]="'USD'"
         (pointHover)="onPointHover($event)"
-        (pointClick)="onPointClick($event)"
       />
-      @if (lastEvent) {
-        <div class="event-log">{{ lastEvent }}</div>
-      }
     </div>
     <div class="code-block">
-      <pre><code class="language-html">{{ basicExample }}</code></pre>
+      <pre><code class="language-html">{{ hoverExample }}</code></pre>
     </div>
   </section>
 

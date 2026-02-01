@@ -124,8 +124,8 @@ export class ValuePerformanceChartPageComponent {
   // Loading state
   isLoading = true;
 
-  // Event log
-  lastEvent = '';
+  // Hovered point data
+  hoveredPoint: { timestamp: Date | number | string; value: number; invested?: number } | null = null;
 
   // ============ CODE EXAMPLES ============
 
@@ -155,10 +155,22 @@ export class ValuePerformanceChartPageComponent {
 
   minimalExample = `<co-value-performance-chart
   [data]="chartData"
-  [showLegend]="false"
   [showHighLowValues]="false"
   [showClosingValue]="false"
 />`;
+
+  hoverExample = `<co-value-performance-chart
+  [data]="chartData"
+  (pointHover)="onPointHover($event)"
+/>
+
+<!-- Zobrazení hodnot mimo komponentu -->
+@if (hoveredPoint) {
+  <div class="hover-values">
+    <span>{{ hoveredPoint.timestamp | date }}</span>
+    <span>{{ hoveredPoint.value | number }}</span>
+  </div>
+}`;
 
   dataTypeExample = `interface ValuePerformanceDataPoint {
   timestamp: Date | number | string;
@@ -182,14 +194,8 @@ interface ValuePerformanceData {
     }, 2000);
   }
 
-  onPointHover(event: any): void {
-    if (event) {
-      this.lastEvent = `Hover: ${new Date(event.timestamp).toLocaleDateString('cs-CZ')} - hodnota: ${event.value.toLocaleString('cs-CZ')}`;
-    }
-  }
-
-  onPointClick(event: any): void {
-    this.lastEvent = `Klik: ${new Date(event.timestamp).toLocaleDateString('cs-CZ')} - hodnota: ${event.value.toLocaleString('cs-CZ')}`;
+  onPointHover(event: { timestamp: Date | number | string; value: number; invested?: number } | null): void {
+    this.hoveredPoint = event;
   }
 
   toggleLoading(): void {
