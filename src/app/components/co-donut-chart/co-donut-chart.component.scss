@@ -1,4 +1,3 @@
-@use 'sass:color';
 @use '../../styles/tokens' as *;
 @use '../../styles/chart-skeleton' as *;
 
@@ -125,12 +124,7 @@
 }
 
 .co-donut-chart__skeleton-segment {
-  stroke: $color-background-border;
-
-  &--1 { stroke: color.adjust($color-background-border, $lightness: -5%); }
-  &--2 { stroke: $color-background-border; }
-  &--3 { stroke: color.adjust($color-background-border, $lightness: -8%); }
-  &--4 { stroke: color.adjust($color-background-border, $lightness: 3%); }
+  @include skeleton-segment-colors;
 }
 
 

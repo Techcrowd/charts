@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'tokens' as *;
 
 // ============ SHARED SKELETON ANIMATION ============
@@ -39,6 +40,49 @@
   height: 12px;
   border-radius: $border-radius-sm;
   background-color: $color-background-border;
+}
+
+// ============ SHARED SKELETON MIXINS ============
+
+// Base skeleton container with pulse animation
+@mixin skeleton-container {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  animation: co-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+// Y-axis label placeholder
+@mixin skeleton-label($width: 24px) {
+  width: $width;
+  height: 10px;
+  background-color: $color-background-border;
+  border-radius: $border-radius-sm;
+}
+
+// Bar/segment color variations for visual depth
+@mixin skeleton-bar-colors {
+  background-color: $color-background-border;
+
+  &:nth-child(1) {
+    background-color: color.adjust($color-background-border, $lightness: -8%);
+  }
+  &:nth-child(2) {
+    background-color: $color-background-border;
+  }
+  &:nth-child(3) {
+    background-color: color.adjust($color-background-border, $lightness: -5%);
+  }
+}
+
+// Donut segment stroke colors
+@mixin skeleton-segment-colors {
+  stroke: $color-background-border;
+
+  &--1 { stroke: color.adjust($color-background-border, $lightness: -5%); }
+  &--2 { stroke: $color-background-border; }
+  &--3 { stroke: color.adjust($color-background-border, $lightness: -8%); }
+  &--4 { stroke: color.adjust($color-background-border, $lightness: 3%); }
 }
 
 // ============ SHARED APEX CHART STYLES ============
