@@ -106,10 +106,13 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   @Input() showClosingValue = true;
 
   /** Zobrazit legendu */
-  @Input() showLegend = true;
+  @Input() showLegend = false;
 
   /** Zobrazit tooltip */
   @Input() showTooltip = false;
+
+  /** Zobrazit mřížku */
+  @Input() showGrid = false;
 
   /** Zobrazit Y osu */
   @Input() showYAxis = false;
@@ -518,6 +521,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
     };
 
     this.gridConfig = {
+      show: this.showGrid,
       borderColor: CHART_COLORS.gridBorder,
       strokeDashArray: 0,
       xaxis: {

@@ -125,8 +125,9 @@ interface ColumnChartSeries {
 | `[showInvestedLine]` | boolean | true | Zobrazit křivku investované částky |
 | `[showHighLowValues]` | boolean | true | Zobrazit high/low anotace |
 | `[showClosingValue]` | boolean | true | Zobrazit zavírací hodnotu |
-| `[showLegend]` | boolean | true | Zobrazit legendu |
+| `[showLegend]` | boolean | false | Zobrazit legendu |
 | `[showTooltip]` | boolean | false | Zobrazit tooltip |
+| `[showGrid]` | boolean | false | Zobrazit mřížku |
 | `[showYAxis]` | boolean | false | Zobrazit Y osu |
 | `[trend]` | 'positive' \| 'negative' \| 'auto' | 'auto' | Trend grafu (auto = podle dat) |
 | `[valueUnit]` | string | '' | Jednotka hodnoty (měna) |

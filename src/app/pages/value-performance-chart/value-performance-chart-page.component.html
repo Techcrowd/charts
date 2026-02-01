@@ -8,14 +8,13 @@
   <section class="demo-section">
     <h2>Základní použití</h2>
     <p class="demo-note">
-      Graf s legendou a tooltipem. Pro vlastní ovládací prvky (např. co-tab) použijte ng-content slot.
+      Graf s legendou. Pro vlastní ovládací prvky (např. co-tab) použijte ng-content slot.
     </p>
     <div class="demo-card">
       <co-value-performance-chart
         [data]="basicData"
         [height]="350"
         [showLegend]="true"
-        [showTooltip]="true"
         [showInvestedLine]="true"
         [valueUnit]="'USD'"
         (pointHover)="onPointHover($event)"
@@ -43,9 +42,7 @@
         <co-value-performance-chart
           [data]="positiveTrendData"
           [height]="250"
-          [showLegend]="true"
-          [showTooltip]="true"
-          [showInvestedLine]="false"
+            [showInvestedLine]="false"
           [valueUnit]="'Kč'"
         />
       </div>
@@ -54,9 +51,7 @@
         <co-value-performance-chart
           [data]="negativeTrendData"
           [height]="250"
-          [showLegend]="true"
-          [showTooltip]="true"
-          [showInvestedLine]="false"
+            [showInvestedLine]="false"
           [valueUnit]="'Kč'"
         />
       </div>
@@ -82,7 +77,6 @@
         [data]="basicData"
         [height]="300"
         [showLegend]="true"
-        [showTooltip]="true"
         [showInvestedLine]="true"
         [valueUnit]="'USD'"
       />
@@ -102,8 +96,6 @@
       <co-value-performance-chart
         [data]="positiveTrendData"
         [height]="200"
-        [showLegend]="false"
-        [showTooltip]="true"
         [showInvestedLine]="false"
         [showHighLowValues]="false"
         [showClosingValue]="false"
@@ -128,7 +120,6 @@
         [data]="basicData"
         [height]="300"
         [loading]="isLoading"
-        [showLegend]="true"
         [showInvestedLine]="true"
       />
     </div>
@@ -190,7 +181,7 @@
           <tr>
             <td><code>[showLegend]</code></td>
             <td>boolean</td>
-            <td>true</td>
+            <td>false</td>
             <td>Zobrazit legendu</td>
           </tr>
           <tr>
@@ -198,6 +189,12 @@
             <td>boolean</td>
             <td>false</td>
             <td>Zobrazit tooltip</td>
+          </tr>
+          <tr>
+            <td><code>[showGrid]</code></td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Zobrazit mřížku</td>
           </tr>
           <tr>
             <td><code>[showYAxis]</code></td>

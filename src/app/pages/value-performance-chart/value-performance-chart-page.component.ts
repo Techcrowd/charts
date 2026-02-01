@@ -132,8 +132,6 @@ export class ValuePerformanceChartPageComponent {
   basicExample = `<co-value-performance-chart
   [data]="chartData"
   [height]="300"
-  [showLegend]="true"
-  [showTooltip]="true"
   [valueUnit]="'USD'"
 />`;
 
