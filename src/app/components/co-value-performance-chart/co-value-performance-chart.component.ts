@@ -424,7 +424,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
       },
       events: {
         dataPointSelection: (event: any, chartContext: any, config: any) => {
-          const { seriesIndex, dataPointIndex } = config;
+          const { dataPointIndex } = config;
           const point = self.data.points[dataPointIndex];
           if (point) {
             self.pointClick.emit({
@@ -434,19 +434,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
             });
           }
         },
-        dataPointMouseEnter: (event: any, chartContext: any, config: any) => {
-          const { dataPointIndex } = config;
-          self.hoveredSeriesIndex.set(dataPointIndex);
-          const point = self.data.points[dataPointIndex];
-          if (point) {
-            self.pointHover.emit({
-              timestamp: point.timestamp,
-              value: point.value,
-              invested: point.invested,
-            });
-          }
-        },
-        dataPointMouseLeave: () => {
+        mouseLeave: () => {
           self.hoveredSeriesIndex.set(-1);
           self.pointHover.emit(null);
         },
@@ -474,13 +462,23 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
 
     this.markersConfig = {
       size: 0,
+      strokeWidth: 0,
       hover: {
-        size: 6,
-        sizeOffset: 3,
+        size: 8,
+        sizeOffset: 0,
       },
     };
 
     this.xAxisConfig = {
+      crosshairs: {
+        show: true,
+        width: 1,
+        stroke: {
+          color: CHART_COLORS.contentTertiary,
+          width: 1,
+          dashArray: 3,
+        },
+      },
       type: 'datetime',
       labels: {
         style: {
@@ -537,12 +535,28 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
     };
 
     this.tooltipConfig = {
-      enabled: this.showTooltip,
+      enabled: true, // Always enabled for hover detection
       shared: true,
       intersect: false,
+      marker: {
+        show: true,
+      },
       custom: ({ series, seriesIndex, dataPointIndex, w }: any) => {
         const point = this.data.points[dataPointIndex];
         if (!point) return '';
+
+        // Emit hover event
+        this.hoveredSeriesIndex.set(dataPointIndex);
+        this.pointHover.emit({
+          timestamp: point.timestamp,
+          value: point.value,
+          invested: point.invested,
+        });
+
+        // Return empty string if tooltip is disabled
+        if (!this.showTooltip) {
+          return '<div style="display:none"></div>';
+        }
 
         const date = new Date(point.timestamp);
         const formattedDate = this.formatDate(date);
