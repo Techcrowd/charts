@@ -25,6 +25,40 @@
 | `(segmentClick)` | { item: DonutChartDataItem, index: number } | Kliknutí na segment |
 | `(segmentHover)` | { item: DonutChartDataItem, index: number } \| null | Hover nad segmentem |
 
+## Příklad použití
+
+```html
+<co-donut-chart
+  [data]="chartData"
+  [height]="300"
+  [showLegend]="true"
+  [showLegendValues]="true"
+  [valueFormat]="'percent'"
+  [centerText]="'Portfolio'"
+  (segmentClick)="onSegmentClick($event)"
+/>
+```
+
+## Ukázka dat
+
+```typescript
+const chartData: DonutChartDataItem[] = [
+  { label: 'Akcie', value: 45000 },
+  { label: 'Dluhopisy', value: 30000 },
+  { label: 'Hotovost', value: 15000 },
+  { label: 'Alternativy', value: 10000 },
+];
+```
+
+## Typy
+
+```typescript
+interface DonutChartDataItem {
+  label: string;
+  value: number;
+}
+```
+
 ---
 
 # Bar Chart
@@ -54,6 +88,31 @@
 |--------|-----|-------|
 | `(barClick)` | { seriesIndex, dataPointIndex, value, category, seriesName } | Kliknutí na bar |
 | `(barHover)` | { seriesIndex, dataPointIndex, value, category, seriesName } \| null | Hover nad barem |
+
+## Příklad použití
+
+```html
+<co-bar-chart
+  [data]="chartData"
+  [height]="350"
+  [showLegend]="true"
+  [showDataLabels]="true"
+  [valueUnit]="'Kč'"
+  (barClick)="onBarClick($event)"
+/>
+```
+
+## Ukázka dat
+
+```typescript
+const chartData: BarChartData = {
+  categories: ['Q1', 'Q2', 'Q3', 'Q4'],
+  series: [
+    { name: 'Příjmy', data: [44000, 55000, 41000, 67000] },
+    { name: 'Výdaje', data: [35000, 42000, 38000, 51000] },
+  ],
+};
+```
 
 ## Typy
 
@@ -98,6 +157,32 @@ interface BarChartSeries {
 | `(columnClick)` | { seriesIndex, dataPointIndex, value, category, seriesName } | Kliknutí na sloupec |
 | `(columnHover)` | { seriesIndex, dataPointIndex, value, category, seriesName } \| null | Hover nad sloupcem |
 
+## Příklad použití
+
+```html
+<co-column-chart
+  [data]="chartData"
+  [height]="300"
+  [showLegend]="true"
+  [colors]="['chart-stocks', 'chart-bonds', 'chart-cash']"
+  [valueUnit]="'%'"
+  (columnClick)="onColumnClick($event)"
+/>
+```
+
+## Ukázka dat
+
+```typescript
+const chartData: ColumnChartData = {
+  categories: ['Led', 'Úno', 'Bře', 'Dub', 'Kvě', 'Čvn'],
+  series: [
+    { name: 'Akcie', data: [35, 41, 36, 26, 45, 48] },
+    { name: 'Dluhopisy', data: [28, 29, 33, 36, 32, 32] },
+    { name: 'Hotovost', data: [12, 11, 14, 18, 17, 13] },
+  ],
+};
+```
+
 ## Typy
 
 ```typescript
@@ -120,22 +205,17 @@ interface ColumnChartSeries {
 
 | Input | Typ | Default | Popis |
 |-------|-----|---------|-------|
-| `[data]` | ValuePerformanceData | { points: [] } | Data pro graf |
+| `[lines]` | ChartLine[] | [] | Pole čar - každá čára obsahuje svou definici i data |
 | `[height]` | number | 300 | Výška grafu v px |
-| `[showInvestedLine]` | boolean | true | Zobrazit křivku investované částky |
 | `[showHighLowValues]` | boolean | true | Zobrazit high/low anotace |
-| `[showClosingValue]` | boolean | true | Zobrazit zavírací hodnotu |
 | `[showLegend]` | boolean | false | Zobrazit legendu |
 | `[showTooltip]` | boolean | false | Zobrazit tooltip |
 | `[showGrid]` | boolean | false | Zobrazit mřížku |
 | `[showYAxis]` | boolean | false | Zobrazit Y osu |
-| `[trend]` | 'positive' \| 'negative' \| 'auto' | 'auto' | Trend grafu (auto = podle dat) |
+| `[xAxisMin]` | Date \| number \| string | - | Min. hodnota osy X |
+| `[xAxisMax]` | Date \| number \| string | - | Max. hodnota osy X (pro neúplné intervaly) |
 | `[valueUnit]` | string | '' | Jednotka hodnoty (měna) |
 | `[dateFormat]` | string | 'dd.MM.yyyy' | Formát datumu (dd, MM, MMM, yyyy, HH, mm) |
-| `[curveType]` | 'smooth' \| 'stepline' | 'smooth' | Typ křivky |
-| `[positiveColor]` | ChartColor | 'chart-in' | Barva pro pozitivní trend |
-| `[negativeColor]` | ChartColor | 'chart-out' | Barva pro negativní trend |
-| `[investedColor]` | ChartColor | 'chart-bonds' | Barva křivky investované částky |
 | `[loading]` | boolean | false | Loading stav |
 | `[nonce]` | string | - | CSP nonce pro inline styly |
 
@@ -143,23 +223,113 @@ interface ColumnChartSeries {
 
 | Output | Typ | Popis |
 |--------|-----|-------|
-| `(pointHover)` | { timestamp, value, invested? } \| null | Hover nad bodem |
-| `(pointClick)` | { timestamp, value, invested? } | Kliknutí na bod |
+| `(pointHover)` | { timestamp, values: { name, value }[] } \| null | Hover nad bodem - obsahuje hodnoty ze všech čar |
+| `(pointClick)` | { timestamp, values: { name, value }[] } | Kliknutí na bod |
+
+## Příklad použití
+
+### Základní graf s jednou čárou
+
+```html
+<co-value-performance-chart
+  [height]="300"
+  [lines]="valueLines"
+  [dateFormat]="'MMM yyyy'"
+  [valueUnit]="'Kč'"
+/>
+```
+
+### Graf s hodnotou a investovanou částkou
+
+```html
+<co-value-performance-chart
+  [height]="350"
+  [showLegend]="true"
+  [lines]="lines"
+  [dateFormat]="'yyyy'"
+  [valueUnit]="'Kč'"
+  (pointHover)="onPointHover($event)"
+/>
+```
+
+### Neúplný interval (data končí dříve než osa X)
+
+```html
+<co-value-performance-chart
+  [height]="300"
+  [lines]="incompleteLines"
+  [xAxisMin]="'2025-01-01'"
+  [xAxisMax]="'2025-01-31'"
+  [dateFormat]="'dd.MM'"
+  [valueUnit]="'Kč'"
+/>
+```
+
+## Ukázka dat
+
+```typescript
+// Data pro čáru hodnoty
+const valueData: ChartDataPoint[] = [
+  { x: '2023-01-01', y: 100000 },
+  { x: '2023-02-01', y: 105000 },
+  { x: '2023-03-01', y: 102000 },
+  { x: '2023-04-01', y: 115000 },
+  { x: '2023-05-01', y: 125000 },
+  { x: '2023-06-01', y: 135000 },
+];
+
+// Data pro čáru investované částky
+const investedData: ChartDataPoint[] = [
+  { x: '2023-01-01', y: 100000 },
+  { x: '2023-02-01', y: 100000 },
+  { x: '2023-03-01', y: 100000 },
+  { x: '2023-04-01', y: 110000 },
+  { x: '2023-05-01', y: 110000 },
+  { x: '2023-06-01', y: 120000 },
+];
+
+// Konfigurace čar s vlastními daty
+const lines: ChartLine[] = [
+  {
+    name: 'Investováno',
+    color: 'chart-out',
+    curveType: 'stepline',
+    data: investedData
+  },
+  {
+    name: 'Hodnota portfolia',
+    color: 'chart-in',
+    curveType: 'straight',
+    data: valueData
+  },
+];
+
+// Pouze hodnota (jedna čára)
+const valueLines: ChartLine[] = [
+  {
+    name: 'Hodnota',
+    color: 'chart-in',
+    curveType: 'straight',
+    data: valueData
+  },
+];
+```
 
 ## Typy
 
 ```typescript
-interface ValuePerformanceDataPoint {
-  timestamp: Date | number | string;
-  value: number;
-  invested?: number;
+/** Datový bod pro čáru grafu */
+interface ChartDataPoint {
+  x: Date | number | string;
+  y: number;
 }
 
-interface ValuePerformanceData {
-  points: ValuePerformanceDataPoint[];
-  highValue?: number;
-  lowValue?: number;
-  closingValue?: number;
+/** Konfigurace jedné čáry grafu - obsahuje definici i data */
+interface ChartLine {
+  name: string;
+  color: ChartColor;
+  curveType: 'smooth' | 'straight' | 'stepline';
+  data: ChartDataPoint[];
 }
 
 type TimeInterval = '1D' | '5D' | '1M' | '6M' | '1Y' | '5Y' | 'ALL';
@@ -171,16 +341,16 @@ type TimeInterval = '1D' | '5D' | '1M' | '6M' | '1Y' | '5Y' | 'ALL';
 
 ```typescript
 type ChartColor =
-  | 'chart-stocks'
-  | 'chart-bonds'
-  | 'chart-alternatives'
-  | 'chart-cash'
   | 'chart-in'
   | 'chart-out'
-  | 'chart-rest'
-  | 'chart-misc-1'
-  | 'chart-misc-2'
-  | 'chart-misc-3';
+  | 'chart-funds'
+  | 'chart-cool'
+  | 'chart-evaluation'
+  | 'chart-stocks'
+  | 'chart-bonds'
+  | 'chart-neon'
+  | 'chart-rusty-red'
+  | 'chart-orangish';
 
 type ValueFormat = 'absolute' | 'percent';
 ```

@@ -4,9 +4,27 @@
     Graf pro zobrazení vývoje hodnoty investice v čase s volitelnou křivkou investované částky.
   </p>
 
-  <!-- Basic Example with Hover Values -->
+  <!-- Basic Example -->
   <section class="demo-section">
-    <h2>Základní použití s hover hodnotami</h2>
+    <h2>Základní zobrazení</h2>
+    <p class="demo-note">
+      Graf s křivkou hodnoty portfolia (zelená výplň) a křivkou investované částky (stepline).
+    </p>
+    <div class="demo-card">
+      <co-value-performance-chart
+        [height]="350"
+        [showLegend]="true"
+        [lines]="fiveYearsLines"
+        [dateFormat]="'yyyy'"
+      />
+      <markdown clipboard class="code-block" [data]="code.basic | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.basicTs | language : 'typescript'"></markdown>
+    </div>
+  </section>
+
+  <!-- Hover Example with External Display -->
+  <section class="demo-section">
+    <h2>Hover s externím zobrazením hodnot</h2>
     <p class="demo-note">
       Hover nad grafem zobrazí puntík a hodnoty jsou emitovány mimo komponentu přes <code>(pointHover)</code> event.
     </p>
@@ -17,14 +35,10 @@
             <span class="hover-values-display__label">Datum:</span>
             <span class="hover-values-display__value">{{ formatDate(hoveredPoint.timestamp) }}</span>
           </div>
-          <div class="hover-values-display__item">
-            <span class="hover-values-display__label">Hodnota:</span>
-            <span class="hover-values-display__value">{{ formatNumber(hoveredPoint.value) }} USD</span>
-          </div>
-          @if (hoveredPoint.invested) {
+          @for (v of hoveredPoint.values; track v.name) {
             <div class="hover-values-display__item">
-              <span class="hover-values-display__label">Investováno:</span>
-              <span class="hover-values-display__value">{{ formatNumber(hoveredPoint.invested) }} USD</span>
+              <span class="hover-values-display__label">{{ v.name }}:</span>
+              <span class="hover-values-display__value">{{ formatNumber(v.value) }} Kč</span>
             </div>
           }
         } @else {
@@ -32,53 +46,43 @@
         }
       </div>
       <co-value-performance-chart
-        [data]="basicData"
-        [height]="350"
+        [height]="300"
         [showLegend]="true"
-        [showInvestedLine]="true"
-        [valueUnit]="'USD'"
-        [dateFormat]="dateFormat"
+        [lines]="hoverExampleLines"
+        [dateFormat]="'MMM yyyy'"
         (pointHover)="onPointHover($event)"
       />
-    </div>
-    <div class="code-block">
-      <pre><code class="language-html">{{ hoverExample }}</code></pre>
+      <markdown clipboard class="code-block" [data]="code.hover | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.hoverTs | language : 'typescript'"></markdown>
     </div>
   </section>
 
   <!-- Trend Variants -->
   <section class="demo-section">
-    <h2>Barevné varianty podle trendu</h2>
+    <h2>Barevné varianty</h2>
     <p class="demo-note">
-      Barva grafu se automaticky mění podle trendu (pozitivní = zelená, negativní = černá).
-      Lze také nastavit manuálně pomocí <code>trend</code> inputu.
+      Barva grafu se nastavuje v konfiguraci čáry pomocí <code>color</code> vlastnosti.
     </p>
     <div class="demo-grid">
       <div class="demo-card">
-        <h3>Pozitivní trend</h3>
+        <h3>Pozitivní trend (zelená)</h3>
         <co-value-performance-chart
-          [data]="positiveTrendData"
           [height]="250"
-            [showInvestedLine]="false"
+          [lines]="positiveLines"
           [valueUnit]="'Kč'"
         />
+        <markdown clipboard class="code-block" [data]="code.positive | language : 'html'"></markdown>
+        <markdown clipboard class="code-block" [data]="code.positiveTs | language : 'typescript'"></markdown>
       </div>
       <div class="demo-card">
-        <h3>Negativní trend</h3>
+        <h3>Negativní trend (šedá)</h3>
         <co-value-performance-chart
-          [data]="negativeTrendData"
           [height]="250"
-            [showInvestedLine]="false"
+          [lines]="negativeLines"
           [valueUnit]="'Kč'"
         />
-      </div>
-    </div>
-    <div class="demo-grid">
-      <div class="code-block">
-        <pre><code class="language-html">{{ positiveTrendExample }}</code></pre>
-      </div>
-      <div class="code-block">
-        <pre><code class="language-html">{{ negativeTrendExample }}</code></pre>
+        <markdown clipboard class="code-block" [data]="code.negative | language : 'html'"></markdown>
+        <markdown clipboard class="code-block" [data]="code.negativeTs | language : 'typescript'"></markdown>
       </div>
     </div>
   </section>
@@ -87,19 +91,16 @@
   <section class="demo-section">
     <h2>S křivkou investované částky</h2>
     <p class="demo-note">
-      Volitelná čárkovaná čára zobrazující vývoj investované částky.
+      Konfigurace s dvěma čárami - hodnota a investovaná částka.
     </p>
     <div class="demo-card">
       <co-value-performance-chart
-        [data]="basicData"
         [height]="300"
         [showLegend]="true"
-        [showInvestedLine]="true"
+        [lines]="fiveYearsLines"
         [valueUnit]="'USD'"
       />
-    </div>
-    <div class="code-block">
-      <pre><code class="language-html">{{ withInvestedExample }}</code></pre>
+      <markdown clipboard class="code-block" [data]="code.withInvested | language : 'html'"></markdown>
     </div>
   </section>
 
@@ -111,16 +112,12 @@
     </p>
     <div class="demo-card">
       <co-value-performance-chart
-        [data]="steplineData"
         [height]="300"
-        [curveType]="'stepline'"
-        [showLegend]="true"
-        [showInvestedLine]="true"
+        [lines]="steplineLines"
         [valueUnit]="'Kč'"
       />
-    </div>
-    <div class="code-block">
-      <pre><code class="language-html">{{ steplineExample }}</code></pre>
+      <markdown clipboard class="code-block" [data]="code.stepline | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.steplineTs | language : 'typescript'"></markdown>
     </div>
   </section>
 
@@ -132,15 +129,93 @@
     </p>
     <div class="demo-card">
       <co-value-performance-chart
-        [data]="volatileData"
         [height]="300"
-        [showLegend]="true"
-        [showInvestedLine]="true"
+        [lines]="volatileLines"
         [valueUnit]="'Kč'"
       />
+      <markdown clipboard class="code-block" [data]="code.volatile | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.volatileTs | language : 'typescript'"></markdown>
     </div>
-    <div class="code-block">
-      <pre><code class="language-html">{{ volatileExample }}</code></pre>
+  </section>
+
+  <!-- Incomplete Interval -->
+  <section class="demo-section">
+    <h2>Neúplný interval</h2>
+    <p class="demo-note">
+      Data končí dříve než časový rozsah osy X - např. zobrazení aktuálního měsíce kde data ještě nejsou kompletní.
+      Použijte <code>[xAxisMax]</code> pro nastavení konce osy X.
+    </p>
+    <div class="demo-card">
+      <co-value-performance-chart
+        [height]="300"
+        [lines]="incompleteLines"
+        [xAxisMin]="'2025-01-01'"
+        [xAxisMax]="'2025-01-31'"
+        [dateFormat]="'dd.MM'"
+        [valueUnit]="'Kč'"
+      />
+      <markdown clipboard class="code-block" [data]="code.incomplete | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.incompleteTs | language : 'typescript'"></markdown>
+    </div>
+  </section>
+
+  <!-- Time Interval Variants -->
+  <section class="demo-section">
+    <h2>Časové intervaly</h2>
+    <p class="demo-note">
+      Různé časové intervaly s odpovídající granularitou dat a formátem datumu.
+    </p>
+    <div class="demo-grid demo-grid--3col">
+      <div class="demo-card">
+        <h3>1 den</h3>
+        <co-value-performance-chart
+          [height]="200"
+          [lines]="oneDayLines"
+          [dateFormat]="'HH:mm'"
+          [valueUnit]="'USD'"
+        />
+        <markdown clipboard class="code-block" [data]="code.timeInterval1d | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>5 dnů</h3>
+        <co-value-performance-chart
+          [height]="200"
+          [lines]="fiveDaysLines"
+          [dateFormat]="'dd.MM'"
+          [valueUnit]="'USD'"
+        />
+        <markdown clipboard class="code-block" [data]="code.timeInterval5d | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>1 měsíc</h3>
+        <co-value-performance-chart
+          [height]="200"
+          [lines]="oneMonthLines"
+          [dateFormat]="'dd.MM'"
+          [valueUnit]="'USD'"
+        />
+        <markdown clipboard class="code-block" [data]="code.timeInterval1m | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>1 rok</h3>
+        <co-value-performance-chart
+          [height]="200"
+          [lines]="oneYearLines"
+          [dateFormat]="'MMM yyyy'"
+          [valueUnit]="'USD'"
+        />
+        <markdown clipboard class="code-block" [data]="code.timeInterval1y | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>5 let</h3>
+        <co-value-performance-chart
+          [height]="200"
+          [lines]="fiveYearsLines"
+          [dateFormat]="'yyyy'"
+          [valueUnit]="'USD'"
+        />
+        <markdown clipboard class="code-block" [data]="code.timeInterval5y | language : 'html'"></markdown>
+      </div>
     </div>
   </section>
 
@@ -152,12 +227,11 @@
     </p>
     <div class="demo-card">
       <co-value-performance-chart
-        [data]="positiveTrendData"
         [height]="200"
-        [showInvestedLine]="false"
+        [lines]="positiveLines"
         [showHighLowValues]="false"
-        [showClosingValue]="false"
       />
+      <markdown clipboard class="code-block" [data]="code.minimal | language : 'html'"></markdown>
     </div>
   </section>
 
@@ -172,11 +246,30 @@
     </p>
     <div class="demo-card">
       <co-value-performance-chart
-        [data]="basicData"
         [height]="300"
         [loading]="isLoading"
-        [showInvestedLine]="true"
+        [lines]="isLoading ? loadingLines : fiveYearsLines"
       />
+      <markdown clipboard class="code-block" [data]="code.loading | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Custom Colors Variant -->
+  <section class="demo-section">
+    <h2>Vlastní barvy</h2>
+    <p class="demo-note">
+      Graf s vlastními barvami z palety - <code>chart-stocks</code> a <code>chart-bonds</code>.
+    </p>
+    <div class="demo-card">
+      <co-value-performance-chart
+        [height]="350"
+        [showLegend]="true"
+        [lines]="customColorLines"
+        [dateFormat]="'MMM yyyy'"
+        [valueUnit]="'Kč'"
+      />
+      <markdown clipboard class="code-block" [data]="code.customColors | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.customColorsTs | language : 'typescript'"></markdown>
     </div>
   </section>
 
@@ -184,7 +277,7 @@
   <section class="demo-section">
     <h2>Datové typy</h2>
     <div class="demo-card">
-      <pre><code class="language-typescript">{{ dataTypeExample }}</code></pre>
+      <markdown clipboard class="code-block" [data]="code.dataTypes | language : 'typescript'"></markdown>
     </div>
   </section>
 
@@ -204,10 +297,10 @@
         </thead>
         <tbody>
           <tr>
-            <td><code>[data]</code></td>
-            <td>ValuePerformanceData</td>
-            <td>{{ '{ points: [] }' }}</td>
-            <td>Data pro graf</td>
+            <td><code>[lines]</code></td>
+            <td>ChartLine[]</td>
+            <td>[]</td>
+            <td>Pole čar - každá čára obsahuje svou definici i data</td>
           </tr>
           <tr>
             <td><code>[height]</code></td>
@@ -216,22 +309,10 @@
             <td>Výška grafu v px</td>
           </tr>
           <tr>
-            <td><code>[showInvestedLine]</code></td>
-            <td>boolean</td>
-            <td>true</td>
-            <td>Zobrazit křivku investované částky</td>
-          </tr>
-          <tr>
             <td><code>[showHighLowValues]</code></td>
             <td>boolean</td>
             <td>true</td>
             <td>Zobrazit high/low anotace</td>
-          </tr>
-          <tr>
-            <td><code>[showClosingValue]</code></td>
-            <td>boolean</td>
-            <td>true</td>
-            <td>Zobrazit zavírací hodnotu</td>
           </tr>
           <tr>
             <td><code>[showLegend]</code></td>
@@ -258,10 +339,16 @@
             <td>Zobrazit Y osu</td>
           </tr>
           <tr>
-            <td><code>[trend]</code></td>
-            <td>'positive' | 'negative' | 'auto'</td>
-            <td>'auto'</td>
-            <td>Trend grafu (auto = podle dat)</td>
+            <td><code>[xAxisMin]</code></td>
+            <td>Date | number | string</td>
+            <td>-</td>
+            <td>Min. hodnota osy X (pro neúplné intervaly)</td>
+          </tr>
+          <tr>
+            <td><code>[xAxisMax]</code></td>
+            <td>Date | number | string</td>
+            <td>-</td>
+            <td>Max. hodnota osy X (osa pokračuje za data)</td>
           </tr>
           <tr>
             <td><code>[valueUnit]</code></td>
@@ -274,30 +361,6 @@
             <td>string</td>
             <td>'dd.MM.yyyy'</td>
             <td>Formát datumu (dd, MM, MMM, yyyy, HH, mm)</td>
-          </tr>
-          <tr>
-            <td><code>[curveType]</code></td>
-            <td>'smooth' | 'stepline'</td>
-            <td>'smooth'</td>
-            <td>Typ křivky</td>
-          </tr>
-          <tr>
-            <td><code>[positiveColor]</code></td>
-            <td>ChartColor</td>
-            <td>'chart-in'</td>
-            <td>Barva pro pozitivní trend</td>
-          </tr>
-          <tr>
-            <td><code>[negativeColor]</code></td>
-            <td>ChartColor</td>
-            <td>'chart-out'</td>
-            <td>Barva pro negativní trend</td>
-          </tr>
-          <tr>
-            <td><code>[investedColor]</code></td>
-            <td>ChartColor</td>
-            <td>'chart-bonds'</td>
-            <td>Barva křivky investované částky</td>
           </tr>
           <tr>
             <td><code>[loading]</code></td>
@@ -314,6 +377,39 @@
         </tbody>
       </table>
 
+      <h2>ChartLine</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Vlastnost</th>
+            <th>Typ</th>
+            <th>Popis</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>name</code></td>
+            <td>string</td>
+            <td>Název čáry (legenda, tooltip)</td>
+          </tr>
+          <tr>
+            <td><code>color</code></td>
+            <td>ChartColor</td>
+            <td>Barva z palety</td>
+          </tr>
+          <tr>
+            <td><code>curveType</code></td>
+            <td>'smooth' | 'straight' | 'stepline'</td>
+            <td>Typ křivky</td>
+          </tr>
+          <tr>
+            <td><code>data</code></td>
+            <td>ChartDataPoint[]</td>
+            <td>Pole datových bodů {{ '{ x, y }' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
       <h2>Outputs</h2>
       <table>
         <thead>
@@ -326,12 +422,12 @@
         <tbody>
           <tr>
             <td><code>(pointHover)</code></td>
-            <td>{{ '{ timestamp, value, invested? }' }} | null</td>
-            <td>Hover nad bodem</td>
+            <td>{{ '{ timestamp, values: { name, value }[] }' }} | null</td>
+            <td>Hover nad bodem - obsahuje hodnoty ze všech čar</td>
           </tr>
           <tr>
             <td><code>(pointClick)</code></td>
-            <td>{{ '{ timestamp, value, invested? }' }}</td>
+            <td>{{ '{ timestamp, values: { name, value }[] }' }}</td>
             <td>Kliknutí na bod</td>
           </tr>
         </tbody>
@@ -339,7 +435,7 @@
 
       <h2>Content Projection</h2>
       <p>Pro vlastní ovládací prvky použijte ng-content slot:</p>
-      <pre><code>&lt;co-value-performance-chart [data]="data"&gt;
+      <pre><code>&lt;co-value-performance-chart [lines]="lines"&gt;
   &lt;co-tab [options]="intervals" (change)="onIntervalChange($event)" /&gt;
 &lt;/co-value-performance-chart&gt;</code></pre>
     </div>

@@ -24,10 +24,12 @@
 .co-value-performance-chart__chart-wrapper {
   width: 100%;
   position: relative;
+  overflow: hidden; // Clip any overflow from annotations/tooltips
 }
 
 .co-value-performance-chart__chart-container {
   width: 100%;
+  overflow: hidden; // Ensure chart doesn't overflow
 }
 
 // ============ SKELETON ============
@@ -130,5 +132,33 @@
 
   .apexcharts-annotation-label {
     font-family: inherit !important;
+  }
+
+  // Ensure chart doesn't overflow container
+  .apexcharts-canvas {
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  // Smoother line rendering
+  .apexcharts-area-series,
+  .apexcharts-line-series {
+    path {
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      shape-rendering: geometricPrecision;
+    }
+  }
+
+  // Fix tooltip positioning
+  .apexcharts-tooltip-marker {
+    margin-right: 8px;
+  }
+
+  // X-axis label styling
+  .apexcharts-xaxis-texts-g {
+    .apexcharts-xaxis-label {
+      opacity: 1 !important;
+    }
   }
 }

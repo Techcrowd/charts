@@ -33,6 +33,7 @@ import {
   NgApexchartsModule,
 } from 'ng-apexcharts';
 import { ChartColorService, ChartColor } from '../../services/chart-color.service';
+import { DateTimeService } from '../../services/date-time.service';
 import { CoChartLegendComponent, ChartLegendItem } from '../co-chart-legend/co-chart-legend.component';
 import { CHART_COLORS } from '../../shared/chart-types';
 
@@ -40,28 +41,34 @@ import { CHART_COLORS } from '../../shared/chart-types';
 
 export { ChartColor } from '../../services/chart-color.service';
 
-/** Časový interval pro zobrazení dat */
-export type TimeInterval = '1D' | '5D' | '1M' | '6M' | '1Y' | '5Y' | 'ALL';
-
-/** Trend grafu */
-export type ChartTrend = 'positive' | 'negative' | 'auto';
-
 /** Typ křivky */
-export type CurveType = 'smooth' | 'stepline';
+export type CurveType = 'smooth' | 'straight' | 'stepline';
 
-/** Datový bod pro graf */
-export interface ValuePerformanceDataPoint {
-  timestamp: Date | number | string;
-  value: number;
-  invested?: number;
+/** Datový bod pro čáru grafu */
+export interface ChartDataPoint {
+  x: Date | number | string;
+  y: number;
 }
 
-/** Data pro graf */
-export interface ValuePerformanceData {
-  points: ValuePerformanceDataPoint[];
-  highValue?: number;
-  lowValue?: number;
-  closingValue?: number;
+/** Konfigurace jedné čáry grafu - obsahuje definici i data */
+export interface ChartLine {
+  /** Název čáry (zobrazí se v legendě a tooltipu) */
+  name: string;
+
+  /** Barva čáry z palety */
+  color: ChartColor;
+
+  /** Typ křivky */
+  curveType: CurveType;
+
+  /** Průhlednost výplně gradientu (0-1). Default: 0.5 */
+  fillOpacity?: number;
+
+  /** Pro layered gradienty - čáry se stackují na sebe. Default: false */
+  stacked?: boolean;
+
+  /** Data pro tuto čáru */
+  data: ChartDataPoint[];
 }
 
 /** Statické konfigurace */
@@ -88,25 +95,23 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   // ============ INJECTED ============
   private elementRef = inject(ElementRef);
   private chartColorService = inject(ChartColorService);
+  private dateTimeService = inject(DateTimeService);
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
 
   // ============ INPUTS ============
 
-  /** Data pro graf */
-  @Input() data: ValuePerformanceData = { points: [] };
-
   /** Výška grafu v px */
   @Input() height = 300;
 
-  /** Zobrazit čáru investované částky */
-  @Input() showInvestedLine = true;
+  /**
+   * Pole čar pro vykreslení.
+   * Každá čára obsahuje svou definici (název, barva, typ křivky) i data.
+   */
+  @Input() lines: ChartLine[] = [];
 
   /** Zobrazit vysokou/nízkou hodnotu */
   @Input() showHighLowValues = true;
-
-  /** Zobrazit zavírací hodnotu */
-  @Input() showClosingValue = true;
 
   /** Zobrazit legendu */
   @Input() showLegend = false;
@@ -117,11 +122,14 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   /** Zobrazit mřížku */
   @Input() showGrid = false;
 
+  /** Minimální hodnota osy X (pro neúplné intervaly) */
+  @Input() xAxisMin?: Date | number | string;
+
+  /** Maximální hodnota osy X (pro neúplné intervaly - osa pokračuje za data) */
+  @Input() xAxisMax?: Date | number | string;
+
   /** Zobrazit Y osu */
   @Input() showYAxis = false;
-
-  /** Trend grafu (auto = automaticky podle dat) */
-  @Input() trend: ChartTrend = 'auto';
 
   /** Jednotka hodnoty (měna) */
   @Input() valueUnit = '';
@@ -129,41 +137,24 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   /** Formát datumu (dd = den, MM = měsíc, MMM = měsíc slovně, yyyy = rok, HH = hodina, mm = minuta) */
   @Input() dateFormat = 'dd.MM.yyyy';
 
-  /** Typ křivky */
-  @Input() curveType: CurveType = 'smooth';
-
-  /** Barva pro pozitivní trend */
-  @Input() positiveColor: ChartColor = 'chart-in';
-
-  /** Barva pro negativní trend */
-  @Input() negativeColor: ChartColor = 'chart-out';
-
-  /** Barva pro investovanou částku */
-  @Input() investedColor: ChartColor = 'chart-bonds';
-
   /** Loading stav */
   @Input() loading = false;
 
   /** CSP nonce pro inline styly */
   @Input() nonce?: string;
 
-  /** Počet skeleton bodů při loading */
-  @Input() skeletonPointCount = 50;
-
   // ============ OUTPUTS ============
 
-  /** Emituje při hoveru nad bodem */
+  /** Emituje při hoveru nad bodem - obsahuje hodnoty ze všech čar */
   @Output() pointHover = new EventEmitter<{
     timestamp: Date | number | string;
-    value: number;
-    invested?: number;
+    values: { name: string; value: number }[];
   } | null>();
 
   /** Emituje při kliknutí na bod */
   @Output() pointClick = new EventEmitter<{
     timestamp: Date | number | string;
-    value: number;
-    invested?: number;
+    values: { name: string; value: number }[];
   }>();
 
   // ============ INTERNAL STATE ============
@@ -171,67 +162,80 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   hoveredSeriesIndex = signal(-1);
   isLegendHover = signal(false);
 
-  // Internal signals for reactive data
-  private dataSignal = signal<ValuePerformanceData>({ points: [] });
-  private trendSignal = signal<ChartTrend>('auto');
-  private showInvestedLineSignal = signal(true);
+  // Internal signal for reactive data
+  private linesSignal = signal<ChartLine[]>([]);
 
-  // Computed: determine actual trend
-  computedTrend = computed(() => {
-    const trend = this.trendSignal();
-    if (trend !== 'auto') return trend;
-
-    const data = this.dataSignal();
-    if (data.points.length < 2) return 'positive';
-
-    const firstValue = data.points[0].value;
-    const lastValue = data.points[data.points.length - 1].value;
-    return lastValue >= firstValue ? 'positive' : 'negative';
-  });
-
-  // Computed: chart colors based on trend
+  // Computed: resolve colors for each line from palette
   chartColors = computed(() => {
     // Read colorVersion to react to theme changes
     this.chartColorService.getColorVersion()();
-    const trend = this.computedTrend();
-    const trendColor = trend === 'positive'
-      ? this.chartColorService.getColorHex(this.positiveColor)
-      : this.chartColorService.getColorHex(this.negativeColor);
-    const investedColorHex = this.chartColorService.getColorHex(this.investedColor);
+    const lines = this.linesSignal();
 
-    return [trendColor, investedColorHex];
+    return lines.map(line => this.chartColorService.getColorHex(line.color));
+  });
+
+  // Computed: active line configs (only lines that have data)
+  activeLines = computed(() => {
+    const lines = this.linesSignal();
+    return lines.filter(line => line.data && line.data.length > 0);
+  });
+
+  // Computed: check if we should use stacked mode (lines with stacked: true)
+  hasStackedLines = computed(() => {
+    const lines = this.activeLines();
+    const stackedLines = lines.filter(l => l.stacked);
+    // Need at least 2 stacked lines for stacking to make sense
+    return stackedLines.length >= 2;
   });
 
   // Computed: series data for ApexCharts
   chartSeries = computed<ApexAxisChartSeries>(() => {
-    const data = this.dataSignal();
-    const showInvested = this.showInvestedLineSignal();
+    const lines = this.activeLines();
     const series: ApexAxisChartSeries = [];
+    const isStacked = this.hasStackedLines();
 
-    // Value series (area)
-    const valueData = data.points.map(p => ({
-      x: new Date(p.timestamp).getTime(),
-      y: p.value,
-    }));
-    series.push({
-      name: 'Hodnota',
-      type: 'area',
-      data: valueData,
-    });
+    if (isStacked && lines.length >= 2) {
+      // STACKED MODE: For layered gradients
+      // First line is the base (renders from x-axis)
+      // Second line shows the difference for proper stacking
+      const baseLine = lines[0];
+      const topLine = lines[1];
 
-    // Invested series (line) - only if data exists and showInvestedLine
-    const hasInvestedData = data.points.some(p => p.invested !== undefined);
-    if (showInvested && hasInvestedData) {
-      const investedData = data.points
-        .filter(p => p.invested !== undefined)
-        .map(p => ({
-          x: new Date(p.timestamp).getTime(),
-          y: p.invested!,
+      // Base series (bottom layer)
+      const baseData = baseLine.data.map(p => ({
+        x: new Date(p.x).getTime(),
+        y: p.y,
+      }));
+      series.push({ name: baseLine.name, data: baseData });
+
+      // Difference series (stacked on top)
+      // We need to match points by x value
+      const baseMap = new Map(baseLine.data.map(p => [new Date(p.x).getTime(), p.y]));
+      const diffData = topLine.data
+        .filter(p => baseMap.has(new Date(p.x).getTime()))
+        .map(p => {
+          const x = new Date(p.x).getTime();
+          const baseY = baseMap.get(x) ?? 0;
+          return { x, y: p.y - baseY };
+        });
+      series.push({ name: topLine.name, data: diffData });
+
+      // Add any remaining non-stacked lines
+      lines.slice(2).filter(l => !l.stacked).forEach(line => {
+        const lineData = line.data.map(p => ({
+          x: new Date(p.x).getTime(),
+          y: p.y,
         }));
-      series.push({
-        name: 'Investováno',
-        type: 'line',
-        data: investedData,
+        series.push({ name: line.name, data: lineData });
+      });
+    } else {
+      // NON-STACKED MODE: render each line independently
+      lines.forEach(line => {
+        const lineData = line.data.map(p => ({
+          x: new Date(p.x).getTime(),
+          y: p.y,
+        }));
+        series.push({ name: line.name, data: lineData });
       });
     }
 
@@ -241,139 +245,23 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   // Computed: legend items
   legendItems = computed<ChartLegendItem[]>(() => {
     const colors = this.chartColors();
-    const data = this.dataSignal();
-    const showInvested = this.showInvestedLineSignal();
+    const lines = this.activeLines();
     const items: ChartLegendItem[] = [];
 
-    // Value legend item
-    const lastPoint = data.points[data.points.length - 1];
-    items.push({
-      label: 'Hodnota',
-      value: lastPoint?.value ?? 0,
-      color: colors[0],
-      percent: 0,
-    });
-
-    // Invested legend item (if applicable)
-    const hasInvestedData = data.points.some(p => p.invested !== undefined);
-    if (showInvested && hasInvestedData) {
+    lines.forEach((line, index) => {
+      const lastPoint = line.data[line.data.length - 1];
+      const value = lastPoint?.y ?? 0;
       items.push({
-        label: 'Investováno',
-        value: lastPoint?.invested ?? 0,
-        color: colors[1],
+        label: line.name,
+        value,
+        color: colors[index],
         percent: 0,
       });
-    }
+    });
 
     return items;
   });
 
-  // Computed: annotations for high/low/closing values
-  computedAnnotations = computed<ApexAnnotations>(() => {
-    const data = this.dataSignal();
-    const annotations: ApexAnnotations = { yaxis: [], points: [] };
-
-    if (data.points.length === 0) return annotations;
-
-    const colors = this.chartColors();
-
-    // Find high and low values if not provided
-    let highValue = data.highValue;
-    let lowValue = data.lowValue;
-    let highPoint: ValuePerformanceDataPoint | undefined;
-    let lowPoint: ValuePerformanceDataPoint | undefined;
-
-    if (highValue === undefined || lowValue === undefined) {
-      data.points.forEach(p => {
-        if (highValue === undefined || p.value > highValue) {
-          highValue = p.value;
-          highPoint = p;
-        }
-        if (lowValue === undefined || p.value < lowValue) {
-          lowValue = p.value;
-          lowPoint = p;
-        }
-      });
-    }
-
-    // High value annotation
-    if (this.showHighLowValues && highPoint) {
-      annotations.points!.push({
-        x: new Date(highPoint.timestamp).getTime(),
-        y: highPoint.value,
-        marker: {
-          size: 6,
-          fillColor: colors[0],
-          strokeColor: '#fff',
-          strokeWidth: 2,
-        },
-        label: {
-          text: this.formatValue(highPoint.value),
-          borderColor: 'transparent',
-          style: {
-            background: 'transparent',
-            color: CHART_COLORS.contentSecondary,
-            fontSize: '10px',
-            fontWeight: 600,
-          },
-          offsetY: -10,
-        },
-      });
-    }
-
-    // Low value annotation
-    if (this.showHighLowValues && lowPoint && lowPoint !== highPoint) {
-      annotations.points!.push({
-        x: new Date(lowPoint.timestamp).getTime(),
-        y: lowPoint.value,
-        marker: {
-          size: 6,
-          fillColor: colors[0],
-          strokeColor: '#fff',
-          strokeWidth: 2,
-        },
-        label: {
-          text: this.formatValue(lowPoint.value),
-          borderColor: 'transparent',
-          style: {
-            background: 'transparent',
-            color: CHART_COLORS.contentSecondary,
-            fontSize: '10px',
-            fontWeight: 600,
-          },
-          offsetY: 15,
-        },
-      });
-    }
-
-    // Closing value annotation (last point)
-    if (this.showClosingValue && data.points.length > 0) {
-      const lastPoint = data.points[data.points.length - 1];
-      annotations.points!.push({
-        x: new Date(lastPoint.timestamp).getTime(),
-        y: lastPoint.value,
-        marker: {
-          size: 6,
-          fillColor: colors[0],
-          strokeColor: '#fff',
-          strokeWidth: 2,
-        },
-        label: {
-          text: this.formatValue(lastPoint.value),
-          borderColor: 'transparent',
-          style: {
-            background: 'transparent',
-            color: CHART_COLORS.contentSecondary,
-            fontSize: '10px',
-            fontWeight: 600,
-          },
-          offsetX: 10,
-        },
-      });
-    }
-
-    return annotations;
-  });
 
   // Chart configs (dynamic)
   chartConfig!: ApexChart;
@@ -404,9 +292,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   }
 
   private syncSignals(): void {
-    this.dataSignal.set(this.data);
-    this.trendSignal.set(this.trend);
-    this.showInvestedLineSignal.set(this.showInvestedLine);
+    this.linesSignal.set(this.lines);
   }
 
   // ============ PRIVATE METHODS ============
@@ -414,11 +300,29 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   private updateChartConfigs(): void {
     const self = this;
     const colors = this.chartColors();
+    const lines = this.activeLines();
+    const isStacked = this.hasStackedLines();
+
+    // Build ordered arrays for chart config
+    const orderedCurves = lines.map(line => line.curveType);
+    let orderedOpacityFrom: number[];
+    let orderedOpacityTo: number[];
+
+    if (isStacked && lines.length >= 2) {
+      // For stacked mode, use specific opacities for clearer separation
+      orderedOpacityFrom = lines.map((line, i) => i === 0 ? 0.3 : 0.5);
+      orderedOpacityTo = lines.map((line, i) => i === 0 ? 0.05 : 0.1);
+    } else {
+      // Non-stacked: use fillOpacity from config
+      orderedOpacityFrom = lines.map(line => line.fillOpacity ?? 0.5);
+      orderedOpacityTo = lines.map(line => (line.fillOpacity ?? 0.5) * 0.1);
+    }
 
     this.chartConfig = {
-      type: 'line',
+      type: 'area',
       height: this.height,
       fontFamily: 'inherit',
+      stacked: isStacked, // Enable stacking when both lines present
       ...(this.nonce && { nonce: this.nonce }),
       toolbar: {
         show: false,
@@ -434,12 +338,16 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
       events: {
         dataPointSelection: (event: any, chartContext: any, config: any) => {
           const { dataPointIndex } = config;
-          const point = self.data.points[dataPointIndex];
-          if (point) {
+          const currentLines = self.activeLines();
+          const firstPoint = currentLines[0]?.data[dataPointIndex];
+          if (firstPoint) {
+            const values = currentLines.map(line => ({
+              name: line.name,
+              value: line.data[dataPointIndex]?.y ?? 0,
+            }));
             self.pointClick.emit({
-              timestamp: point.timestamp,
-              value: point.value,
-              invested: point.invested,
+              timestamp: firstPoint.x,
+              values,
             });
           }
         },
@@ -450,54 +358,97 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
       },
     };
 
+    // Build stroke config - use ordered curves for stacked mode
     this.strokeConfig = {
-      curve: this.curveType,
-      width: [2, 2],
-      dashArray: [0, 5], // solid for value, dashed for invested
+      curve: orderedCurves,
+      width: orderedCurves.map(() => 1), // 1px lines
+      lineCap: 'round', // Smoother line endings
+      dashArray: orderedCurves.map(() => 0), // all solid lines
     };
 
+    // Build fill config - use ordered opacities for stacked mode
     this.fillConfig = {
-      type: ['gradient', 'solid'],
+      type: orderedCurves.map(() => 'gradient'),
       gradient: {
         shade: 'light',
         type: 'vertical',
-        shadeIntensity: 0.3,
-        opacityFrom: 0.5,
-        opacityTo: 0.1,
+        shadeIntensity: 0.2,
+        opacityFrom: orderedOpacityFrom,
+        opacityTo: orderedOpacityTo,
         stops: [0, 100],
       },
-      opacity: [1, 1],
+      opacity: orderedCurves.map(() => 1),
     };
 
     this.markersConfig = {
-      size: 0,
-      strokeWidth: 0,
+      size: 0, // Hidden by default
+      strokeWidth: 2,
+      strokeColors: '#ADADAD',
       hover: {
-        size: 8,
+        size: 4, // 8px diameter = 4px radius
         sizeOffset: 0,
       },
     };
+
+    // Calculate x-axis range from all lines' data
+    // Collect all x values from all lines to determine range
+    const allXValues: number[] = [];
+    lines.forEach(line => {
+      line.data.forEach(p => allXValues.push(new Date(p.x).getTime()));
+    });
+    allXValues.sort((a, b) => a - b);
+
+    // Get first and last timestamps
+    const firstTimestamp = allXValues.length > 0 ? allXValues[0] : undefined;
+    const lastDataTimestamp = allXValues.length > 0 ? allXValues[allXValues.length - 1] : undefined;
+
+    // Use explicit min/max if provided, otherwise use data range
+    const xMin = this.xAxisMin ? new Date(this.xAxisMin).getTime() : firstTimestamp;
+    const xMax = this.xAxisMax ? new Date(this.xAxisMax).getTime() : lastDataTimestamp;
+
+    // Threshold for considering a timestamp as "edge" (within 5% of range)
+    const range = (xMax ?? 0) - (xMin ?? 0);
+    const edgeThreshold = range * 0.1;
 
     this.xAxisConfig = {
       crosshairs: {
         show: true,
         width: 1,
         stroke: {
-          color: CHART_COLORS.contentTertiary,
+          color: '#ADADAD',
           width: 1,
-          dashArray: 3,
+          dashArray: 0,
         },
       },
       type: 'datetime',
+      min: xMin,
+      max: xMax,
+      tickAmount: 5,
       labels: {
         style: {
           colors: CHART_COLORS.contentTertiary,
           fontSize: '10px',
-          fontWeight: 600,
+          fontWeight: 400, // caption-secondary
         },
         datetimeUTC: false,
-        formatter: (value: string) => {
-          const date = new Date(value);
+        rotate: 0,
+        rotateAlways: false,
+        showDuplicates: false,
+        hideOverlappingLabels: true,
+        formatter: (value: string, timestamp?: number) => {
+          const ts = timestamp ?? parseInt(value, 10);
+          if (isNaN(ts)) return '';
+
+          // Hide labels that are too close to the edges (we use annotations for those)
+          if (xMin && xMax) {
+            const distFromStart = Math.abs(ts - xMin);
+            const distFromEnd = Math.abs(ts - xMax);
+            if (distFromStart < edgeThreshold || distFromEnd < edgeThreshold) {
+              return ''; // Hide - we show these via annotations
+            }
+          }
+
+          const date = new Date(ts);
           return this.formatDate(date);
         },
       },
@@ -545,19 +496,28 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
       enabled: true, // Always enabled for hover detection
       shared: true,
       intersect: false,
+      fixed: {
+        enabled: false,
+        position: 'topRight',
+      },
       marker: {
         show: true,
       },
       custom: ({ series, seriesIndex, dataPointIndex, w }: any) => {
-        const point = this.data.points[dataPointIndex];
-        if (!point) return '';
+        // Get the first line's point for timestamp reference
+        const firstLine = lines[0];
+        const firstPoint = firstLine?.data[dataPointIndex];
+        if (!firstPoint) return '';
 
-        // Emit hover event
+        // Emit hover event with values from all lines
         this.hoveredSeriesIndex.set(dataPointIndex);
+        const values = lines.map(line => ({
+          name: line.name,
+          value: line.data[dataPointIndex]?.y ?? 0,
+        }));
         this.pointHover.emit({
-          timestamp: point.timestamp,
-          value: point.value,
-          invested: point.invested,
+          timestamp: firstPoint.x,
+          values,
         });
 
         // Return empty string if tooltip is disabled
@@ -565,29 +525,31 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
           return '<div style="display:none"></div>';
         }
 
-        const date = new Date(point.timestamp);
+        const date = new Date(firstPoint.x);
         const formattedDate = this.formatDate(date);
         const unit = this.valueUnit ? ` ${this.valueUnit}` : '';
 
         let html = `
           <div class="co-value-performance-tooltip">
             <div class="co-value-performance-tooltip__header">${formattedDate}</div>
-            <div class="co-value-performance-tooltip__row">
-              <span class="co-value-performance-tooltip__dot" style="background-color: ${colors[0]}"></span>
-              <span class="co-value-performance-tooltip__label">Hodnota</span>
-              <span class="co-value-performance-tooltip__value">${this.formatValue(point.value)}${unit}</span>
-            </div>
         `;
 
-        if (point.invested !== undefined && this.showInvestedLine) {
-          html += `
-            <div class="co-value-performance-tooltip__row">
-              <span class="co-value-performance-tooltip__dot" style="background-color: ${colors[1]}"></span>
-              <span class="co-value-performance-tooltip__label">Investováno</span>
-              <span class="co-value-performance-tooltip__value">${this.formatValue(point.invested)}${unit}</span>
-            </div>
-          `;
-        }
+        // Add a row for each configured line
+        lines.forEach((line, index) => {
+          const lineColor = colors[index];
+          const point = line.data[dataPointIndex];
+          const val = point?.y;
+
+          if (val !== undefined) {
+            html += `
+              <div class="co-value-performance-tooltip__row">
+                <span class="co-value-performance-tooltip__dot" style="background-color: ${lineColor}"></span>
+                <span class="co-value-performance-tooltip__label">${line.name}</span>
+                <span class="co-value-performance-tooltip__value">${this.formatValue(val)}${unit}</span>
+              </div>
+            `;
+          }
+        });
 
         html += '</div>';
         return html;
@@ -598,29 +560,135 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
       enabled: false,
     };
 
-    this.annotationsConfig = this.computedAnnotations();
+    // Build all annotations
+    const annotations: ApexAnnotations = { yaxis: [], points: [], xaxis: [] };
+
+    if (allXValues.length > 0) {
+      const firstTs = xMin!;
+      const lastTs = xMax!;
+
+      // === X-AXIS LABELS (first and last) ===
+      // First date label - aligned to left
+      annotations.xaxis!.push({
+        x: firstTs,
+        borderColor: 'transparent',
+        label: {
+          text: this.formatDate(new Date(firstTs)),
+          borderColor: 'transparent',
+          textAnchor: 'start',
+          style: {
+            background: 'transparent',
+            color: CHART_COLORS.contentTertiary,
+            fontSize: '10px',
+            fontWeight: 400, // caption-secondary
+            fontFamily: 'inherit',
+            padding: { left: 0, right: 0, top: 0, bottom: 0 },
+          },
+          position: 'bottom',
+          orientation: 'horizontal',
+          offsetX: 0,
+          offsetY: 25,
+        },
+      });
+
+      // Last date label - aligned to right, with negative offset to stay inside
+      annotations.xaxis!.push({
+        x: lastTs,
+        borderColor: 'transparent',
+        label: {
+          text: this.formatDate(new Date(lastTs)),
+          borderColor: 'transparent',
+          textAnchor: 'end',
+          style: {
+            background: 'transparent',
+            color: CHART_COLORS.contentTertiary,
+            fontSize: '10px',
+            fontWeight: 400, // caption-secondary
+            fontFamily: 'inherit',
+            padding: { left: 0, right: 0, top: 0, bottom: 0 },
+          },
+          position: 'bottom',
+          orientation: 'horizontal',
+          offsetX: -5,
+          offsetY: 25,
+        },
+      });
+
+      // === MAX/MIN VALUE LABELS ===
+      if (this.showHighLowValues) {
+        let absMax = -Infinity;
+        let absMin = Infinity;
+
+        // Find min/max across all lines
+        lines.forEach(line => {
+          line.data.forEach(p => {
+            if (p.y > absMax) absMax = p.y;
+            if (p.y < absMin) absMin = p.y;
+          });
+        });
+
+        // Position labels at the END of the chart (xMax), not at last data point
+        // Max label - top right
+        annotations.points!.push({
+          x: lastTs,
+          y: absMax,
+          marker: { size: 0 },
+          label: {
+            text: this.formatValue(absMax),
+            borderColor: '#E5E7EB',
+            borderWidth: 1,
+            borderRadius: 4,
+            position: 'left',
+            textAnchor: 'end',
+            style: {
+              background: '#FFFFFF',
+              color: CHART_COLORS.contentTertiary,
+              fontSize: '10px',
+              fontWeight: 400,
+              padding: { left: 6, right: 6, top: 3, bottom: 3 },
+            },
+            offsetX: -5,
+            offsetY: 4,
+          },
+        });
+
+        // Min label - bottom right
+        annotations.points!.push({
+          x: lastTs,
+          y: absMin,
+          marker: { size: 0 },
+          label: {
+            text: this.formatValue(absMin),
+            borderColor: '#E5E7EB',
+            borderWidth: 1,
+            borderRadius: 4,
+            position: 'left',
+            textAnchor: 'end',
+            style: {
+              background: '#FFFFFF',
+              color: CHART_COLORS.contentTertiary,
+              fontSize: '10px',
+              fontWeight: 400,
+              padding: { left: 6, right: 6, top: 3, bottom: 3 },
+            },
+            offsetX: -5,
+            offsetY: 4,
+          },
+        });
+      }
+    }
+
+    this.annotationsConfig = annotations;
   }
 
   // ============ PUBLIC METHODS ============
 
   formatValue(value: number): string {
-    return value.toLocaleString('cs-CZ', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    return this.dateTimeService.formatNumber(value);
   }
 
   formatDate(date: Date): string {
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    const months = ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'];
-
-    return this.dateFormat
-      .replace('yyyy', date.getFullYear().toString())
-      .replace('MM', pad(date.getMonth() + 1))
-      .replace('MMM', months[date.getMonth()])
-      .replace('dd', pad(date.getDate()))
-      .replace('HH', pad(date.getHours()))
-      .replace('mm', pad(date.getMinutes()));
+    return this.dateTimeService.formatDate(date, this.dateFormat);
   }
 
   onLegendItemHover(index: number): void {
@@ -653,10 +721,5 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
         el.style.opacity = i === activeIndex ? '1' : '0.35';
       }
     });
-  }
-
-  // Skeleton helpers
-  get skeletonPoints(): number[] {
-    return Array.from({ length: this.skeletonPointCount }, (_, i) => i);
   }
 }

@@ -1,8 +1,6 @@
 <div
   class="co-value-performance-chart"
   [class.co-value-performance-chart--loading]="loading"
-  [class.co-value-performance-chart--positive]="computedTrend() === 'positive'"
-  [class.co-value-performance-chart--negative]="computedTrend() === 'negative'"
 >
   <!-- Chart Container -->
   <div class="co-value-performance-chart__chart-wrapper">
@@ -52,11 +50,7 @@
   @if (showLegend) {
     @if (loading) {
       <div class="co-chart-legend-skeleton">
-        <div class="co-chart-legend-skeleton__item">
-          <span class="co-chart-legend-skeleton__dot"></span>
-          <span class="co-chart-legend-skeleton__text"></span>
-        </div>
-        @if (showInvestedLine) {
+        @for (line of lines; track line.name) {
           <div class="co-chart-legend-skeleton__item">
             <span class="co-chart-legend-skeleton__dot"></span>
             <span class="co-chart-legend-skeleton__text"></span>

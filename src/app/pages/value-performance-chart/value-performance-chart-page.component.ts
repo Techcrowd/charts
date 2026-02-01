@@ -1,229 +1,759 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MarkdownComponent, LanguagePipe } from 'ngx-markdown';
 import {
   CoValuePerformanceChartComponent,
-  ValuePerformanceData,
+  ChartLine,
+  ChartDataPoint,
 } from '../../components/co-value-performance-chart/co-value-performance-chart.component';
+import { DateTimeService } from '../../services/date-time.service';
 
-// ============ STATIC DATA ============
+// ============ HELPER FUNCTION ============
 
-/** Basic data with invested line - stable growth */
-const BASIC_DATA: ValuePerformanceData = {
-  points: [
-    { timestamp: '2025-01-01', value: 10000, invested: 10000 },
-    { timestamp: '2025-01-15', value: 10250, invested: 10000 },
-    { timestamp: '2025-02-01', value: 10180, invested: 10000 },
-    { timestamp: '2025-02-15', value: 10520, invested: 10500 },
-    { timestamp: '2025-03-01', value: 10890, invested: 10500 },
-    { timestamp: '2025-03-15', value: 10750, invested: 10500 },
-    { timestamp: '2025-04-01', value: 11200, invested: 11000 },
-    { timestamp: '2025-04-15', value: 11450, invested: 11000 },
-    { timestamp: '2025-05-01', value: 11320, invested: 11000 },
-    { timestamp: '2025-05-15', value: 11680, invested: 11500 },
-    { timestamp: '2025-06-01', value: 12100, invested: 11500 },
-    { timestamp: '2025-06-15', value: 11950, invested: 11500 },
-    { timestamp: '2025-07-01', value: 12400, invested: 12000 },
-    { timestamp: '2025-07-15', value: 12750, invested: 12000 },
-    { timestamp: '2025-08-01', value: 12580, invested: 12000 },
-    { timestamp: '2025-08-15', value: 12920, invested: 12500 },
-    { timestamp: '2025-09-01', value: 13200, invested: 12500 },
-    { timestamp: '2025-09-15', value: 13050, invested: 12500 },
-    { timestamp: '2025-10-01', value: 13480, invested: 13000 },
-    { timestamp: '2025-10-15', value: 13750, invested: 13000 },
-    { timestamp: '2025-11-01', value: 13620, invested: 13000 },
-    { timestamp: '2025-11-15', value: 14100, invested: 13500 },
-    { timestamp: '2025-12-01', value: 14450, invested: 13500 },
-    { timestamp: '2025-12-15', value: 14280, invested: 13500 },
-  ],
-};
+/** Convert simple x/y data to ChartDataPoint array */
+function toData(points: Array<{ x: string; y: number }>): ChartDataPoint[] {
+  return points.map(p => ({ x: p.x, y: p.y }));
+}
+
+// ============ STATIC DATA (as ChartDataPoint arrays) ============
+
+/** 1 Day data - organic intraday pattern with trends */
+const ONE_DAY_VALUE_DATA: ChartDataPoint[] = toData([
+  { x: '2025-01-15T09:00', y: 42.50 },
+  { x: '2025-01-15T09:05', y: 42.35 },
+  { x: '2025-01-15T09:10', y: 42.20 },
+  { x: '2025-01-15T09:15', y: 42.05 },
+  { x: '2025-01-15T09:20', y: 41.95 },
+  { x: '2025-01-15T09:25', y: 42.10 },
+  { x: '2025-01-15T09:30', y: 42.25 },
+  { x: '2025-01-15T09:35', y: 42.45 },
+  { x: '2025-01-15T09:40', y: 42.60 },
+  { x: '2025-01-15T09:45', y: 42.80 },
+  { x: '2025-01-15T09:50', y: 42.95 },
+  { x: '2025-01-15T09:55', y: 43.15 },
+  { x: '2025-01-15T10:00', y: 43.30 },
+  { x: '2025-01-15T10:05', y: 43.25 },
+  { x: '2025-01-15T10:10', y: 43.20 },
+  { x: '2025-01-15T10:15', y: 43.28 },
+  { x: '2025-01-15T10:20', y: 43.35 },
+  { x: '2025-01-15T10:25', y: 43.50 },
+  { x: '2025-01-15T10:30', y: 43.70 },
+  { x: '2025-01-15T10:35', y: 43.85 },
+  { x: '2025-01-15T10:40', y: 44.00 },
+  { x: '2025-01-15T10:45', y: 44.20 },
+  { x: '2025-01-15T10:50', y: 44.35 },
+  { x: '2025-01-15T10:55', y: 44.50 },
+  { x: '2025-01-15T11:00', y: 44.65 },
+  { x: '2025-01-15T11:05', y: 44.55 },
+  { x: '2025-01-15T11:10', y: 44.40 },
+  { x: '2025-01-15T11:15', y: 44.30 },
+  { x: '2025-01-15T11:20', y: 44.45 },
+  { x: '2025-01-15T11:25', y: 44.60 },
+  { x: '2025-01-15T11:30', y: 44.75 },
+  { x: '2025-01-15T11:35', y: 44.90 },
+  { x: '2025-01-15T11:40', y: 45.05 },
+  { x: '2025-01-15T11:45', y: 45.00 },
+  { x: '2025-01-15T11:50', y: 44.95 },
+  { x: '2025-01-15T11:55', y: 45.02 },
+  { x: '2025-01-15T12:00', y: 44.98 },
+  { x: '2025-01-15T12:05', y: 45.05 },
+  { x: '2025-01-15T12:10', y: 45.00 },
+  { x: '2025-01-15T12:15', y: 45.10 },
+  { x: '2025-01-15T12:20', y: 45.25 },
+  { x: '2025-01-15T12:25', y: 45.40 },
+  { x: '2025-01-15T12:30', y: 45.55 },
+  { x: '2025-01-15T12:35', y: 45.70 },
+  { x: '2025-01-15T12:40', y: 45.82 },
+  { x: '2025-01-15T12:45', y: 45.95 },
+  { x: '2025-01-15T12:50', y: 45.88 },
+  { x: '2025-01-15T12:55', y: 45.92 },
+  { x: '2025-01-15T13:00', y: 45.85 },
+  { x: '2025-01-15T13:05', y: 45.90 },
+  { x: '2025-01-15T13:10', y: 45.95 },
+  { x: '2025-01-15T13:15', y: 46.00 },
+  { x: '2025-01-15T13:20', y: 46.05 },
+  { x: '2025-01-15T13:25', y: 46.10 },
+  { x: '2025-01-15T13:30', y: 46.15 },
+  { x: '2025-01-15T13:35', y: 46.20 },
+  { x: '2025-01-15T13:40', y: 46.18 },
+  { x: '2025-01-15T13:45', y: 46.22 },
+  { x: '2025-01-15T13:50', y: 46.25 },
+  { x: '2025-01-15T13:55', y: 46.30 },
+  { x: '2025-01-15T14:00', y: 46.35 },
+]);
+
+/** 5 Days data */
+const FIVE_DAYS_VALUE_DATA: ChartDataPoint[] = toData([
+  { x: '2025-01-10T09:00', y: 43.50 },
+  { x: '2025-01-10T11:00', y: 43.35 },
+  { x: '2025-01-10T13:00', y: 43.20 },
+  { x: '2025-01-10T15:00', y: 43.10 },
+  { x: '2025-01-11T09:00', y: 43.25 },
+  { x: '2025-01-11T11:00', y: 43.50 },
+  { x: '2025-01-11T13:00', y: 43.75 },
+  { x: '2025-01-11T15:00', y: 44.00 },
+  { x: '2025-01-12T09:00', y: 44.15 },
+  { x: '2025-01-12T11:00', y: 44.35 },
+  { x: '2025-01-12T13:00', y: 44.50 },
+  { x: '2025-01-12T15:00', y: 44.70 },
+  { x: '2025-01-13T09:00', y: 44.65 },
+  { x: '2025-01-13T11:00', y: 44.60 },
+  { x: '2025-01-13T13:00', y: 44.70 },
+  { x: '2025-01-13T15:00', y: 44.80 },
+  { x: '2025-01-14T09:00', y: 44.95 },
+  { x: '2025-01-14T11:00', y: 45.20 },
+  { x: '2025-01-14T13:00', y: 45.40 },
+  { x: '2025-01-14T15:00', y: 45.65 },
+  { x: '2025-01-15T09:00', y: 45.80 },
+  { x: '2025-01-15T11:00', y: 46.00 },
+  { x: '2025-01-15T13:00', y: 46.15 },
+  { x: '2025-01-15T15:00', y: 46.35 },
+]);
+
+/** 1 Month data */
+const ONE_MONTH_VALUE_DATA: ChartDataPoint[] = toData([
+  { x: '2024-12-15', y: 38.50 },
+  { x: '2024-12-16', y: 38.80 },
+  { x: '2024-12-17', y: 39.10 },
+  { x: '2024-12-18', y: 39.45 },
+  { x: '2024-12-19', y: 39.80 },
+  { x: '2024-12-20', y: 40.10 },
+  { x: '2024-12-21', y: 40.35 },
+  { x: '2024-12-22', y: 40.15 },
+  { x: '2024-12-23', y: 39.95 },
+  { x: '2024-12-24', y: 40.20 },
+  { x: '2024-12-25', y: 40.50 },
+  { x: '2024-12-26', y: 40.85 },
+  { x: '2024-12-27', y: 41.15 },
+  { x: '2024-12-28', y: 41.45 },
+  { x: '2024-12-29', y: 41.80 },
+  { x: '2024-12-30', y: 42.10 },
+  { x: '2024-12-31', y: 42.45 },
+  { x: '2025-01-01', y: 42.75 },
+  { x: '2025-01-02', y: 43.05 },
+  { x: '2025-01-03', y: 43.35 },
+  { x: '2025-01-04', y: 43.25 },
+  { x: '2025-01-05', y: 43.20 },
+  { x: '2025-01-06', y: 43.40 },
+  { x: '2025-01-07', y: 43.70 },
+  { x: '2025-01-08', y: 44.00 },
+  { x: '2025-01-09', y: 44.35 },
+  { x: '2025-01-10', y: 44.65 },
+  { x: '2025-01-11', y: 44.95 },
+  { x: '2025-01-12', y: 45.20 },
+  { x: '2025-01-13', y: 45.50 },
+  { x: '2025-01-14', y: 45.75 },
+  { x: '2025-01-15', y: 46.00 },
+]);
+
+/** 1 Year data */
+const ONE_YEAR_VALUE_DATA: ChartDataPoint[] = toData([
+  { x: '2024-01-01', y: 30.00 },
+  { x: '2024-01-15', y: 30.80 },
+  { x: '2024-02-01', y: 31.50 },
+  { x: '2024-02-15', y: 32.20 },
+  { x: '2024-03-01', y: 32.85 },
+  { x: '2024-03-15', y: 33.50 },
+  { x: '2024-04-01', y: 33.20 },
+  { x: '2024-04-15', y: 32.60 },
+  { x: '2024-05-01', y: 32.10 },
+  { x: '2024-05-15', y: 31.80 },
+  { x: '2024-06-01', y: 32.20 },
+  { x: '2024-06-15', y: 32.80 },
+  { x: '2024-07-01', y: 33.50 },
+  { x: '2024-07-15', y: 34.30 },
+  { x: '2024-08-01', y: 35.10 },
+  { x: '2024-08-15', y: 35.85 },
+  { x: '2024-09-01', y: 36.50 },
+  { x: '2024-09-15', y: 37.20 },
+  { x: '2024-10-01', y: 37.85 },
+  { x: '2024-10-15', y: 38.55 },
+  { x: '2024-11-01', y: 39.30 },
+  { x: '2024-11-15', y: 40.10 },
+  { x: '2024-12-01', y: 40.85 },
+  { x: '2024-12-15', y: 41.60 },
+  { x: '2025-01-01', y: 42.30 },
+  { x: '2025-01-15', y: 43.00 },
+]);
+
+/** 5 Years VALUE data */
+const FIVE_YEARS_VALUE_DATA: ChartDataPoint[] = toData([
+  { x: '2020-01-01', y: 10 }, { x: '2020-01-15', y: 10.5 }, { x: '2020-02-01', y: 11.2 }, { x: '2020-02-15', y: 11.8 },
+  { x: '2020-03-01', y: 10.5 }, { x: '2020-03-15', y: 8.5 }, { x: '2020-03-25', y: 7.0 },
+  { x: '2020-04-01', y: 8.0 }, { x: '2020-04-15', y: 10.0 }, { x: '2020-05-01', y: 12.5 }, { x: '2020-05-15', y: 14.0 },
+  { x: '2020-06-01', y: 15.5 }, { x: '2020-06-15', y: 17.0 }, { x: '2020-07-01', y: 18.5 }, { x: '2020-07-15', y: 19.5 },
+  { x: '2020-08-01', y: 21.0 }, { x: '2020-08-15', y: 22.5 }, { x: '2020-09-01', y: 21.5 }, { x: '2020-09-15', y: 20.5 },
+  { x: '2020-10-01', y: 22.0 }, { x: '2020-10-15', y: 24.0 }, { x: '2020-11-01', y: 26.5 }, { x: '2020-11-15', y: 28.5 },
+  { x: '2020-12-01', y: 30.0 }, { x: '2020-12-15', y: 31.5 },
+  { x: '2021-01-01', y: 33.0 }, { x: '2021-01-15', y: 35.0 }, { x: '2021-02-01', y: 37.5 }, { x: '2021-02-15', y: 40.0 },
+  { x: '2021-03-01', y: 42.5 }, { x: '2021-03-15', y: 44.0 }, { x: '2021-04-01', y: 46.5 }, { x: '2021-04-15', y: 48.5 },
+  { x: '2021-05-01', y: 50.0 }, { x: '2021-05-15', y: 51.5 }, { x: '2021-06-01', y: 54.0 }, { x: '2021-06-15', y: 56.0 },
+  { x: '2021-07-01', y: 58.0 }, { x: '2021-07-15', y: 60.5 }, { x: '2021-08-01', y: 63.0 }, { x: '2021-08-15', y: 65.0 },
+  { x: '2021-09-01', y: 63.5 }, { x: '2021-09-15', y: 61.0 }, { x: '2021-10-01', y: 64.0 }, { x: '2021-10-15', y: 67.0 },
+  { x: '2021-11-01', y: 70.0 }, { x: '2021-11-15', y: 72.5 }, { x: '2021-12-01', y: 74.0 }, { x: '2021-12-15', y: 75.0 },
+  { x: '2022-01-01', y: 72.0 }, { x: '2022-01-15', y: 68.0 }, { x: '2022-02-01', y: 64.0 }, { x: '2022-02-15', y: 60.0 },
+  { x: '2022-03-01', y: 56.0 }, { x: '2022-03-15', y: 58.0 }, { x: '2022-04-01', y: 54.0 }, { x: '2022-04-15', y: 50.0 },
+  { x: '2022-05-01', y: 46.0 }, { x: '2022-05-15', y: 44.0 }, { x: '2022-06-01', y: 40.0 }, { x: '2022-06-15', y: 38.0 },
+  { x: '2022-07-01', y: 42.0 }, { x: '2022-07-15', y: 46.0 }, { x: '2022-08-01', y: 48.0 }, { x: '2022-08-15', y: 45.0 },
+  { x: '2022-09-01', y: 42.0 }, { x: '2022-09-15', y: 38.0 }, { x: '2022-10-01', y: 36.0 }, { x: '2022-10-15', y: 40.0 },
+  { x: '2022-11-01', y: 44.0 }, { x: '2022-11-15', y: 48.0 }, { x: '2022-12-01', y: 46.0 }, { x: '2022-12-15', y: 44.0 },
+  { x: '2023-01-01', y: 48.0 }, { x: '2023-01-15', y: 52.0 }, { x: '2023-02-01', y: 55.0 }, { x: '2023-02-15', y: 53.0 },
+  { x: '2023-03-01', y: 50.0 }, { x: '2023-03-15', y: 54.0 }, { x: '2023-04-01', y: 58.0 }, { x: '2023-04-15', y: 62.0 },
+  { x: '2023-05-01', y: 65.0 }, { x: '2023-05-15', y: 68.0 }, { x: '2023-06-01', y: 72.0 }, { x: '2023-06-15', y: 76.0 },
+  { x: '2023-07-01', y: 80.0 }, { x: '2023-07-15', y: 83.0 }, { x: '2023-08-01', y: 80.0 }, { x: '2023-08-15', y: 77.0 },
+  { x: '2023-09-01', y: 80.0 }, { x: '2023-09-15', y: 78.0 }, { x: '2023-10-01', y: 75.0 }, { x: '2023-10-15', y: 80.0 },
+  { x: '2023-11-01', y: 85.0 }, { x: '2023-11-15', y: 90.0 }, { x: '2023-12-01', y: 95.0 }, { x: '2023-12-15', y: 98.0 },
+  { x: '2024-01-01', y: 102.0 }, { x: '2024-01-15', y: 106.0 }, { x: '2024-02-01', y: 110.0 }, { x: '2024-02-15', y: 115.0 },
+  { x: '2024-03-01', y: 120.0 }, { x: '2024-03-15', y: 124.0 }, { x: '2024-04-01', y: 128.0 }, { x: '2024-04-15', y: 132.0 },
+  { x: '2024-05-01', y: 136.0 }, { x: '2024-05-15', y: 140.0 }, { x: '2024-06-01', y: 145.0 }, { x: '2024-06-15', y: 150.0 },
+  { x: '2024-07-01', y: 154.0 }, { x: '2024-07-15', y: 158.0 }, { x: '2024-08-01', y: 155.0 }, { x: '2024-08-15', y: 160.0 },
+  { x: '2024-09-01', y: 165.0 }, { x: '2024-09-15', y: 170.0 }, { x: '2024-10-01', y: 175.0 }, { x: '2024-10-15', y: 180.0 },
+  { x: '2024-11-01', y: 186.0 }, { x: '2024-11-15', y: 192.0 }, { x: '2024-12-01', y: 198.0 }, { x: '2024-12-15', y: 205.0 },
+]);
+
+/** 5 Years INVESTED data */
+const FIVE_YEARS_INVESTED_DATA: ChartDataPoint[] = toData([
+  { x: '2020-01-01', y: 10 }, { x: '2020-01-15', y: 10 }, { x: '2020-02-01', y: 10 }, { x: '2020-02-15', y: 10 },
+  { x: '2020-03-01', y: 10 }, { x: '2020-03-15', y: 10 }, { x: '2020-03-25', y: 10 },
+  { x: '2020-04-01', y: 12 }, { x: '2020-04-15', y: 12 }, { x: '2020-05-01', y: 12 }, { x: '2020-05-15', y: 12 },
+  { x: '2020-06-01', y: 12 }, { x: '2020-06-15', y: 12 }, { x: '2020-07-01', y: 12 }, { x: '2020-07-15', y: 12 },
+  { x: '2020-08-01', y: 12 }, { x: '2020-08-15', y: 12 }, { x: '2020-09-01', y: 12 }, { x: '2020-09-15', y: 12 },
+  { x: '2020-10-01', y: 14 }, { x: '2020-10-15', y: 14 }, { x: '2020-11-01', y: 14 }, { x: '2020-11-15', y: 14 },
+  { x: '2020-12-01', y: 14 }, { x: '2020-12-15', y: 14 },
+  { x: '2021-01-01', y: 14 }, { x: '2021-01-15', y: 14 }, { x: '2021-02-01', y: 16 }, { x: '2021-02-15', y: 16 },
+  { x: '2021-03-01', y: 16 }, { x: '2021-03-15', y: 16 }, { x: '2021-04-01', y: 16 }, { x: '2021-04-15', y: 16 },
+  { x: '2021-05-01', y: 16 }, { x: '2021-05-15', y: 16 }, { x: '2021-06-01', y: 16 }, { x: '2021-06-15', y: 16 },
+  { x: '2021-07-01', y: 18 }, { x: '2021-07-15', y: 18 }, { x: '2021-08-01', y: 18 }, { x: '2021-08-15', y: 18 },
+  { x: '2021-09-01', y: 18 }, { x: '2021-09-15', y: 18 }, { x: '2021-10-01', y: 18 }, { x: '2021-10-15', y: 18 },
+  { x: '2021-11-01', y: 18 }, { x: '2021-11-15', y: 18 }, { x: '2021-12-01', y: 18 }, { x: '2021-12-15', y: 18 },
+  { x: '2022-01-01', y: 20 }, { x: '2022-01-15', y: 20 }, { x: '2022-02-01', y: 20 }, { x: '2022-02-15', y: 20 },
+  { x: '2022-03-01', y: 20 }, { x: '2022-03-15', y: 20 }, { x: '2022-04-01', y: 20 }, { x: '2022-04-15', y: 20 },
+  { x: '2022-05-01', y: 20 }, { x: '2022-05-15', y: 20 }, { x: '2022-06-01', y: 20 }, { x: '2022-06-15', y: 20 },
+  { x: '2022-07-01', y: 20 }, { x: '2022-07-15', y: 20 }, { x: '2022-08-01', y: 22 }, { x: '2022-08-15', y: 22 },
+  { x: '2022-09-01', y: 22 }, { x: '2022-09-15', y: 22 }, { x: '2022-10-01', y: 22 }, { x: '2022-10-15', y: 22 },
+  { x: '2022-11-01', y: 22 }, { x: '2022-11-15', y: 22 }, { x: '2022-12-01', y: 22 }, { x: '2022-12-15', y: 22 },
+  { x: '2023-01-01', y: 22 }, { x: '2023-01-15', y: 22 }, { x: '2023-02-01', y: 22 }, { x: '2023-02-15', y: 22 },
+  { x: '2023-03-01', y: 22 }, { x: '2023-03-15', y: 22 }, { x: '2023-04-01', y: 22 }, { x: '2023-04-15', y: 22 },
+  { x: '2023-05-01', y: 24 }, { x: '2023-05-15', y: 24 }, { x: '2023-06-01', y: 24 }, { x: '2023-06-15', y: 24 },
+  { x: '2023-07-01', y: 24 }, { x: '2023-07-15', y: 24 }, { x: '2023-08-01', y: 24 }, { x: '2023-08-15', y: 24 },
+  { x: '2023-09-01', y: 24 }, { x: '2023-09-15', y: 24 }, { x: '2023-10-01', y: 24 }, { x: '2023-10-15', y: 24 },
+  { x: '2023-11-01', y: 24 }, { x: '2023-11-15', y: 24 }, { x: '2023-12-01', y: 24 }, { x: '2023-12-15', y: 24 },
+  { x: '2024-01-01', y: 24 }, { x: '2024-01-15', y: 24 }, { x: '2024-02-01', y: 24 }, { x: '2024-02-15', y: 24 },
+  { x: '2024-03-01', y: 26 }, { x: '2024-03-15', y: 26 }, { x: '2024-04-01', y: 26 }, { x: '2024-04-15', y: 26 },
+  { x: '2024-05-01', y: 26 }, { x: '2024-05-15', y: 26 }, { x: '2024-06-01', y: 26 }, { x: '2024-06-15', y: 26 },
+  { x: '2024-07-01', y: 26 }, { x: '2024-07-15', y: 26 }, { x: '2024-08-01', y: 26 }, { x: '2024-08-15', y: 26 },
+  { x: '2024-09-01', y: 28 }, { x: '2024-09-15', y: 28 }, { x: '2024-10-01', y: 28 }, { x: '2024-10-15', y: 28 },
+  { x: '2024-11-01', y: 28 }, { x: '2024-11-15', y: 28 }, { x: '2024-12-01', y: 28 }, { x: '2024-12-15', y: 28 },
+]);
+
+/** Hover example VALUE data */
+const HOVER_VALUE_DATA: ChartDataPoint[] = toData([
+  { x: '2020-01-01', y: 10 }, { x: '2020-01-15', y: 10.8 }, { x: '2020-02-01', y: 11.5 }, { x: '2020-02-15', y: 10.9 },
+  { x: '2020-03-01', y: 9.5 }, { x: '2020-03-15', y: 8.2 },
+  { x: '2020-04-01', y: 9.5 }, { x: '2020-04-15', y: 11.2 }, { x: '2020-05-01', y: 13.5 }, { x: '2020-05-15', y: 14.8 },
+  { x: '2020-06-01', y: 16.0 }, { x: '2020-06-15', y: 15.2 }, { x: '2020-07-01', y: 17.5 }, { x: '2020-07-15', y: 19.0 },
+  { x: '2020-08-01', y: 21.5 }, { x: '2020-08-15', y: 20.2 }, { x: '2020-09-01', y: 18.5 }, { x: '2020-09-15', y: 20.0 },
+  { x: '2020-10-01', y: 22.5 }, { x: '2020-10-15', y: 25.0 }, { x: '2020-11-01', y: 28.5 }, { x: '2020-11-15', y: 30.0 },
+  { x: '2020-12-01', y: 32.0 }, { x: '2020-12-15', y: 34.5 },
+  { x: '2021-01-01', y: 36.0 }, { x: '2021-01-15', y: 38.5 }, { x: '2021-02-01', y: 40.0 }, { x: '2021-02-15', y: 37.5 },
+  { x: '2021-03-01', y: 42.0 }, { x: '2021-03-15', y: 45.5 }, { x: '2021-04-01', y: 48.0 }, { x: '2021-04-15', y: 46.0 },
+  { x: '2021-05-01', y: 50.0 }, { x: '2021-05-15', y: 53.5 }, { x: '2021-06-01', y: 56.0 }, { x: '2021-06-15', y: 54.0 },
+  { x: '2021-07-01', y: 58.0 }, { x: '2021-07-15', y: 62.0 }, { x: '2021-08-01', y: 65.0 }, { x: '2021-08-15', y: 63.0 },
+  { x: '2021-09-01', y: 60.0 }, { x: '2021-09-15', y: 64.0 }, { x: '2021-10-01', y: 68.0 }, { x: '2021-10-15', y: 72.0 },
+  { x: '2021-11-01', y: 75.0 }, { x: '2021-11-15', y: 73.0 }, { x: '2021-12-01', y: 78.0 }, { x: '2021-12-15', y: 80.0 },
+  { x: '2022-01-01', y: 76.0 }, { x: '2022-01-15', y: 72.0 }, { x: '2022-02-01', y: 68.0 }, { x: '2022-02-15', y: 72.0 },
+  { x: '2022-03-01', y: 65.0 }, { x: '2022-03-15', y: 60.0 }, { x: '2022-04-01', y: 55.0 }, { x: '2022-04-15', y: 58.0 },
+  { x: '2022-05-01', y: 52.0 }, { x: '2022-05-15', y: 48.0 }, { x: '2022-06-01', y: 44.0 }, { x: '2022-06-15', y: 48.0 },
+  { x: '2022-07-01', y: 52.0 }, { x: '2022-07-15', y: 56.0 }, { x: '2022-08-01', y: 54.0 }, { x: '2022-08-15', y: 50.0 },
+  { x: '2022-09-01', y: 45.0 }, { x: '2022-09-15', y: 42.0 }, { x: '2022-10-01', y: 46.0 }, { x: '2022-10-15', y: 50.0 },
+  { x: '2022-11-01', y: 55.0 }, { x: '2022-11-15', y: 58.0 }, { x: '2022-12-01', y: 56.0 }, { x: '2022-12-15', y: 60.0 },
+  { x: '2023-01-01', y: 65.0 }, { x: '2023-01-15', y: 68.0 }, { x: '2023-02-01', y: 72.0 }, { x: '2023-02-15', y: 70.0 },
+  { x: '2023-03-01', y: 68.0 }, { x: '2023-03-15', y: 74.0 }, { x: '2023-04-01', y: 78.0 }, { x: '2023-04-15', y: 82.0 },
+  { x: '2023-05-01', y: 86.0 }, { x: '2023-05-15', y: 90.0 }, { x: '2023-06-01', y: 95.0 }, { x: '2023-06-15', y: 92.0 },
+  { x: '2023-07-01', y: 98.0 }, { x: '2023-07-15', y: 105.0 }, { x: '2023-08-01', y: 102.0 }, { x: '2023-08-15', y: 98.0 },
+  { x: '2023-09-01', y: 95.0 }, { x: '2023-09-15', y: 100.0 }, { x: '2023-10-01', y: 105.0 }, { x: '2023-10-15', y: 112.0 },
+  { x: '2023-11-01', y: 118.0 }, { x: '2023-11-15', y: 125.0 }, { x: '2023-12-01', y: 130.0 }, { x: '2023-12-15', y: 135.0 },
+  { x: '2024-01-01', y: 140.0 }, { x: '2024-01-15', y: 145.0 }, { x: '2024-02-01', y: 150.0 }, { x: '2024-02-15', y: 148.0 },
+  { x: '2024-03-01', y: 155.0 }, { x: '2024-03-15', y: 162.0 }, { x: '2024-04-01', y: 168.0 }, { x: '2024-04-15', y: 165.0 },
+  { x: '2024-05-01', y: 172.0 }, { x: '2024-05-15', y: 180.0 }, { x: '2024-06-01', y: 185.0 }, { x: '2024-06-15', y: 182.0 },
+  { x: '2024-07-01', y: 190.0 }, { x: '2024-07-15', y: 198.0 }, { x: '2024-08-01', y: 195.0 }, { x: '2024-08-15', y: 202.0 },
+  { x: '2024-09-01', y: 210.0 }, { x: '2024-09-15', y: 218.0 }, { x: '2024-10-01', y: 225.0 }, { x: '2024-10-15', y: 222.0 },
+  { x: '2024-11-01', y: 232.0 }, { x: '2024-11-15', y: 240.0 }, { x: '2024-12-01', y: 248.0 }, { x: '2024-12-15', y: 255.0 },
+]);
+
+/** Hover example INVESTED data */
+const HOVER_INVESTED_DATA: ChartDataPoint[] = toData([
+  { x: '2020-01-01', y: 10 }, { x: '2020-01-15', y: 10 }, { x: '2020-02-01', y: 10 }, { x: '2020-02-15', y: 10 },
+  { x: '2020-03-01', y: 10 }, { x: '2020-03-15', y: 10 },
+  { x: '2020-04-01', y: 12 }, { x: '2020-04-15', y: 12 }, { x: '2020-05-01', y: 12 }, { x: '2020-05-15', y: 12 },
+  { x: '2020-06-01', y: 12 }, { x: '2020-06-15', y: 12 }, { x: '2020-07-01', y: 12 }, { x: '2020-07-15', y: 12 },
+  { x: '2020-08-01', y: 12 }, { x: '2020-08-15', y: 12 }, { x: '2020-09-01', y: 12 }, { x: '2020-09-15', y: 12 },
+  { x: '2020-10-01', y: 14 }, { x: '2020-10-15', y: 14 }, { x: '2020-11-01', y: 14 }, { x: '2020-11-15', y: 14 },
+  { x: '2020-12-01', y: 14 }, { x: '2020-12-15', y: 14 },
+  { x: '2021-01-01', y: 14 }, { x: '2021-01-15', y: 14 }, { x: '2021-02-01', y: 16 }, { x: '2021-02-15', y: 16 },
+  { x: '2021-03-01', y: 16 }, { x: '2021-03-15', y: 16 }, { x: '2021-04-01', y: 16 }, { x: '2021-04-15', y: 16 },
+  { x: '2021-05-01', y: 16 }, { x: '2021-05-15', y: 16 }, { x: '2021-06-01', y: 16 }, { x: '2021-06-15', y: 16 },
+  { x: '2021-07-01', y: 18 }, { x: '2021-07-15', y: 18 }, { x: '2021-08-01', y: 18 }, { x: '2021-08-15', y: 18 },
+  { x: '2021-09-01', y: 18 }, { x: '2021-09-15', y: 18 }, { x: '2021-10-01', y: 18 }, { x: '2021-10-15', y: 18 },
+  { x: '2021-11-01', y: 18 }, { x: '2021-11-15', y: 18 }, { x: '2021-12-01', y: 18 }, { x: '2021-12-15', y: 18 },
+  { x: '2022-01-01', y: 20 }, { x: '2022-01-15', y: 20 }, { x: '2022-02-01', y: 20 }, { x: '2022-02-15', y: 20 },
+  { x: '2022-03-01', y: 20 }, { x: '2022-03-15', y: 20 }, { x: '2022-04-01', y: 20 }, { x: '2022-04-15', y: 20 },
+  { x: '2022-05-01', y: 20 }, { x: '2022-05-15', y: 20 }, { x: '2022-06-01', y: 20 }, { x: '2022-06-15', y: 20 },
+  { x: '2022-07-01', y: 20 }, { x: '2022-07-15', y: 20 }, { x: '2022-08-01', y: 22 }, { x: '2022-08-15', y: 22 },
+  { x: '2022-09-01', y: 22 }, { x: '2022-09-15', y: 22 }, { x: '2022-10-01', y: 22 }, { x: '2022-10-15', y: 22 },
+  { x: '2022-11-01', y: 22 }, { x: '2022-11-15', y: 22 }, { x: '2022-12-01', y: 22 }, { x: '2022-12-15', y: 22 },
+  { x: '2023-01-01', y: 22 }, { x: '2023-01-15', y: 22 }, { x: '2023-02-01', y: 22 }, { x: '2023-02-15', y: 22 },
+  { x: '2023-03-01', y: 22 }, { x: '2023-03-15', y: 22 }, { x: '2023-04-01', y: 22 }, { x: '2023-04-15', y: 22 },
+  { x: '2023-05-01', y: 24 }, { x: '2023-05-15', y: 24 }, { x: '2023-06-01', y: 24 }, { x: '2023-06-15', y: 24 },
+  { x: '2023-07-01', y: 24 }, { x: '2023-07-15', y: 24 }, { x: '2023-08-01', y: 24 }, { x: '2023-08-15', y: 24 },
+  { x: '2023-09-01', y: 24 }, { x: '2023-09-15', y: 24 }, { x: '2023-10-01', y: 24 }, { x: '2023-10-15', y: 24 },
+  { x: '2023-11-01', y: 24 }, { x: '2023-11-15', y: 24 }, { x: '2023-12-01', y: 24 }, { x: '2023-12-15', y: 24 },
+  { x: '2024-01-01', y: 24 }, { x: '2024-01-15', y: 24 }, { x: '2024-02-01', y: 24 }, { x: '2024-02-15', y: 24 },
+  { x: '2024-03-01', y: 26 }, { x: '2024-03-15', y: 26 }, { x: '2024-04-01', y: 26 }, { x: '2024-04-15', y: 26 },
+  { x: '2024-05-01', y: 26 }, { x: '2024-05-15', y: 26 }, { x: '2024-06-01', y: 26 }, { x: '2024-06-15', y: 26 },
+  { x: '2024-07-01', y: 26 }, { x: '2024-07-15', y: 26 }, { x: '2024-08-01', y: 26 }, { x: '2024-08-15', y: 26 },
+  { x: '2024-09-01', y: 28 }, { x: '2024-09-15', y: 28 }, { x: '2024-10-01', y: 28 }, { x: '2024-10-15', y: 28 },
+  { x: '2024-11-01', y: 28 }, { x: '2024-11-15', y: 28 }, { x: '2024-12-01', y: 28 }, { x: '2024-12-15', y: 28 },
+]);
 
 /** Positive trend data */
-const POSITIVE_TREND_DATA: ValuePerformanceData = {
-  points: [
-    { timestamp: '2025-01-01', value: 10000 },
-    { timestamp: '2025-02-01', value: 10800 },
-    { timestamp: '2025-03-01', value: 11200 },
-    { timestamp: '2025-04-01', value: 12500 },
-    { timestamp: '2025-05-01', value: 13100 },
-    { timestamp: '2025-06-01', value: 14200 },
-    { timestamp: '2025-07-01', value: 14800 },
-    { timestamp: '2025-08-01', value: 15600 },
-    { timestamp: '2025-09-01', value: 16400 },
-    { timestamp: '2025-10-01', value: 17200 },
-    { timestamp: '2025-11-01', value: 17800 },
-    { timestamp: '2025-12-01', value: 18500 },
-  ],
-};
+const POSITIVE_VALUE_DATA: ChartDataPoint[] = toData([
+  { x: '2024-07-01', y: 32.00 }, { x: '2024-07-08', y: 32.80 }, { x: '2024-07-15', y: 33.50 }, { x: '2024-07-22', y: 34.20 },
+  { x: '2024-08-01', y: 34.00 }, { x: '2024-08-08', y: 34.30 }, { x: '2024-08-15', y: 35.20 }, { x: '2024-08-22', y: 36.10 },
+  { x: '2024-09-01', y: 37.00 }, { x: '2024-09-08', y: 37.80 }, { x: '2024-09-15', y: 37.40 }, { x: '2024-09-22', y: 37.20 },
+  { x: '2024-10-01', y: 37.80 }, { x: '2024-10-08', y: 38.60 }, { x: '2024-10-15', y: 39.40 }, { x: '2024-10-22', y: 40.20 },
+  { x: '2024-11-01', y: 41.00 }, { x: '2024-11-08', y: 41.80 }, { x: '2024-11-15', y: 41.60 }, { x: '2024-11-22', y: 41.80 },
+  { x: '2024-12-01', y: 42.50 }, { x: '2024-12-08', y: 43.30 }, { x: '2024-12-15', y: 44.10 }, { x: '2024-12-22', y: 44.90 },
+  { x: '2025-01-01', y: 45.60 }, { x: '2025-01-08', y: 46.30 },
+]);
 
 /** Negative trend data */
-const NEGATIVE_TREND_DATA: ValuePerformanceData = {
-  points: [
-    { timestamp: '2025-01-01', value: 15000 },
-    { timestamp: '2025-02-01', value: 14200 },
-    { timestamp: '2025-03-01', value: 13800 },
-    { timestamp: '2025-04-01', value: 12500 },
-    { timestamp: '2025-05-01', value: 12100 },
-    { timestamp: '2025-06-01', value: 11200 },
-    { timestamp: '2025-07-01', value: 10800 },
-    { timestamp: '2025-08-01', value: 10200 },
-    { timestamp: '2025-09-01', value: 9600 },
-    { timestamp: '2025-10-01', value: 9200 },
-    { timestamp: '2025-11-01', value: 8800 },
-    { timestamp: '2025-12-01', value: 8500 },
-  ],
-};
+const NEGATIVE_VALUE_DATA: ChartDataPoint[] = toData([
+  { x: '2024-07-01', y: 48.00 }, { x: '2024-07-08', y: 47.20 }, { x: '2024-07-15', y: 46.50 }, { x: '2024-07-22', y: 45.80 },
+  { x: '2024-08-01', y: 46.20 }, { x: '2024-08-08', y: 46.00 }, { x: '2024-08-15', y: 45.20 }, { x: '2024-08-22', y: 44.40 },
+  { x: '2024-09-01', y: 43.60 }, { x: '2024-09-08', y: 42.80 }, { x: '2024-09-15', y: 43.20 }, { x: '2024-09-22', y: 43.50 },
+  { x: '2024-10-01', y: 42.80 }, { x: '2024-10-08', y: 42.00 }, { x: '2024-10-15', y: 41.20 }, { x: '2024-10-22', y: 40.40 },
+  { x: '2024-11-01', y: 39.60 }, { x: '2024-11-08', y: 38.80 }, { x: '2024-11-15', y: 38.60 }, { x: '2024-11-22', y: 38.40 },
+  { x: '2024-12-01', y: 37.60 }, { x: '2024-12-08', y: 36.80 }, { x: '2024-12-15', y: 36.00 }, { x: '2024-12-22', y: 35.20 },
+  { x: '2025-01-01', y: 34.50 }, { x: '2025-01-08', y: 33.80 },
+]);
 
-/** Volatile data with big swings */
-const VOLATILE_DATA: ValuePerformanceData = {
-  points: [
-    { timestamp: '2025-01-01', value: 10000, invested: 10000 },
-    { timestamp: '2025-01-15', value: 11500, invested: 10000 },
-    { timestamp: '2025-02-01', value: 8500, invested: 10000 },
-    { timestamp: '2025-02-15', value: 12000, invested: 10000 },
-    { timestamp: '2025-03-01', value: 9000, invested: 10000 },
-    { timestamp: '2025-03-15', value: 13500, invested: 10000 },
-    { timestamp: '2025-04-01', value: 7500, invested: 10000 },
-    { timestamp: '2025-04-15', value: 14000, invested: 10000 },
-    { timestamp: '2025-05-01', value: 10500, invested: 10000 },
-    { timestamp: '2025-05-15', value: 15500, invested: 10000 },
-    { timestamp: '2025-06-01', value: 8000, invested: 10000 },
-    { timestamp: '2025-06-15', value: 16000, invested: 10000 },
-    { timestamp: '2025-07-01', value: 11000, invested: 10000 },
-    { timestamp: '2025-07-15', value: 6500, invested: 10000 },
-    { timestamp: '2025-08-01', value: 14500, invested: 10000 },
-    { timestamp: '2025-08-15', value: 9500, invested: 10000 },
-    { timestamp: '2025-09-01', value: 17000, invested: 10000 },
-    { timestamp: '2025-09-15', value: 7000, invested: 10000 },
-    { timestamp: '2025-10-01', value: 13000, invested: 10000 },
-    { timestamp: '2025-10-15', value: 10000, invested: 10000 },
-    { timestamp: '2025-11-01', value: 15000, invested: 10000 },
-    { timestamp: '2025-11-15', value: 8500, invested: 10000 },
-    { timestamp: '2025-12-01', value: 12500, invested: 10000 },
-  ],
-};
+/** Stepline data */
+const STEPLINE_VALUE_DATA: ChartDataPoint[] = toData([
+  { x: '2025-01-01', y: 100.00 }, { x: '2025-01-22', y: 100.00 },
+  { x: '2025-01-23', y: 102.50 }, { x: '2025-02-20', y: 102.50 },
+  { x: '2025-02-21', y: 105.80 }, { x: '2025-03-05', y: 105.80 },
+  { x: '2025-03-06', y: 103.20 }, { x: '2025-04-20', y: 103.20 },
+  { x: '2025-04-21', y: 108.50 }, { x: '2025-05-12', y: 108.50 },
+  { x: '2025-05-13', y: 112.30 }, { x: '2025-06-15', y: 112.30 },
+  { x: '2025-06-16', y: 109.80 }, { x: '2025-07-01', y: 109.80 },
+  { x: '2025-07-02', y: 115.60 }, { x: '2025-08-01', y: 115.60 },
+]);
 
-/** Stepline data - discrete value changes */
-const STEPLINE_DATA: ValuePerformanceData = {
-  points: [
-    { timestamp: '2025-01-01', value: 10000, invested: 10000 },
-    { timestamp: '2025-01-20', value: 10000, invested: 10000 },
-    { timestamp: '2025-01-21', value: 10500, invested: 10000 },
-    { timestamp: '2025-02-15', value: 10500, invested: 10000 },
-    { timestamp: '2025-02-16', value: 11200, invested: 11000 },
-    { timestamp: '2025-03-10', value: 11200, invested: 11000 },
-    { timestamp: '2025-03-11', value: 10800, invested: 11000 },
-    { timestamp: '2025-04-05', value: 10800, invested: 11000 },
-    { timestamp: '2025-04-06', value: 12000, invested: 12000 },
-    { timestamp: '2025-05-01', value: 12000, invested: 12000 },
-    { timestamp: '2025-05-02', value: 12800, invested: 12000 },
-    { timestamp: '2025-06-01', value: 12800, invested: 12000 },
-    { timestamp: '2025-06-02', value: 11500, invested: 12000 },
-    { timestamp: '2025-07-01', value: 11500, invested: 12000 },
-    { timestamp: '2025-07-02', value: 13500, invested: 13000 },
-    { timestamp: '2025-08-01', value: 13500, invested: 13000 },
-    { timestamp: '2025-08-02', value: 14200, invested: 13000 },
-    { timestamp: '2025-09-01', value: 14200, invested: 13000 },
-    { timestamp: '2025-09-02', value: 13800, invested: 13000 },
-    { timestamp: '2025-10-01', value: 13800, invested: 13000 },
-    { timestamp: '2025-10-02', value: 15000, invested: 14000 },
-    { timestamp: '2025-11-01', value: 15000, invested: 14000 },
-    { timestamp: '2025-11-02', value: 15800, invested: 14000 },
-    { timestamp: '2025-12-01', value: 15800, invested: 14000 },
-  ],
-};
+/** Volatile data */
+const VOLATILE_VALUE_DATA: ChartDataPoint[] = toData([
+  { x: '2024-07-01', y: 30.00 }, { x: '2024-07-08', y: 34.00 }, { x: '2024-07-15', y: 38.00 }, { x: '2024-07-22', y: 42.00 },
+  { x: '2024-08-01', y: 35.00 }, { x: '2024-08-08', y: 28.00 },
+  { x: '2024-08-15', y: 32.00 }, { x: '2024-08-22', y: 38.00 }, { x: '2024-09-01', y: 45.00 }, { x: '2024-09-08', y: 52.00 },
+  { x: '2024-09-15', y: 44.00 }, { x: '2024-09-22', y: 36.00 }, { x: '2024-10-01', y: 30.00 },
+  { x: '2024-10-08', y: 33.00 }, { x: '2024-10-15', y: 37.00 }, { x: '2024-10-22', y: 42.00 }, { x: '2024-11-01', y: 48.00 },
+  { x: '2024-11-08', y: 42.00 }, { x: '2024-11-15', y: 38.00 },
+  { x: '2024-11-22', y: 44.00 }, { x: '2024-12-01', y: 50.00 }, { x: '2024-12-08', y: 55.00 }, { x: '2024-12-15', y: 52.00 },
+  { x: '2024-12-22', y: 56.00 }, { x: '2025-01-01', y: 58.00 },
+]);
+
+/** Incomplete interval data */
+const INCOMPLETE_VALUE_DATA: ChartDataPoint[] = toData([
+  { x: '2025-01-01', y: 100.00 }, { x: '2025-01-02', y: 100.50 }, { x: '2025-01-03', y: 101.20 },
+  { x: '2025-01-04', y: 101.80 }, { x: '2025-01-05', y: 102.30 }, { x: '2025-01-06', y: 102.10 },
+  { x: '2025-01-07', y: 102.60 }, { x: '2025-01-08', y: 103.20 }, { x: '2025-01-09', y: 103.80 },
+  { x: '2025-01-10', y: 104.50 }, { x: '2025-01-11', y: 104.20 }, { x: '2025-01-12', y: 104.80 },
+  { x: '2025-01-13', y: 105.40 }, { x: '2025-01-14', y: 106.00 }, { x: '2025-01-15', y: 106.50 },
+]);
 
 // ============ COMPONENT ============
 
 @Component({
   selector: 'app-value-performance-chart-page',
   standalone: true,
-  imports: [CommonModule, CoValuePerformanceChartComponent],
+  imports: [CommonModule, CoValuePerformanceChartComponent, MarkdownComponent, LanguagePipe],
   templateUrl: './value-performance-chart-page.component.html',
   styleUrls: ['./value-performance-chart-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ValuePerformanceChartPageComponent {
   private cdr = inject(ChangeDetectorRef);
+  private dateTimeService = inject(DateTimeService);
 
-  // ============ STATIC DATA ============
+  // ============ LINE CONFIGURATIONS (with embedded data) ============
 
-  readonly basicData = BASIC_DATA;
-  readonly positiveTrendData = POSITIVE_TREND_DATA;
-  readonly negativeTrendData = NEGATIVE_TREND_DATA;
-  readonly volatileData = VOLATILE_DATA;
-  readonly steplineData = STEPLINE_DATA;
+  /** Basic: 1 Year value line */
+  readonly basicLines: ChartLine[] = [
+    { name: 'Hodnota', color: 'chart-in', curveType: 'straight', fillOpacity: 0.5, data: ONE_YEAR_VALUE_DATA },
+  ];
+
+  /** 1 Day lines */
+  readonly oneDayLines: ChartLine[] = [
+    { name: 'Hodnota', color: 'chart-in', curveType: 'straight', fillOpacity: 0.5, data: ONE_DAY_VALUE_DATA },
+  ];
+
+  /** 5 Days lines */
+  readonly fiveDaysLines: ChartLine[] = [
+    { name: 'Hodnota', color: 'chart-in', curveType: 'straight', fillOpacity: 0.5, data: FIVE_DAYS_VALUE_DATA },
+  ];
+
+  /** 1 Month lines */
+  readonly oneMonthLines: ChartLine[] = [
+    { name: 'Hodnota', color: 'chart-in', curveType: 'straight', fillOpacity: 0.5, data: ONE_MONTH_VALUE_DATA },
+  ];
+
+  /** 1 Year lines */
+  readonly oneYearLines: ChartLine[] = [
+    { name: 'Hodnota', color: 'chart-in', curveType: 'straight', fillOpacity: 0.5, data: ONE_YEAR_VALUE_DATA },
+  ];
+
+  /** 5 Years: invested (base) + value (top) - pořadí je důležité pro stacking */
+  readonly fiveYearsLines: ChartLine[] = [
+    { name: 'Investováno', color: 'chart-out', curveType: 'stepline', fillOpacity: 0.08, stacked: true, data: FIVE_YEARS_INVESTED_DATA },
+    { name: 'Hodnota', color: 'chart-in', curveType: 'straight', fillOpacity: 0.5, stacked: true, data: FIVE_YEARS_VALUE_DATA },
+  ];
+
+  /** Hover example: invested + value */
+  readonly hoverExampleLines: ChartLine[] = [
+    { name: 'Investováno', color: 'chart-out', curveType: 'stepline', fillOpacity: 0.08, stacked: true, data: HOVER_INVESTED_DATA },
+    { name: 'Hodnota', color: 'chart-in', curveType: 'straight', fillOpacity: 0.5, stacked: true, data: HOVER_VALUE_DATA },
+  ];
+
+  /** Positive trend line (green) */
+  readonly positiveLines: ChartLine[] = [
+    { name: 'Hodnota', color: 'chart-in', curveType: 'straight', fillOpacity: 0.5, data: POSITIVE_VALUE_DATA },
+  ];
+
+  /** Negative trend line (dark) */
+  readonly negativeLines: ChartLine[] = [
+    { name: 'Hodnota', color: 'chart-out', curveType: 'straight', fillOpacity: 0.5, data: NEGATIVE_VALUE_DATA },
+  ];
+
+  /** Stepline curve type */
+  readonly steplineLines: ChartLine[] = [
+    { name: 'Hodnota', color: 'chart-in', curveType: 'stepline', fillOpacity: 0.5, data: STEPLINE_VALUE_DATA },
+  ];
+
+  /** Volatile data */
+  readonly volatileLines: ChartLine[] = [
+    { name: 'Hodnota', color: 'chart-in', curveType: 'straight', fillOpacity: 0.5, data: VOLATILE_VALUE_DATA },
+  ];
+
+  /** Incomplete interval */
+  readonly incompleteLines: ChartLine[] = [
+    { name: 'Hodnota', color: 'chart-in', curveType: 'straight', fillOpacity: 0.5, data: INCOMPLETE_VALUE_DATA },
+  ];
+
+  /** Custom colors: invested (base) + value (top) */
+  readonly customColorLines: ChartLine[] = [
+    { name: 'Vklad', color: 'chart-bonds', curveType: 'stepline', fillOpacity: 0.3, stacked: true, data: FIVE_YEARS_INVESTED_DATA },
+    { name: 'Portfolio', color: 'chart-stocks', curveType: 'straight', fillOpacity: 0.5, stacked: true, data: FIVE_YEARS_VALUE_DATA },
+  ];
+
+  /** Loading state lines (empty data) */
+  readonly loadingLines: ChartLine[] = [
+    { name: 'Hodnota', color: 'chart-in', curveType: 'straight', fillOpacity: 0.5, data: [] },
+  ];
 
   // Loading state
   isLoading = true;
 
   // Hovered point data
-  hoveredPoint: { timestamp: Date | number | string; value: number; invested?: number } | null = null;
+  hoveredPoint: { timestamp: Date | number | string; values: { name: string; value: number }[] } | null = null;
 
   // Date format for the chart
   dateFormat = 'dd.MM.yyyy';
 
   // ============ CODE EXAMPLES ============
 
-  basicExample = `<co-value-performance-chart
-  [data]="chartData"
-  [height]="300"
-  [valueUnit]="'Kč'"
-/>`;
-
-  positiveTrendExample = `<co-value-performance-chart
-  [data]="positiveData"
-  [trend]="'positive'"
-/>`;
-
-  negativeTrendExample = `<co-value-performance-chart
-  [data]="negativeData"
-  [trend]="'negative'"
-/>`;
-
-  withInvestedExample = `<co-value-performance-chart
-  [data]="chartData"
-  [showInvestedLine]="true"
+  readonly code = {
+    basic: `<co-value-performance-chart
+  [height]="350"
   [showLegend]="true"
-/>`;
+  [lines]="lines"
+  [dateFormat]="'yyyy'"
+/>`,
 
-  steplineExample = `<co-value-performance-chart
-  [data]="chartData"
-  [curveType]="'stepline'"
-  [showLegend]="true"
-/>`;
+    basicTs: `// Data přímo v konfiguraci čar
+readonly lines: ChartLine[] = [
+  {
+    name: 'Investováno',
+    color: 'chart-out',
+    curveType: 'stepline',
+    data: [
+      { x: '2020-01-01', y: 10 }, { x: '2021-01-01', y: 14 },
+      { x: '2022-01-01', y: 20 }, { x: '2023-01-01', y: 24 },
+      { x: '2024-01-01', y: 26 }, { x: '2024-12-15', y: 28 },
+    ]
+  },
+  {
+    name: 'Hodnota',
+    color: 'chart-in',
+    curveType: 'straight',
+    data: [
+      { x: '2020-01-01', y: 10 }, { x: '2021-01-01', y: 45 },
+      { x: '2022-01-01', y: 72 }, { x: '2023-01-01', y: 95 },
+      { x: '2024-01-01', y: 150 }, { x: '2024-12-15', y: 205 },
+    ]
+  },
+];`,
 
-  volatileExample = `<co-value-performance-chart
-  [data]="volatileData"
-  [showInvestedLine]="true"
-  [showLegend]="true"
-/>`;
-
-  hoverExample = `<co-value-performance-chart
-  [data]="chartData"
-  [dateFormat]="'dd.MM.yyyy'"
+    hover: `<co-value-performance-chart
+  [lines]="lines"
+  [dateFormat]="'MMM yyyy'"
   (pointHover)="onPointHover($event)"
-/>
+/>`,
 
-<!-- Zobrazení hodnot mimo komponentu -->
-@if (hoveredPoint) {
-  <div class="hover-values">
-    <span>{{ formatDate(hoveredPoint.timestamp) }}</span>
-    <span>{{ formatNumber(hoveredPoint.value) }}</span>
-  </div>
-}`;
+    hoverTs: `// Event obsahuje timestamp a pole hodnot ze všech čar
+onPointHover(event: { timestamp: Date | number | string; values: { name: string; value: number }[] } | null): void {
+  this.hoveredPoint = event;
+}`,
 
-  dataTypeExample = `interface ValuePerformanceDataPoint {
-  timestamp: Date | number | string;
-  value: number;
-  invested?: number;
+    positive: `<co-value-performance-chart
+  [lines]="positiveLines"
+  [valueUnit]="'Kč'"
+/>`,
+
+    positiveTs: `readonly positiveLines: ChartLine[] = [
+  {
+    name: 'Hodnota',
+    color: 'chart-in',
+    curveType: 'straight',
+    data: [
+      { x: '2024-07-01', y: 32.00 },
+      { x: '2024-08-01', y: 35.20 },
+      { x: '2024-09-01', y: 37.00 },
+      { x: '2024-10-01', y: 40.20 },
+      { x: '2024-11-01', y: 41.80 },
+      { x: '2024-12-01', y: 44.10 },
+      { x: '2025-01-01', y: 46.30 },
+    ]
+  },
+];`,
+
+    negative: `<co-value-performance-chart
+  [lines]="negativeLines"
+  [valueUnit]="'Kč'"
+/>`,
+
+    negativeTs: `readonly negativeLines: ChartLine[] = [
+  {
+    name: 'Hodnota',
+    color: 'chart-out',
+    curveType: 'straight',
+    data: [
+      { x: '2024-07-01', y: 48.00 },
+      { x: '2024-08-01', y: 44.40 },
+      { x: '2024-09-01', y: 42.80 },
+      { x: '2024-10-01', y: 40.40 },
+      { x: '2024-11-01', y: 38.80 },
+      { x: '2024-12-01', y: 36.00 },
+      { x: '2025-01-01', y: 33.80 },
+    ]
+  },
+];`,
+
+    withInvested: `<co-value-performance-chart
+  [height]="300"
+  [showLegend]="true"
+  [lines]="lines"
+  [valueUnit]="'USD'"
+/>`,
+
+    stepline: `<co-value-performance-chart
+  [height]="300"
+  [lines]="steplineLines"
+  [valueUnit]="'Kč'"
+/>`,
+
+    steplineTs: `readonly steplineLines: ChartLine[] = [
+  {
+    name: 'Hodnota',
+    color: 'chart-in',
+    curveType: 'stepline',
+    data: [
+      { x: '2025-01-01', y: 100.00 },
+      { x: '2025-01-23', y: 102.50 },
+      { x: '2025-02-21', y: 105.80 },
+      { x: '2025-03-06', y: 103.20 },
+      { x: '2025-04-21', y: 108.50 },
+      { x: '2025-05-13', y: 112.30 },
+      { x: '2025-07-02', y: 115.60 },
+    ]
+  },
+];`,
+
+    volatile: `<co-value-performance-chart
+  [height]="300"
+  [lines]="volatileLines"
+  [valueUnit]="'Kč'"
+/>`,
+
+    volatileTs: `readonly volatileLines: ChartLine[] = [
+  {
+    name: 'Hodnota',
+    color: 'chart-in',
+    curveType: 'straight',
+    data: [
+      { x: '2024-07-01', y: 30.00 },
+      { x: '2024-08-01', y: 35.00 },
+      { x: '2024-08-15', y: 28.00 },
+      { x: '2024-09-01', y: 45.00 },
+      { x: '2024-10-01', y: 30.00 },
+      { x: '2024-11-01', y: 48.00 },
+      { x: '2024-12-01', y: 55.00 },
+      { x: '2025-01-01', y: 58.00 },
+    ]
+  },
+];`,
+
+    incomplete: `<co-value-performance-chart
+  [height]="300"
+  [lines]="incompleteLines"
+  [xAxisMin]="'2025-01-01'"
+  [xAxisMax]="'2025-01-31'"
+  [dateFormat]="'dd.MM'"
+  [valueUnit]="'Kč'"
+/>`,
+
+    incompleteTs: `// Data končí 15. ledna, ale osa X pokračuje do 31. ledna
+readonly incompleteLines: ChartLine[] = [
+  {
+    name: 'Hodnota',
+    color: 'chart-in',
+    curveType: 'straight',
+    data: [
+      { x: '2025-01-01', y: 100.00 },
+      { x: '2025-01-05', y: 102.30 },
+      { x: '2025-01-10', y: 104.50 },
+      { x: '2025-01-15', y: 106.50 },
+      // Data zatím nejsou k dispozici pro zbytek měsíce
+    ]
+  },
+];`,
+
+    timeInterval1d: `<co-value-performance-chart
+  [height]="200"
+  [lines]="oneDayLines"
+  [dateFormat]="'HH:mm'"
+/>`,
+
+    timeInterval5d: `<co-value-performance-chart
+  [height]="200"
+  [lines]="fiveDaysLines"
+  [dateFormat]="'dd.MM'"
+/>`,
+
+    timeInterval1m: `<co-value-performance-chart
+  [height]="200"
+  [lines]="oneMonthLines"
+  [dateFormat]="'dd.MM'"
+/>`,
+
+    timeInterval1y: `<co-value-performance-chart
+  [height]="200"
+  [lines]="oneYearLines"
+  [dateFormat]="'MMM yyyy'"
+/>`,
+
+    timeInterval5y: `<co-value-performance-chart
+  [height]="200"
+  [lines]="fiveYearsLines"
+  [dateFormat]="'yyyy'"
+/>`,
+
+    minimal: `<co-value-performance-chart
+  [height]="200"
+  [lines]="lines"
+  [showHighLowValues]="false"
+/>`,
+
+    loading: `<co-value-performance-chart
+  [height]="300"
+  [loading]="isLoading"
+  [lines]="lines"
+/>`,
+
+    customColors: `<co-value-performance-chart
+  [height]="350"
+  [showLegend]="true"
+  [lines]="customColorLines"
+  [dateFormat]="'MMM yyyy'"
+  [valueUnit]="'Kč'"
+/>`,
+
+    customColorsTs: `readonly customColorLines: ChartLine[] = [
+  {
+    name: 'Vklad',
+    color: 'chart-bonds',
+    curveType: 'stepline',
+    data: [
+      { x: '2020-01-01', y: 10 }, { x: '2021-01-01', y: 14 },
+      { x: '2022-01-01', y: 20 }, { x: '2023-01-01', y: 24 },
+      { x: '2024-01-01', y: 26 }, { x: '2024-12-15', y: 28 },
+    ]
+  },
+  {
+    name: 'Portfolio',
+    color: 'chart-stocks',
+    curveType: 'straight',
+    data: [
+      { x: '2020-01-01', y: 10 }, { x: '2021-01-01', y: 45 },
+      { x: '2022-01-01', y: 72 }, { x: '2023-01-01', y: 95 },
+      { x: '2024-01-01', y: 150 }, { x: '2024-12-15', y: 205 },
+    ]
+  },
+];`,
+
+    dataTypes: `/** Datový bod pro čáru grafu */
+interface ChartDataPoint {
+  x: Date | number | string;
+  y: number;
 }
 
-interface ValuePerformanceData {
-  points: ValuePerformanceDataPoint[];
-  highValue?: number;
-  lowValue?: number;
-  closingValue?: number;
-}`;
+/** Konfigurace jedné čáry grafu - obsahuje definici i data */
+interface ChartLine {
+  name: string;
+  color: ChartColor;
+  curveType: 'smooth' | 'straight' | 'stepline';
+  data: ChartDataPoint[];
+}`,
+
+    sampleData: `// Kompletní příklad - každá čára má vlastní data
+readonly lines: ChartLine[] = [
+  {
+    name: 'Investováno',
+    color: 'chart-out',
+    curveType: 'stepline',
+    data: [
+      { x: '2024-01-01', y: 100000 },
+      { x: '2024-02-01', y: 100000 },
+      { x: '2024-03-01', y: 110000 },
+      { x: '2024-04-01', y: 110000 },
+      { x: '2024-05-01', y: 120000 },
+      { x: '2024-06-01', y: 120000 },
+    ]
+  },
+  {
+    name: 'Hodnota',
+    color: 'chart-in',
+    curveType: 'straight',
+    data: [
+      { x: '2024-01-01', y: 100000 },
+      { x: '2024-02-01', y: 105000 },
+      { x: '2024-03-01', y: 115000 },
+      { x: '2024-04-01', y: 125000 },
+      { x: '2024-05-01', y: 135000 },
+      { x: '2024-06-01', y: 145000 },
+    ]
+  },
+];`,
+  };
 
   // ============ METHODS ============
 
@@ -234,27 +764,17 @@ interface ValuePerformanceData {
     }, 2000);
   }
 
-  onPointHover(event: { timestamp: Date | number | string; value: number; invested?: number } | null): void {
+  onPointHover(event: { timestamp: Date | number | string; values: { name: string; value: number }[] } | null): void {
     this.hoveredPoint = event;
     this.cdr.markForCheck();
   }
 
   formatNumber(value: number): string {
-    return value.toLocaleString('cs-CZ', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    return this.dateTimeService.formatNumber(value);
   }
 
   formatDate(timestamp: Date | number | string): string {
-    const date = new Date(timestamp);
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    return this.dateFormat
-      .replace('yyyy', date.getFullYear().toString())
-      .replace('MM', pad(date.getMonth() + 1))
-      .replace('dd', pad(date.getDate()))
-      .replace('HH', pad(date.getHours()))
-      .replace('mm', pad(date.getMinutes()));
+    return this.dateTimeService.formatDate(timestamp, this.dateFormat);
   }
 
   toggleLoading(): void {
