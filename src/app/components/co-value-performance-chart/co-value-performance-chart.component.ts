@@ -186,6 +186,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   private dataSignal = signal<ValuePerformanceData>({ points: [] });
   private trendSignal = signal<ChartTrend>('auto');
   private activeIntervalSignal = signal<TimeInterval>('1Y');
+  private showInvestedLineSignal = signal(true);
 
   // Computed: determine actual trend
   computedTrend = computed(() => {
@@ -216,6 +217,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   // Computed: series data for ApexCharts
   chartSeries = computed<ApexAxisChartSeries>(() => {
     const data = this.dataSignal();
+    const showInvested = this.showInvestedLineSignal();
     const series: ApexAxisChartSeries = [];
 
     // Value series (area)
@@ -230,7 +232,8 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
     });
 
     // Invested series (line) - only if data exists and showInvestedLine
-    if (this.showInvestedLine && data.points.some(p => p.invested !== undefined)) {
+    const hasInvestedData = data.points.some(p => p.invested !== undefined);
+    if (showInvested && hasInvestedData) {
       const investedData = data.points
         .filter(p => p.invested !== undefined)
         .map(p => ({
@@ -251,6 +254,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   legendItems = computed<ChartLegendItem[]>(() => {
     const colors = this.chartColors();
     const data = this.dataSignal();
+    const showInvested = this.showInvestedLineSignal();
     const items: ChartLegendItem[] = [];
 
     // Value legend item
@@ -263,7 +267,8 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
     });
 
     // Invested legend item (if applicable)
-    if (this.showInvestedLine && data.points.some(p => p.invested !== undefined)) {
+    const hasInvestedData = data.points.some(p => p.invested !== undefined);
+    if (showInvested && hasInvestedData) {
       items.push({
         label: 'Investováno',
         value: lastPoint?.invested ?? 0,
@@ -414,6 +419,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
     this.dataSignal.set(this.data);
     this.trendSignal.set(this.trend);
     this.activeIntervalSignal.set(this.activeTimeInterval);
+    this.showInvestedLineSignal.set(this.showInvestedLine);
   }
 
   // ============ PRIVATE METHODS ============
@@ -423,7 +429,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
     const colors = this.chartColors();
 
     this.chartConfig = {
-      type: 'area',
+      type: 'line',
       height: this.height,
       fontFamily: 'inherit',
       ...(this.nonce && { nonce: this.nonce }),
