@@ -112,6 +112,9 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   /** Loading stav */
   @Input() loading = false;
 
+  /** CSP nonce pro inline styly */
+  @Input() nonce?: string;
+
   /** Počet skeleton položek legendy při loading */
   @Input() skeletonLegendCount = 4;
 
@@ -175,6 +178,8 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   );
 
   chartColors = computed(() => {
+    // Read colorVersion to react to theme changes
+    this.chartColorService.getColorVersion()();
     const colors = this.colorsSignal();
     const dataLength = this.processedData().length;
 
@@ -245,6 +250,7 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
       width: this.height,
       height: this.height,
       fontFamily: 'inherit',
+      ...(this.nonce && { nonce: this.nonce }),
       animations: {
         enabled: true,
         easing: 'easeinout',

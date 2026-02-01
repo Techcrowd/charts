@@ -112,6 +112,9 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   /** Loading stav */
   @Input() loading = false;
 
+  /** CSP nonce pro inline styly */
+  @Input() nonce?: string;
+
   /** Počet skeleton sloupců při loading */
   @Input() skeletonColumnCount = 6;
 
@@ -167,6 +170,8 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   });
 
   chartColors = computed(() => {
+    // Read colorVersion to react to theme changes
+    this.chartColorService.getColorVersion()();
     const colors = this.colorsSignal();
     const seriesLength = this.dataSignal().series.length;
 
@@ -232,6 +237,7 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
       type: 'bar',
       height: this.height,
       fontFamily: 'inherit',
+      ...(this.nonce && { nonce: this.nonce }),
       toolbar: {
         show: false,
       },

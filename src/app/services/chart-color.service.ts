@@ -1,4 +1,4 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, signal, computed, DestroyRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 // ============ TYPES ============
@@ -21,6 +21,7 @@ export type ChartColor =
 })
 export class ChartColorService {
   private platformId = inject(PLATFORM_ID);
+  private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(this.platformId);
 
   // Fallback colors (used if CSS variables not available)
@@ -65,35 +66,74 @@ export class ChartColorService {
     'chart-orangish',
   ];
 
-  // Loaded color hex values from CSS variables
-  private colorHexValues: Record<ChartColor, string> = {} as Record<ChartColor, string>;
-  private colorsLoaded = false;
+  // Signal to track color version (increments on theme change)
+  private colorVersion = signal(0);
+
+  // Cached color hex values
+  private colorHexCache: Record<ChartColor, string> = {} as Record<ChartColor, string>;
+
+  // Mutation observer for theme changes
+  private mutationObserver?: MutationObserver;
 
   constructor() {
     this.loadColorsFromCssVariables();
+    this.setupThemeChangeListener();
   }
 
   /**
-   * Load colors from CSS variables (call once on init)
+   * Load colors from CSS variables
    */
-  loadColorsFromCssVariables(): void {
-    if (this.colorsLoaded) return;
-
+  private loadColorsFromCssVariables(): void {
     const styles = this.isBrowser ? getComputedStyle(document.documentElement) : null;
 
     this.availableColors.forEach((colorName) => {
       const value = styles?.getPropertyValue(`--${colorName}`).trim();
-      this.colorHexValues[colorName] = value || this.fallbackColors[colorName];
+      this.colorHexCache[colorName] = value || this.fallbackColors[colorName];
+    });
+  }
+
+  /**
+   * Setup listener for theme changes (watches for class/attribute changes on html element)
+   */
+  private setupThemeChangeListener(): void {
+    if (!this.isBrowser) return;
+
+    // Watch for changes on document element (class, data-theme, etc.)
+    this.mutationObserver = new MutationObserver(() => {
+      this.reloadColors();
     });
 
-    this.colorsLoaded = true;
+    this.mutationObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class', 'data-theme', 'data-mode'],
+    });
+
+    // Also watch for prefers-color-scheme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = () => this.reloadColors();
+    mediaQuery.addEventListener('change', handleChange);
+
+    // Cleanup on destroy
+    this.destroyRef.onDestroy(() => {
+      this.mutationObserver?.disconnect();
+      mediaQuery.removeEventListener('change', handleChange);
+    });
+  }
+
+  /**
+   * Get color version signal (use in computed to react to theme changes)
+   */
+  getColorVersion() {
+    return this.colorVersion;
   }
 
   /**
    * Get hex value for a specific chart color
    */
   getColorHex(color: ChartColor): string {
-    return this.colorHexValues[color] || this.fallbackColors[color];
+    // Access colorVersion to create dependency for reactivity
+    this.colorVersion();
+    return this.colorHexCache[color] || this.fallbackColors[color];
   }
 
   /**
@@ -137,10 +177,10 @@ export class ChartColorService {
   }
 
   /**
-   * Reload colors from CSS variables (useful if theme changes)
+   * Reload colors from CSS variables (call when theme changes)
    */
   reloadColors(): void {
-    this.colorsLoaded = false;
     this.loadColorsFromCssVariables();
+    this.colorVersion.update(v => v + 1);
   }
 }
