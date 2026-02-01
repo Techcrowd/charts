@@ -61,23 +61,7 @@ export interface ValuePerformanceData {
   closingValue?: number;
 }
 
-/** Konfigurace časového intervalu */
-interface TimeIntervalConfig {
-  label: string;
-  value: TimeInterval;
-}
-
 /** Statické konfigurace */
-const TIME_INTERVALS: TimeIntervalConfig[] = [
-  { label: '1D', value: '1D' },
-  { label: '5D', value: '5D' },
-  { label: '1M', value: '1M' },
-  { label: '6M', value: '6M' },
-  { label: '1Y', value: '1Y' },
-  { label: '5Y', value: '5Y' },
-  { label: 'Vše', value: 'ALL' },
-];
-
 const STATES_CONFIG: ApexStates = {
   hover: { filter: { type: 'none' } },
   active: { allowMultipleDataPointsSelection: false, filter: { type: 'none' } },
@@ -127,11 +111,8 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   /** Zobrazit tooltip */
   @Input() showTooltip = true;
 
-  /** Zobrazit selektor časového intervalu */
-  @Input() showTimeIntervalSelector = true;
-
-  /** Aktivní časový interval */
-  @Input() activeTimeInterval: TimeInterval = '1Y';
+  /** Zobrazit Y osu */
+  @Input() showYAxis = false;
 
   /** Trend grafu (auto = automaticky podle dat) */
   @Input() trend: ChartTrend = 'auto';
@@ -159,9 +140,6 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
 
   // ============ OUTPUTS ============
 
-  /** Emituje při změně časového intervalu */
-  @Output() timeIntervalChange = new EventEmitter<TimeInterval>();
-
   /** Emituje při hoveru nad bodem */
   @Output() pointHover = new EventEmitter<{
     timestamp: Date | number | string;
@@ -178,14 +156,12 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
 
   // ============ INTERNAL STATE ============
 
-  readonly timeIntervals = TIME_INTERVALS;
   hoveredSeriesIndex = signal(-1);
   isLegendHover = signal(false);
 
   // Internal signals for reactive data
   private dataSignal = signal<ValuePerformanceData>({ points: [] });
   private trendSignal = signal<ChartTrend>('auto');
-  private activeIntervalSignal = signal<TimeInterval>('1Y');
   private showInvestedLineSignal = signal(true);
 
   // Computed: determine actual trend
@@ -418,7 +394,6 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   private syncSignals(): void {
     this.dataSignal.set(this.data);
     this.trendSignal.set(this.trend);
-    this.activeIntervalSignal.set(this.activeTimeInterval);
     this.showInvestedLineSignal.set(this.showInvestedLine);
   }
 
@@ -530,6 +505,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
     };
 
     this.yAxisConfig = {
+      show: this.showYAxis,
       labels: {
         style: {
           colors: CHART_COLORS.contentTertiary,
@@ -617,16 +593,6 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
       hour: '2-digit',
       minute: '2-digit',
     });
-  }
-
-  onTimeIntervalClick(interval: TimeInterval): void {
-    this.activeTimeInterval = interval;
-    this.activeIntervalSignal.set(interval);
-    this.timeIntervalChange.emit(interval);
-  }
-
-  isActiveInterval(interval: TimeInterval): boolean {
-    return this.activeIntervalSignal() === interval;
   }
 
   onLegendItemHover(index: number): void {

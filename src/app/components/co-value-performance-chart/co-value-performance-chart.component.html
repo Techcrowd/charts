@@ -4,28 +4,6 @@
   [class.co-value-performance-chart--positive]="computedTrend() === 'positive'"
   [class.co-value-performance-chart--negative]="computedTrend() === 'negative'"
 >
-  <!-- Time Interval Selector -->
-  @if (showTimeIntervalSelector) {
-    <div class="co-value-performance-chart__intervals">
-      @if (loading) {
-        @for (i of [1, 2, 3, 4, 5, 6, 7]; track i) {
-          <span class="co-value-performance-chart__interval-skeleton"></span>
-        }
-      } @else {
-        @for (interval of timeIntervals; track interval.value) {
-          <button
-            type="button"
-            class="co-value-performance-chart__interval"
-            [class.co-value-performance-chart__interval--active]="isActiveInterval(interval.value)"
-            (click)="onTimeIntervalClick(interval.value)"
-          >
-            {{ interval.label }}
-          </button>
-        }
-      }
-    </div>
-  }
-
   <!-- Chart Container -->
   <div class="co-value-performance-chart__chart-wrapper">
     @if (loading) {
@@ -96,4 +74,9 @@
       />
     }
   }
+
+  <!-- Slot for custom controls (e.g., co-tab for time intervals) -->
+  <div class="co-value-performance-chart__controls">
+    <ng-content></ng-content>
+  </div>
 </div>

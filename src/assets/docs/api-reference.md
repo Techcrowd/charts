@@ -127,8 +127,7 @@ interface ColumnChartSeries {
 | `[showClosingValue]` | boolean | true | Zobrazit zavírací hodnotu |
 | `[showLegend]` | boolean | true | Zobrazit legendu |
 | `[showTooltip]` | boolean | true | Zobrazit tooltip |
-| `[showTimeIntervalSelector]` | boolean | true | Zobrazit selektor časového intervalu |
-| `[activeTimeInterval]` | TimeInterval | '1Y' | Aktivní časový interval |
+| `[showYAxis]` | boolean | false | Zobrazit Y osu |
 | `[trend]` | 'positive' \| 'negative' \| 'auto' | 'auto' | Trend grafu (auto = podle dat) |
 | `[valueUnit]` | string | '' | Jednotka hodnoty (měna) |
 | `[positiveColor]` | ChartColor | 'chart-in' | Barva pro pozitivní trend |
@@ -141,7 +140,6 @@ interface ColumnChartSeries {
 
 | Output | Typ | Popis |
 |--------|-----|-------|
-| `(timeIntervalChange)` | TimeInterval | Změna časového intervalu |
 | `(pointHover)` | { timestamp, value, invested? } \| null | Hover nad bodem |
 | `(pointClick)` | { timestamp, value, invested? } | Kliknutí na bod |
 

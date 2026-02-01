@@ -8,7 +8,7 @@
   <section class="demo-section">
     <h2>Základní použití</h2>
     <p class="demo-note">
-      Graf s časovým selektorem, legendou a tooltipem. Klikněte na časový interval pro změnu dat.
+      Graf s legendou a tooltipem. Pro vlastní ovládací prvky (např. co-tab) použijte ng-content slot.
     </p>
     <div class="demo-card">
       <co-value-performance-chart
@@ -17,9 +17,7 @@
         [showLegend]="true"
         [showTooltip]="true"
         [showInvestedLine]="true"
-        [activeTimeInterval]="activeInterval"
         [valueUnit]="'USD'"
-        (timeIntervalChange)="onIntervalChange($event)"
         (pointHover)="onPointHover($event)"
         (pointClick)="onPointClick($event)"
       />
@@ -48,7 +46,6 @@
           [showLegend]="true"
           [showTooltip]="true"
           [showInvestedLine]="false"
-          [showTimeIntervalSelector]="false"
           [valueUnit]="'Kč'"
         />
       </div>
@@ -60,7 +57,6 @@
           [showLegend]="true"
           [showTooltip]="true"
           [showInvestedLine]="false"
-          [showTimeIntervalSelector]="false"
           [valueUnit]="'Kč'"
         />
       </div>
@@ -88,7 +84,6 @@
         [showLegend]="true"
         [showTooltip]="true"
         [showInvestedLine]="true"
-        [showTimeIntervalSelector]="false"
         [valueUnit]="'USD'"
       />
     </div>
@@ -101,7 +96,7 @@
   <section class="demo-section">
     <h2>Minimální varianta</h2>
     <p class="demo-note">
-      Graf bez legendy, časového selektoru a anotací - jen čistá křivka.
+      Graf bez legendy a anotací - jen čistá křivka.
     </p>
     <div class="demo-card">
       <co-value-performance-chart
@@ -110,7 +105,6 @@
         [showLegend]="false"
         [showTooltip]="true"
         [showInvestedLine]="false"
-        [showTimeIntervalSelector]="false"
         [showHighLowValues]="false"
         [showClosingValue]="false"
       />
@@ -206,16 +200,10 @@
             <td>Zobrazit tooltip</td>
           </tr>
           <tr>
-            <td><code>[showTimeIntervalSelector]</code></td>
+            <td><code>[showYAxis]</code></td>
             <td>boolean</td>
-            <td>true</td>
-            <td>Zobrazit selektor časového intervalu</td>
-          </tr>
-          <tr>
-            <td><code>[activeTimeInterval]</code></td>
-            <td>TimeInterval</td>
-            <td>'1Y'</td>
-            <td>Aktivní časový interval</td>
+            <td>false</td>
+            <td>Zobrazit Y osu</td>
           </tr>
           <tr>
             <td><code>[trend]</code></td>
@@ -273,11 +261,6 @@
         </thead>
         <tbody>
           <tr>
-            <td><code>(timeIntervalChange)</code></td>
-            <td>TimeInterval</td>
-            <td>Změna časového intervalu</td>
-          </tr>
-          <tr>
             <td><code>(pointHover)</code></td>
             <td>{{ '{ timestamp, value, invested? }' }} | null</td>
             <td>Hover nad bodem</td>
@@ -290,16 +273,11 @@
         </tbody>
       </table>
 
-      <h2>TimeInterval</h2>
-      <ul>
-        <li><code>'1D'</code> - Jeden den</li>
-        <li><code>'5D'</code> - Pět dní</li>
-        <li><code>'1M'</code> - Jeden měsíc</li>
-        <li><code>'6M'</code> - Šest měsíců</li>
-        <li><code>'1Y'</code> - Jeden rok</li>
-        <li><code>'5Y'</code> - Pět let</li>
-        <li><code>'ALL'</code> - Celá historie</li>
-      </ul>
+      <h2>Content Projection</h2>
+      <p>Pro vlastní ovládací prvky použijte ng-content slot:</p>
+      <pre><code>&lt;co-value-performance-chart [data]="data"&gt;
+  &lt;co-tab [options]="intervals" (change)="onIntervalChange($event)" /&gt;
+&lt;/co-value-performance-chart&gt;</code></pre>
     </div>
   </section>
 </div>
