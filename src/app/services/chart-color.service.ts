@@ -105,7 +105,7 @@ export class ChartColorService {
 
     this.mutationObserver.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['class', 'data-theme', 'data-mode'],
+      attributeFilter: ['class', 'data-color-schema'],
     });
 
     // Also watch for prefers-color-scheme changes
