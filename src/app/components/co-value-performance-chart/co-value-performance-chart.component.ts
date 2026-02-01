@@ -109,7 +109,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
   @Input() showLegend = true;
 
   /** Zobrazit tooltip */
-  @Input() showTooltip = true;
+  @Input() showTooltip = false;
 
   /** Zobrazit Y osu */
   @Input() showYAxis = false;
@@ -466,7 +466,7 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
         opacityTo: 0.1,
         stops: [0, 100],
       },
-      opacity: [1, 0],
+      opacity: [1, 1],
     };
 
     this.markersConfig = {

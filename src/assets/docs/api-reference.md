@@ -126,7 +126,7 @@ interface ColumnChartSeries {
 | `[showHighLowValues]` | boolean | true | Zobrazit high/low anotace |
 | `[showClosingValue]` | boolean | true | Zobrazit zavírací hodnotu |
 | `[showLegend]` | boolean | true | Zobrazit legendu |
-| `[showTooltip]` | boolean | true | Zobrazit tooltip |
+| `[showTooltip]` | boolean | false | Zobrazit tooltip |
 | `[showYAxis]` | boolean | false | Zobrazit Y osu |
 | `[trend]` | 'positive' \| 'negative' \| 'auto' | 'auto' | Trend grafu (auto = podle dat) |
 | `[valueUnit]` | string | '' | Jednotka hodnoty (měna) |
