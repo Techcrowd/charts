@@ -19,12 +19,12 @@
           </div>
           <div class="hover-values-display__item">
             <span class="hover-values-display__label">Hodnota:</span>
-            <span class="hover-values-display__value">{{ hoveredPoint.value | number:'1.2-2':'cs' }} USD</span>
+            <span class="hover-values-display__value">{{ formatNumber(hoveredPoint.value) }} USD</span>
           </div>
           @if (hoveredPoint.invested) {
             <div class="hover-values-display__item">
               <span class="hover-values-display__label">Investováno:</span>
-              <span class="hover-values-display__value">{{ hoveredPoint.invested | number:'1.2-2':'cs' }} USD</span>
+              <span class="hover-values-display__value">{{ formatNumber(hoveredPoint.invested) }} USD</span>
             </div>
           }
         } @else {

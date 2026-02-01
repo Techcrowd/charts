@@ -201,6 +201,13 @@ interface ValuePerformanceData {
     this.cdr.markForCheck();
   }
 
+  formatNumber(value: number): string {
+    return value.toLocaleString('cs-CZ', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+
   toggleLoading(): void {
     this.isLoading = !this.isLoading;
   }
