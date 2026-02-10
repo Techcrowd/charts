@@ -23,6 +23,10 @@ export const routes: Routes = [
         path: 'value-performance-chart',
         loadComponent: () => import('./pages/value-performance-chart/value-performance-chart-page.component').then(m => m.ValuePerformanceChartPageComponent),
       },
+      {
+        path: 'panel-menu',
+        loadComponent: () => import('./pages/panel-menu/panel-menu.page').then(m => m.PanelMenuPage),
+      },
     ],
   },
 ];

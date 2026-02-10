@@ -1,0 +1,146 @@
+<div class="page">
+  <h1 class="page__title">Panel Menu</h1>
+  <p class="page__subtitle">co-panel-menu component</p>
+
+  <!-- Základní použití -->
+  <section class="demo-section">
+    <h2>Základní použití</h2>
+    <p class="demo-note">Menu s expandovatelnými sekcemi, oblíbenými a skeleton loading stavem</p>
+    <div class="demo-grid">
+      <div class="demo-card" style="max-width: 320px; background: #fff;">
+        <co-panel-menu
+          [overviewItems]="overviewItems"
+          [favoriteItems]="favoriteItems"
+          (itemClick)="onItemClick($event)"
+          (favoriteToggle)="onFavoriteToggle($event)"
+        />
+      </div>
+      <div class="demo-card" style="flex: 1;">
+        <h3>Interakce</h3>
+        <div class="event-log">
+          <strong>Akce:</strong> {{ lastAction() }}
+        </div>
+        <markdown clipboard class="code-block" [data]="code.basic | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interface -->
+  <section class="demo-section">
+    <h2>PanelMenu Interface</h2>
+    <div class="demo-card">
+      <markdown clipboard class="code-block" [data]="code.interface | language : 'typescript'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.data | language : 'typescript'"></markdown>
+    </div>
+  </section>
+
+  <!-- Loading stav -->
+  <section class="demo-section">
+    <h2>Loading stav</h2>
+    <div class="demo-grid">
+      <div class="demo-card" style="max-width: 320px; background: #fff;">
+        <co-panel-menu [isLoading]="true" />
+      </div>
+      <div class="demo-card" style="flex: 1;">
+        <markdown clipboard class="code-block" [data]="code.loading | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bez oblíbených -->
+  <section class="demo-section">
+    <h2>Bez oblíbených</h2>
+    <div class="demo-grid">
+      <div class="demo-card" style="max-width: 320px; background: #fff;">
+        <co-panel-menu
+          [overviewItems]="overviewItems"
+          [favoriteItems]="emptyFavorites"
+          [showFavoriteIcons]="false"
+          (itemClick)="onItemClick($event)"
+        />
+      </div>
+      <div class="demo-card" style="flex: 1;">
+        <markdown clipboard class="code-block" [data]="code.noFavorites | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- API Reference -->
+  <section class="demo-section">
+    <h2>API Reference</h2>
+    <div class="demo-card api-card">
+      <h3>Inputs</h3>
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Název</th>
+            <th>Typ</th>
+            <th>Výchozí</th>
+            <th>Popis</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>overviewItems</code></td>
+            <td><code>PanelMenu[]</code></td>
+            <td><code>[]</code></td>
+            <td>Položky hlavního menu</td>
+          </tr>
+          <tr>
+            <td><code>favoriteItems</code></td>
+            <td><code>PanelMenu[]</code></td>
+            <td><code>[]</code></td>
+            <td>Oblíbené položky</td>
+          </tr>
+          <tr>
+            <td><code>isLoading</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>Skeleton loading stav</td>
+          </tr>
+          <tr>
+            <td><code>showFavoriteIcons</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Zobrazit hvězdičky pro oblíbené</td>
+          </tr>
+          <tr>
+            <td><code>defaultActiveItem</code></td>
+            <td><code>string</code></td>
+            <td>—</td>
+            <td>Label výchozí aktivní položky</td>
+          </tr>
+          <tr>
+            <td><code>defaultActiveSubItem</code></td>
+            <td><code>string</code></td>
+            <td>—</td>
+            <td>Label výchozí aktivní podpoložky</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin-top: 24px;">Outputs</h3>
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Název</th>
+            <th>Typ</th>
+            <th>Popis</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>itemClick</code></td>
+            <td><code>PanelMenu</code></td>
+            <td>Emituje při kliknutí na položku</td>
+          </tr>
+          <tr>
+            <td><code>favoriteToggle</code></td>
+            <td><code>PanelMenu</code></td>
+            <td>Emituje při přidání/odebrání z oblíbených</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

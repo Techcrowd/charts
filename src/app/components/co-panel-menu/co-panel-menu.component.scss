@@ -1,0 +1,357 @@
+@use '../../styles/tokens' as *;
+
+// ============ ANIMATIONS ============
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+// ============ PANEL MENU ============
+
+.custom-panel-menu {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  padding: $spacing-sm;
+  font-family: $font-family-base;
+}
+
+// ============ OVERVIEW BUTTON ============
+
+.overview {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  border: none;
+  border-radius: $border-radius-lg;
+  background: transparent;
+  cursor: pointer;
+  transition: background $transition-fast, color $transition-fast;
+  @include body-secondary;
+  color: $color-content-secondary;
+
+  &:hover {
+    background: $color-background-surface-secondary;
+  }
+
+  &.active {
+    background: $color-interactive-primary;
+    color: $color-interactive-on-primary;
+
+    .icon-wrap {
+      color: $color-interactive-on-primary;
+    }
+  }
+}
+
+.overview-label {
+  @include body-secondary-bold;
+}
+
+// ============ ICON ============
+
+.icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: $color-content-tertiary;
+  transition: color $transition-fast;
+}
+
+// ============ FAVORITE SECTION ============
+
+.favorite-section {
+  margin-top: $spacing-sm;
+  padding-bottom: $spacing-sm;
+  border-bottom: 1px solid $color-background-border;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-lg;
+  margin-bottom: $spacing-xs;
+}
+
+.section-title {
+  @include caption-primary-bold;
+  color: $color-content-tertiary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.icon-favorite {
+  color: $color-attention-processing;
+}
+
+.favorite-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+// ============ MENU ITEMS ============
+
+.menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-top: $spacing-sm;
+}
+
+.menu-item-group {
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+}
+
+// ============ HEADER (menu item) ============
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  width: 100%;
+  padding: $spacing-md $spacing-lg;
+  border: none;
+  border-radius: $border-radius-lg;
+  background: transparent;
+  cursor: pointer;
+  transition: background $transition-fast, color $transition-fast;
+  @include body-secondary;
+  color: $color-content-secondary;
+  text-align: left;
+
+  &:hover {
+    background: $color-background-surface-secondary;
+  }
+
+  &.active {
+    color: $color-interactive-primary;
+    background: $color-background-surface-secondary;
+
+    .icon-wrap {
+      color: $color-interactive-primary;
+    }
+  }
+}
+
+.header-label {
+  @include body-secondary-bold;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ============ FAVORITE BUTTON ============
+
+.icon-favorite-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: $color-content-quaternary;
+  cursor: pointer;
+  border-radius: $border-radius-full;
+  transition: color $transition-fast, background $transition-fast;
+  opacity: 0;
+
+  .header:hover & {
+    opacity: 1;
+  }
+
+  &.is-favorite {
+    opacity: 1;
+    color: $color-attention-processing;
+  }
+
+  &:hover {
+    color: $color-attention-processing;
+    background: $color-background-surface-secondary;
+  }
+}
+
+// ============ EXPAND ARROW ============
+
+.rotate-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: $color-content-tertiary;
+  transition: transform 0.25s ease, color $transition-fast;
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+}
+
+// ============ DROPDOWN (subitems) ============
+
+.dropdown-container {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+
+  &.is-open {
+    grid-template-rows: 1fr;
+  }
+}
+
+.dropdown-inner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-left: $spacing-xl;
+}
+
+// ============ SUBITEM ============
+
+.subitem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  width: 100%;
+  padding: $spacing-sm $spacing-lg;
+  border: none;
+  border-radius: $border-radius-md;
+  background: transparent;
+  cursor: pointer;
+  transition: background $transition-fast, color $transition-fast;
+  @include body-secondary;
+  color: $color-content-secondary;
+  text-align: left;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 60%;
+    border-radius: 1px;
+    background: transparent;
+    transition: background $transition-fast;
+  }
+
+  &:hover {
+    background: $color-background-surface-secondary;
+  }
+
+  &.active {
+    color: $color-interactive-primary;
+    background: $color-background-surface-secondary;
+
+    &::before {
+      background: $color-interactive-primary;
+    }
+  }
+}
+
+.subitem-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ============ SKELETON LOADING ============
+
+.skeleton-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  padding: $spacing-lg;
+}
+
+.skeleton-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm 0;
+}
+
+.skeleton-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: $border-radius-md;
+  background: linear-gradient(
+    90deg,
+    $color-background-surface-tertiary 25%,
+    $color-background-surface-secondary 50%,
+    $color-background-surface-tertiary 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.skeleton-text {
+  height: 14px;
+  border-radius: $border-radius-sm;
+  background: linear-gradient(
+    90deg,
+    $color-background-surface-tertiary 25%,
+    $color-background-surface-secondary 50%,
+    $color-background-surface-tertiary 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  flex: 1;
+
+  .skeleton-item:nth-child(1) & { width: 75%; }
+  .skeleton-item:nth-child(2) & { width: 60%; }
+  .skeleton-item:nth-child(3) & { width: 80%; }
+  .skeleton-item:nth-child(4) & { width: 50%; }
+  .skeleton-item:nth-child(5) & { width: 65%; }
+}

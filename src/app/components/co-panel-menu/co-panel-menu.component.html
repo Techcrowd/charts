@@ -1,0 +1,113 @@
+<div class="custom-panel-menu">
+  <!-- Overview button -->
+  <button
+    class="overview"
+    [class.active]="overviewActive()"
+    (click)="setOverviewActive()"
+  >
+    <span class="icon-wrap">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+      </svg>
+    </span>
+    <span class="overview-label">Přehled</span>
+  </button>
+
+  <!-- Loading skeleton -->
+  @if (isLoading) {
+    <div class="skeleton-section">
+      @for (i of skeletonItems; track i) {
+        <div class="skeleton-item">
+          <div class="skeleton-icon"></div>
+          <div class="skeleton-text"></div>
+        </div>
+      }
+    </div>
+  } @else {
+    <!-- Favorites section -->
+    @if (favoriteItems.length > 0) {
+      <div class="favorite-section">
+        <div class="section-header">
+          @if (showFavoriteIcons) {
+            <span class="icon-wrap icon-favorite">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+            </span>
+          }
+          <span class="section-title">Oblíbené</span>
+        </div>
+        <div class="favorite-items">
+          @for (fav of favoriteItems; track fav.label) {
+            <button
+              class="subitem"
+              [class.active]="isActive(fav)"
+              (click)="setActiveItem(fav)"
+            >
+              <span class="subitem-label">{{ fav.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Menu items -->
+    <div class="menu-items">
+      @for (item of overviewItems; track item.label) {
+        <div class="menu-item-group" [class.expanded]="isExpanded(item)">
+          <!-- Header -->
+          <button
+            class="header"
+            [class.active]="isActive(item)"
+            (click)="toggleExpand(item)"
+          >
+            @if (item.icon) {
+              <span class="icon-wrap">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <path [attr.d]="item.icon"/>
+                </svg>
+              </span>
+            }
+            <span class="header-label">{{ item.label }}</span>
+            @if (showFavoriteIcons) {
+              <button
+                class="icon-favorite-btn"
+                [class.is-favorite]="isFavorite(item)"
+                (click)="toggleFavoriteToFirst(item); $event.stopPropagation()"
+                title="Přidat do oblíbených"
+              >
+                <svg width="14" height="14" viewBox="0 0 20 20" [attr.fill]="isFavorite(item) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.5">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+              </button>
+            }
+            @if (isItemExpandable(item)) {
+              <span class="rotate-icon" [class.rotated]="isExpanded(item)">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+                </svg>
+              </span>
+            }
+          </button>
+
+          <!-- Dropdown subitems -->
+          @if (isItemExpandable(item)) {
+            <div class="dropdown-container" [class.is-open]="isExpanded(item)">
+              <div class="dropdown-inner">
+                @for (sub of item.items; track sub.label) {
+                  <button
+                    class="subitem"
+                    [class.active]="isSubActive(sub)"
+                    (click)="setActiveSubItem(item, sub)"
+                  >
+                    <span class="subitem-label">{{ sub.label }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

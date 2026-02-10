@@ -20,5 +20,6 @@ export class LayoutComponent {
     { label: 'Column Chart', path: '/column-chart', ready: true },
     { label: 'Bar Chart', path: '/bar-chart', ready: true },
     { label: 'Value Performance Chart', path: '/value-performance-chart', ready: true },
+    { label: 'Panel Menu', path: '/panel-menu', ready: true },
   ];
 }
