@@ -18,7 +18,7 @@
       <div class="demo-card" style="flex: 1;">
         <h3>Interakce</h3>
         <div class="event-log">
-          <strong>Akce:</strong> {{ lastAction() }}
+          <strong>Akce:</strong> {{ lastAction$ | async }}
         </div>
         <markdown clipboard class="code-block" [data]="code.basic | language : 'html'"></markdown>
       </div>

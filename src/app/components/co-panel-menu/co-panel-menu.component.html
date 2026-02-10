@@ -2,7 +2,7 @@
   <!-- Overview button -->
   <button
     class="overview"
-    [class.active]="overviewActive()"
+    [class.active]="overviewActive$ | async"
     (click)="setOverviewActive()"
   >
     <span class="icon-wrap">

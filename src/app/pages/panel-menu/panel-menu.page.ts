@@ -1,4 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
 import { CoPanelMenuComponent, PanelMenu } from '../../components/co-panel-menu/co-panel-menu.component';
 import { MarkdownComponent, LanguagePipe } from 'ngx-markdown';
 
@@ -14,7 +16,7 @@ const ICONS = {
 @Component({
   selector: 'app-panel-menu-page',
   standalone: true,
-  imports: [CoPanelMenuComponent, MarkdownComponent, LanguagePipe],
+  imports: [AsyncPipe, CoPanelMenuComponent, MarkdownComponent, LanguagePipe],
   templateUrl: './panel-menu.page.html',
 })
 export class PanelMenuPage {
@@ -73,14 +75,14 @@ export class PanelMenuPage {
   emptyFavorites: PanelMenu[] = [];
 
   // Interakce log
-  lastAction = signal('Žádná');
+  lastAction$ = new BehaviorSubject<string>('Žádná');
 
   onItemClick(item: PanelMenu): void {
-    this.lastAction.set(`Klik: ${item.label} → ${item.routerLink || '—'}`);
+    this.lastAction$.next(`Klik: ${item.label} → ${item.routerLink || '—'}`);
   }
 
   onFavoriteToggle(item: PanelMenu): void {
-    this.lastAction.set(`Oblíbené toggle: ${item.label}`);
+    this.lastAction$.next(`Oblíbené toggle: ${item.label}`);
     const idx = this.favoriteItems.findIndex(f => f.label === item.label);
     if (idx >= 0) {
       this.favoriteItems = this.favoriteItems.filter((_, i) => i !== idx);

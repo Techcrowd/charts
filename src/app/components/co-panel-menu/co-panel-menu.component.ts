@@ -4,9 +4,10 @@ import {
   Output,
   EventEmitter,
   ChangeDetectionStrategy,
-  signal,
-  computed,
+  OnInit,
 } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
 
 // ============ TYPES ============
 
@@ -24,11 +25,12 @@ export interface PanelMenu {
 @Component({
   selector: 'co-panel-menu',
   standalone: true,
+  imports: [AsyncPipe],
   templateUrl: './co-panel-menu.component.html',
   styleUrls: ['./co-panel-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CoPanelMenuComponent {
+export class CoPanelMenuComponent implements OnInit {
   // ============ INPUTS ============
 
   /** Oblíbené položky (zobrazí se v sekci Oblíbené) */
@@ -59,11 +61,10 @@ export class CoPanelMenuComponent {
 
   // ============ INTERNAL STATE ============
 
-  activeItem = signal<PanelMenu | null>(null);
-  activeSubItem = signal<PanelMenu | null>(null);
-  expandedItems = signal<Set<PanelMenu>>(new Set());
-  isExpandedLoading = signal<boolean[]>([false, false]);
-  overviewActive = signal(false);
+  readonly activeItem$ = new BehaviorSubject<PanelMenu | null>(null);
+  readonly activeSubItem$ = new BehaviorSubject<PanelMenu | null>(null);
+  readonly expandedItems$ = new BehaviorSubject<Set<PanelMenu>>(new Set());
+  readonly overviewActive$ = new BehaviorSubject<boolean>(false);
 
   readonly skeletonItems = [0, 1, 2, 3, 4];
 
@@ -73,20 +74,18 @@ export class CoPanelMenuComponent {
     if (this.defaultActiveItem) {
       const item = this.overviewItems.find(i => i.label === this.defaultActiveItem);
       if (item) {
-        this.activeItem.set(item);
+        this.activeItem$.next(item);
         if (item.expandable) {
-          this.expandedItems.update(set => {
-            const next = new Set(set);
-            next.add(item);
-            return next;
-          });
+          const next = new Set(this.expandedItems$.getValue());
+          next.add(item);
+          this.expandedItems$.next(next);
         }
       }
     }
-    if (this.defaultActiveSubItem && this.activeItem()) {
-      const parent = this.activeItem()!;
+    if (this.defaultActiveSubItem && this.activeItem$.getValue()) {
+      const parent = this.activeItem$.getValue()!;
       const sub = parent.items?.find(i => i.label === this.defaultActiveSubItem);
-      if (sub) this.activeSubItem.set(sub);
+      if (sub) this.activeSubItem$.next(sub);
     }
   }
 
@@ -96,23 +95,22 @@ export class CoPanelMenuComponent {
       return;
     }
 
-    this.expandedItems.update(set => {
-      const next = new Set(set);
-      if (next.has(item)) {
-        next.delete(item);
-      } else {
-        next.add(item);
-      }
-      return next;
-    });
+    const current = this.expandedItems$.getValue();
+    const next = new Set(current);
+    if (next.has(item)) {
+      next.delete(item);
+    } else {
+      next.add(item);
+    }
+    this.expandedItems$.next(next);
 
     this.setActiveItem(item);
   }
 
   setActiveItem(item: PanelMenu): void {
-    this.activeItem.set(item);
-    this.activeSubItem.set(null);
-    this.overviewActive.set(false);
+    this.activeItem$.next(item);
+    this.activeSubItem$.next(null);
+    this.overviewActive$.next(false);
 
     if (item.routerLink) {
       this.itemClick.emit(item);
@@ -120,9 +118,9 @@ export class CoPanelMenuComponent {
   }
 
   setActiveSubItem(item: PanelMenu, subItem: PanelMenu): void {
-    this.activeItem.set(item);
-    this.activeSubItem.set(subItem);
-    this.overviewActive.set(false);
+    this.activeItem$.next(item);
+    this.activeSubItem$.next(subItem);
+    this.overviewActive$.next(false);
 
     if (subItem.routerLink) {
       this.itemClick.emit(subItem);
@@ -130,14 +128,14 @@ export class CoPanelMenuComponent {
   }
 
   setOverviewActive(): void {
-    this.overviewActive.set(true);
-    this.activeItem.set(null);
-    this.activeSubItem.set(null);
+    this.overviewActive$.next(true);
+    this.activeItem$.next(null);
+    this.activeSubItem$.next(null);
     this.itemClick.emit({ label: 'Přehled', routerLink: '/overview' });
   }
 
   isExpanded(item: PanelMenu): boolean {
-    return this.expandedItems().has(item);
+    return this.expandedItems$.getValue().has(item);
   }
 
   isItemExpandable(item: PanelMenu): boolean {
@@ -146,11 +144,11 @@ export class CoPanelMenuComponent {
   }
 
   isActive(item: PanelMenu): boolean {
-    return this.activeItem() === item;
+    return this.activeItem$.getValue() === item;
   }
 
   isSubActive(subItem: PanelMenu): boolean {
-    return this.activeSubItem() === subItem;
+    return this.activeSubItem$.getValue() === subItem;
   }
 
   toggleFavoriteToFirst(item: PanelMenu): void {
