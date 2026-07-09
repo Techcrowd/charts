@@ -63,7 +63,6 @@ interface ValueBubble {
   text: string;
   /** Vertikální pozice v % výšky plot area (0 = nahoře) */
   topPercent: number;
-  color: string;
 }
 
 // ============ COMPONENT ============
@@ -212,22 +211,16 @@ export class CoLineBasicChartComponent implements OnInit, OnChanges {
 
   private buildBubbles(pick: (s: LineBasicSeries) => number | undefined): ValueBubble[] {
     const series = this.visibleSeries();
-    const colors = this.chartColors();
     const { min, max } = this.valueRange();
     const seen = new Map<number, ValueBubble>();
 
-    series.forEach((s, i) => {
+    series.forEach(s => {
       const value = pick(s);
-      if (value === undefined) return;
-      if (seen.has(value)) {
-        // Stejná hodnota u více křivek → jen jednou, neutrální barvou
-        seen.get(value)!.color = CHART_COLORS.contentTertiary;
-        return;
-      }
+      // Stejná hodnota u více křivek → bublina jen jednou
+      if (value === undefined || seen.has(value)) return;
       seen.set(value, {
         text: this.formatBubbleValue(value),
         topPercent: (1 - (value - min) / (max - min)) * 100,
-        color: colors[i],
       });
     });
 
