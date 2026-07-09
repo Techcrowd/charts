@@ -1,0 +1,191 @@
+<div class="page">
+  <h1 class="page__title">Line Basic</h1>
+  <p class="page__subtitle">co-line-basic-chart component (vývoj hodnot ve zvoleném časovém období)</p>
+
+  <!-- Základní použití -->
+  <section class="demo-section">
+    <h2>Základní použití</h2>
+    <div class="demo-card">
+      <co-line-basic-chart [data]="scenariosData" [showLegend]="true" />
+      <markdown clipboard class="code-block" [data]="code.basic | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.basicTs | language : 'typescript'"></markdown>
+    </div>
+  </section>
+
+  <!-- Počet křivek -->
+  <section class="demo-section">
+    <h2>Počet křivek</h2>
+    <p class="demo-note">V grafu musí být zobrazena alespoň jedna vývojová křivka, maximální počet není stanoven.</p>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>1 křivka</h3>
+        <co-line-basic-chart [data]="singleData" [showLegend]="true" />
+      </div>
+      <div class="demo-card">
+        <h3>3 křivky</h3>
+        <co-line-basic-chart [data]="scenariosData" [showLegend]="true" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Časové intervaly -->
+  <section class="demo-section">
+    <h2>Časové intervaly</h2>
+    <p class="demo-note">Graf může zobrazovat intervaly v řádu hodin, dní, měsíců i let — podle vložených dat.</p>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>Hodiny</h3>
+        <co-line-basic-chart [data]="hoursData" [showLegend]="true" />
+      </div>
+      <div class="demo-card">
+        <h3>Dny</h3>
+        <co-line-basic-chart [data]="daysData" [showLegend]="true" />
+      </div>
+      <div class="demo-card">
+        <h3>Roky</h3>
+        <co-line-basic-chart [data]="scenariosData" [showLegend]="true" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Počáteční a cílová hodnota -->
+  <section class="demo-section">
+    <h2>Počáteční a cílová hodnota</h2>
+    <p class="demo-note">
+      Bubliny s hodnotami lze doplnit jednotkou ($, %, Kč), případně zkrátit (1 215 211 → 1,2M).
+      Křivky se stejnou výchozí hodnotou sdílejí jednu bublinu.
+    </p>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>Start value enabled</h3>
+        <co-line-basic-chart [data]="scenariosData" [showStartValues]="true" [compactValues]="true" [showLegend]="true" />
+        <markdown clipboard class="code-block" [data]="code.startValues | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>End value enabled</h3>
+        <co-line-basic-chart [data]="scenariosData" [showEndValues]="true" [compactValues]="true" [showLegend]="true" />
+        <markdown clipboard class="code-block" [data]="code.endValues | language : 'html'"></markdown>
+      </div>
+    </div>
+    <div class="demo-card">
+      <h3>Obě hodnoty + jednotka</h3>
+      <co-line-basic-chart
+        [data]="scenariosData"
+        [showStartValues]="true"
+        [showEndValues]="true"
+        [valueUnit]="'Kč'"
+        [compactValues]="true"
+        [showLegend]="true"
+      />
+      <markdown clipboard class="code-block" [data]="code.bothValues | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Zobrazení vybrané hodnoty -->
+  <section class="demo-section">
+    <h2>Zobrazení vybrané hodnoty (tooltip)</h2>
+    <p class="demo-note">
+      Na hover se zobrazí ryska s body na křivkách a tooltip s hodnotami platnými pro vybraný čas.
+    </p>
+    <div class="demo-card">
+      <co-line-basic-chart [data]="scenariosData" [showTooltip]="true" [valueUnit]="'Kč'" [showLegend]="true" />
+      <markdown clipboard class="code-block" [data]="code.tooltip | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Eventy -->
+  <section class="demo-section">
+    <h2>Eventy</h2>
+    <p class="demo-note">Output (pointHover) lze volitelně využít — emituje bod křivky pod kurzorem.</p>
+    <div class="demo-card">
+      <co-line-basic-chart
+        [data]="scenariosData"
+        [showTooltip]="true"
+        [showLegend]="true"
+        (pointHover)="onPointHover($event)"
+      />
+      <div>
+        <h3>(pointHover) payload</h3>
+        <pre class="code-block">{{ lastHoverEvent ?? 'Najeď myší na graf…' }}</pre>
+      </div>
+      <markdown clipboard class="code-block" [data]="code.hover | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <section class="demo-section">
+    <h2>Loading</h2>
+    <div class="demo-card">
+      <co-line-basic-chart [data]="scenariosData" [loading]="true" [skeletonSeriesCount]="3" [showLegend]="true" />
+      <markdown clipboard class="code-block" [data]="code.loading | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Legenda -->
+  <section class="demo-section">
+    <h2>Legenda</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>S legendou</h3>
+        <co-line-basic-chart [data]="scenariosData" [showLegend]="true" />
+      </div>
+      <div class="demo-card">
+        <h3>Bez legendy (výchozí)</h3>
+        <co-line-basic-chart [data]="scenariosData" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Vlastní barvy -->
+  <section class="demo-section">
+    <h2>Vlastní barvy</h2>
+    <p class="demo-note">Všechny barvy musí pocházet z palety definované v design tokenech (ColorSemantic / Chart).</p>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>Výchozí pořadí palety</h3>
+        <co-line-basic-chart [data]="scenariosData" [showLegend]="true" />
+      </div>
+      <div class="demo-card">
+        <h3>Vlastní výběr</h3>
+        <co-line-basic-chart
+          [data]="scenariosData"
+          [colors]="['chart-evaluation', 'chart-neon', 'chart-cool']"
+          [showLegend]="true"
+        />
+        <markdown clipboard class="code-block" [data]="code.colors | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Výška -->
+  <section class="demo-section">
+    <h2>Výška grafu</h2>
+    <p class="demo-note">Graf je na výšku fixní (dle nastavení), na šířku se roztahuje podle prostoru.</p>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>height="200" (výchozí)</h3>
+        <co-line-basic-chart [data]="scenariosData" />
+      </div>
+      <div class="demo-card">
+        <h3>height="280"</h3>
+        <co-line-basic-chart [data]="scenariosData" [height]="280" />
+        <markdown clipboard class="code-block" [data]="code.height | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Paleta barev -->
+  <section class="demo-section">
+    <h2>Paleta barev (ColorSemantic / Chart)</h2>
+    <div class="demo-card">
+      <div class="color-palette">
+        @for (color of availableColors; track color) {
+          <div class="color-palette__item">
+            <span class="color-palette__swatch" [style.background]="getColorHex(color)"></span>
+            <code>{{ color }}</code>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+</div>

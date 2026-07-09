@@ -1,0 +1,86 @@
+<div
+  class="co-line-basic"
+  [class.co-line-basic--loading]="loading"
+>
+  <!-- Chart Container -->
+  <div class="co-line-basic__chart-wrapper">
+    @if (loading) {
+      <div class="co-line-basic__skeleton" [style.height.px]="height">
+        <svg class="co-line-basic__skeleton-svg" viewBox="0 0 400 100" preserveAspectRatio="none">
+          <polyline class="co-line-basic__skeleton-line" points="0,80 60,70 120,78 180,55 240,60 300,35 400,20" />
+          <polyline class="co-line-basic__skeleton-line co-line-basic__skeleton-line--2" points="0,85 70,80 140,82 210,70 280,72 400,60" />
+          <polyline class="co-line-basic__skeleton-line co-line-basic__skeleton-line--3" points="0,88 80,86 160,88 240,82 320,84 400,78" />
+        </svg>
+        <div class="co-line-basic__skeleton-xaxis">
+          @for (i of [0, 1, 2, 3, 4]; track i) {
+            <span class="co-line-basic__skeleton-xlabel"></span>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="co-line-basic__chart-container">
+        @if (showStartValues) {
+          <div class="co-line-basic__bubbles co-line-basic__bubbles--start">
+            @for (bubble of startValueBubbles(); track $index) {
+              <span
+                class="co-line-basic__bubble"
+                [style.top.px]="bubbleTop(bubble.topPercent)"
+                [style.color]="bubble.color"
+              >{{ bubble.text }}</span>
+            }
+          </div>
+        }
+        @if (showEndValues) {
+          <div class="co-line-basic__bubbles co-line-basic__bubbles--end">
+            @for (bubble of endValueBubbles(); track $index) {
+              <span
+                class="co-line-basic__bubble"
+                [style.top.px]="bubbleTop(bubble.topPercent)"
+                [style.color]="bubble.color"
+              >{{ bubble.text }}</span>
+            }
+          </div>
+        }
+        <apx-chart
+          #chart
+          [series]="chartSeries()"
+          [chart]="chartConfig"
+          [colors]="chartColors()"
+          [dataLabels]="dataLabelsConfig"
+          [tooltip]="tooltipConfig"
+          [states]="statesConfig"
+          [legend]="legendConfig"
+          [xaxis]="xAxisConfig"
+          [yaxis]="yAxisConfig"
+          [grid]="gridConfig"
+          [stroke]="strokeConfig"
+          [fill]="fillConfig"
+          [markers]="markersConfig"
+        />
+      </div>
+    }
+  </div>
+
+  <!-- Legend -->
+  @if (showLegend) {
+    @if (loading) {
+      <div class="co-chart-legend-skeleton">
+        @for (i of skeletonItems; track i) {
+          <div class="co-chart-legend-skeleton__item">
+            <span class="co-chart-legend-skeleton__dot"></span>
+            <span class="co-chart-legend-skeleton__text"></span>
+          </div>
+        }
+      </div>
+    } @else {
+      <co-chart-legend
+        [items]="legendItems()"
+        [showValues]="false"
+        [valueFormat]="valueFormat"
+        (itemHover)="onLegendItemHover($event)"
+        (itemLeave)="onLegendItemLeave()"
+        (itemClick)="onLegendItemHover($event.index)"
+      />
+    }
+  }
+</div>

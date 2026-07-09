@@ -2030,6 +2030,42 @@ button.markdown-clipboard-button {
   }
 }
 
+.co-line-basic-tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: $spacing-sm $spacing-md;
+  background: $color-content-secondary;
+  border-radius: $border-radius-lg;
+  color: $color-interactive-on-primary;
+  white-space: nowrap;
+
+  &__header {
+    @include caption-primary;
+    color: $color-interactive-on-primary;
+    opacity: 0.8;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: $border-radius-full;
+    flex-shrink: 0;
+  }
+
+  &__value {
+    @include caption-primary-bold;
+    color: $color-interactive-on-primary;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
 .co-stacked-bar-tooltip {
   position: relative;
   display: flex;

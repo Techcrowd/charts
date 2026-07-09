@@ -21,6 +21,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/bar-chart/bar-chart.page').then(m => m.BarChartPage),
       },
       {
+        path: 'line-basic-chart',
+        loadComponent: () => import('./pages/line-basic-chart/line-basic-chart.page').then(m => m.LineBasicChartPage),
+      },
+      {
         path: 'stacked-bar-chart',
         loadComponent: () => import('./pages/stacked-bar-chart/stacked-bar-chart.page').then(m => m.StackedBarChartPage),
       },

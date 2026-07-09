@@ -1,0 +1,103 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/chart-skeleton' as *;
+
+.co-line-basic {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  min-height: 0;
+  width: 100%;
+}
+
+.co-line-basic__chart-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.co-line-basic__chart-container {
+  @include chart-container-base;
+  position: relative;
+
+  ::ng-deep {
+    .apexcharts-series {
+      transition: opacity $transition-fast;
+    }
+  }
+}
+
+// Bubliny s počáteční / cílovou hodnotou
+.co-line-basic__bubbles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.co-line-basic__bubble {
+  position: absolute;
+  transform: translateY(-50%);
+  padding: 2px 4px;
+  border-radius: 2px;
+  background: $color-background-surface;
+  font-size: 9px;
+  font-weight: $font-weight-regular;
+  line-height: 1.2;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.08);
+}
+
+.co-line-basic__bubbles--start .co-line-basic__bubble {
+  left: 0;
+}
+
+.co-line-basic__bubbles--end .co-line-basic__bubble {
+  right: 0;
+}
+
+// Dark mode overrides
+:host-context(.detail--dark),
+:host-context(.sc-preview--dark),
+:host-context(.sc-content--dark) {
+  .co-line-basic__chart-container {
+    @include chart-dark-mode-overrides;
+  }
+}
+
+// Skeleton Loading
+.co-line-basic__skeleton {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  animation: co-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.co-line-basic__skeleton-svg {
+  flex: 1;
+  width: 100%;
+}
+
+.co-line-basic__skeleton-line {
+  fill: none;
+  stroke: $color-background-border;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+
+  &--2 {
+    opacity: 0.7;
+  }
+
+  &--3 {
+    opacity: 0.45;
+  }
+}
+
+.co-line-basic__skeleton-xaxis {
+  display: flex;
+  justify-content: space-between;
+  padding: $spacing-sm $spacing-xs 0;
+}
+
+.co-line-basic__skeleton-xlabel {
+  @include skeleton-label(28px);
+}
