@@ -1,0 +1,101 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/chart-skeleton' as *;
+
+.co-stacked-bar {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  min-height: 0;
+  width: 100%;
+}
+
+.co-stacked-bar__chart-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.co-stacked-bar__chart-container {
+  @include chart-container-base;
+  position: relative;
+
+  ::ng-deep {
+    .apexcharts-bar-area {
+      transition: opacity $transition-fast;
+      cursor: default;
+    }
+
+    // Zaoblení vnějších rohů baru (první sekce vlevo, poslední vpravo)
+    .apexcharts-bar-series {
+      clip-path: inset(0 round 4px) fill-box;
+    }
+  }
+}
+
+// Hodnoty sekcí — vlastní HTML overlay (bílé pozadí, tmavý text)
+.co-stacked-bar__labels {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.co-stacked-bar__label {
+  position: absolute;
+  top: 50%;
+  transform: translate(-100%, -50%);
+  padding: 2px;
+  border-radius: 2px;
+  background: $color-background-surface;
+  color: $color-content-tertiary;
+  font-size: 9px;
+  font-weight: $font-weight-regular;
+  line-height: 1.2;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+// Akce na sekci grafu — pointer jen v interaktivním režimu
+.co-stacked-bar--interactive {
+  .co-stacked-bar__chart-container ::ng-deep .apexcharts-bar-area {
+    cursor: pointer;
+  }
+}
+
+// Hover state — potlačení ostatních sekcí (50% průhlednost dle specifikace)
+.co-stacked-bar--hovering {
+  .co-stacked-bar__chart-container ::ng-deep {
+    .apexcharts-series {
+      opacity: 0.5;
+    }
+    .apexcharts-series:hover {
+      opacity: 1;
+    }
+  }
+}
+
+// Dark mode overrides
+:host-context(.detail--dark),
+:host-context(.sc-preview--dark),
+:host-context(.sc-content--dark) {
+  .co-stacked-bar__chart-container {
+    @include chart-dark-mode-overrides;
+  }
+}
+
+// Skeleton Loading
+.co-stacked-bar__skeleton {
+  display: flex;
+  gap: 2px;
+  width: 100%;
+  animation: co-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.co-stacked-bar__skeleton-section {
+  flex: 1;
+  border-radius: $border-radius-sm;
+  @include skeleton-bar-colors;
+
+  &:first-child {
+    flex: 2;
+  }
+}

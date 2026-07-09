@@ -1,0 +1,69 @@
+<div
+  class="co-stacked-bar"
+  [class.co-stacked-bar--loading]="loading"
+  [class.co-stacked-bar--interactive]="hasClickAction"
+  [class.co-stacked-bar--hovering]="hoveredSectionIndex() !== -1 && !isLegendHover()"
+>
+  <!-- Chart Container -->
+  <div class="co-stacked-bar__chart-wrapper">
+    @if (loading) {
+      <div class="co-stacked-bar__skeleton" [style.height.px]="barHeight">
+        @for (s of skeletonSections; track s) {
+          <div class="co-stacked-bar__skeleton-section"></div>
+        }
+      </div>
+    } @else {
+      <div class="co-stacked-bar__chart-container">
+        @if (showSectionValues) {
+          <div class="co-stacked-bar__labels">
+            @for (label of sectionLabels(); track $index) {
+              <span
+                class="co-stacked-bar__label"
+                [style.left]="'calc(' + label.endPercent + '% - 8px)'"
+              >{{ label.text }}</span>
+            }
+          </div>
+        }
+        <apx-chart
+          #chart
+          [series]="chartSeries()"
+          [chart]="chartConfig"
+          [colors]="chartColors()"
+          [dataLabels]="dataLabelsConfig"
+          [plotOptions]="plotOptionsConfig"
+          [tooltip]="tooltipConfig"
+          [states]="statesConfig"
+          [legend]="legendConfig"
+          [xaxis]="xAxisConfig"
+          [yaxis]="yAxisConfig"
+          [grid]="gridConfig"
+          [stroke]="strokeConfig"
+          [fill]="fillConfig"
+        />
+      </div>
+    }
+  </div>
+
+  <!-- Legend -->
+  @if (showLegend) {
+    @if (loading) {
+      <div class="co-chart-legend-skeleton">
+        @for (i of skeletonSections; track i) {
+          <div class="co-chart-legend-skeleton__item">
+            <span class="co-chart-legend-skeleton__dot"></span>
+            <span class="co-chart-legend-skeleton__text"></span>
+          </div>
+        }
+      </div>
+    } @else {
+      <co-chart-legend
+        [items]="legendItems()"
+        [showValues]="false"
+        [valueFormat]="valueFormat"
+        (itemHover)="onLegendItemHover($event)"
+        (itemLeave)="onLegendItemLeave()"
+        (itemClick)="onLegendItemClick($event.index)"
+      />
+    }
+  }
+</div>

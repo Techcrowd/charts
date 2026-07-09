@@ -19,7 +19,9 @@ export class LayoutComponent {
     { label: 'Donut Chart', path: '/donut-chart', ready: true },
     { label: 'Column Chart', path: '/column-chart', ready: true },
     { label: 'Bar Chart', path: '/bar-chart', ready: true },
+    { label: 'Stacked Bar', path: '/stacked-bar-chart', ready: true },
     { label: 'Value Performance Chart', path: '/value-performance-chart', ready: true },
     { label: 'Panel Menu', path: '/panel-menu', ready: true },
+    { label: 'Showcase', path: '/showcase', ready: true },
   ];
 }

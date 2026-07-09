@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 
 export const routes: Routes = [
+  // Showcase detail renders standalone (no layout sidebar) — matches original Golem DS
+  {
+    path: 'showcase/:slug',
+    loadComponent: () => import('./pages/showcase/showcase-detail.page').then(m => m.ShowcaseDetailPage),
+  },
   {
     path: '',
     component: LayoutComponent,
@@ -16,6 +21,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/bar-chart/bar-chart.page').then(m => m.BarChartPage),
       },
       {
+        path: 'stacked-bar-chart',
+        loadComponent: () => import('./pages/stacked-bar-chart/stacked-bar-chart.page').then(m => m.StackedBarChartPage),
+      },
+      {
         path: 'column-chart',
         loadComponent: () => import('./pages/column-chart/column-chart.page').then(m => m.ColumnChartPage),
       },
@@ -26,6 +35,10 @@ export const routes: Routes = [
       {
         path: 'panel-menu',
         loadComponent: () => import('./pages/panel-menu/panel-menu.page').then(m => m.PanelMenuPage),
+      },
+      {
+        path: 'showcase',
+        loadComponent: () => import('./pages/showcase/showcase.page').then(m => m.ShowcasePage),
       },
     ],
   },

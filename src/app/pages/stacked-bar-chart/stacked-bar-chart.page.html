@@ -1,0 +1,190 @@
+<div class="page">
+  <h1 class="page__title">Stacked Bar</h1>
+  <p class="page__subtitle">co-stacked-bar-chart component (skládaný pruhový graf — podíl částí na celku)</p>
+
+  <!-- Základní použití -->
+  <section class="demo-section">
+    <h2>Základní použití</h2>
+    <div class="demo-card">
+      <co-stacked-bar-chart [data]="portfolioData" [showLegend]="true" [compactValues]="true" />
+      <markdown clipboard class="code-block" [data]="code.basic | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.basicTs | language : 'typescript'"></markdown>
+    </div>
+  </section>
+
+  <!-- Hodnoty v grafu -->
+  <section class="demo-section">
+    <h2>Hodnoty v grafu</h2>
+    <p class="demo-note">Hodnoty se zobrazují vpravo v sekci na bílém pozadí — buď u všech sekcí, nebo u žádné.</p>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>Section values enabled</h3>
+        <co-stacked-bar-chart [data]="fiveSectionsData" [showSectionValues]="true" [showLegend]="true" />
+        <markdown clipboard class="code-block" [data]="code.valuesOn | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Section values disabled</h3>
+        <co-stacked-bar-chart [data]="fiveSectionsData" [showSectionValues]="false" [showLegend]="true" />
+        <markdown clipboard class="code-block" [data]="code.valuesOff | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formát hodnot -->
+  <section class="demo-section">
+    <h2>Formát hodnot</h2>
+    <p class="demo-note">Hodnoty je možné doplnit jednotkou ($, %, Kč), případně zkrátit (1 215 211 → 1,2M).</p>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>Procenta</h3>
+        <co-stacked-bar-chart [data]="portfolioData" [valueFormat]="'percent'" [showLegend]="true" />
+        <markdown clipboard class="code-block" [data]="code.valuesPercent | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Zkrácené hodnoty</h3>
+        <co-stacked-bar-chart [data]="portfolioData" [compactValues]="true" [showLegend]="true" />
+        <markdown clipboard class="code-block" [data]="code.valuesCompact | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>S jednotkou</h3>
+        <co-stacked-bar-chart [data]="portfolioData" [valueUnit]="'Kč'" [compactValues]="true" [showLegend]="true" />
+        <markdown clipboard class="code-block" [data]="code.valuesUnit | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Počet sekcí -->
+  <section class="demo-section">
+    <h2>Počet sekcí v grafu</h2>
+    <p class="demo-note">Graf musí zobrazit alespoň jednu sekci, maximální počet není stanoven.</p>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>1 sekce</h3>
+        <co-stacked-bar-chart [data]="singleSectionData" [compactValues]="true" [showLegend]="true" />
+      </div>
+      <div class="demo-card">
+        <h3>2 sekce</h3>
+        <co-stacked-bar-chart [data]="twoSectionsData" [compactValues]="true" [showLegend]="true" />
+      </div>
+      <div class="demo-card">
+        <h3>5 sekcí</h3>
+        <co-stacked-bar-chart [data]="fiveSectionsData" [showLegend]="true" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Tooltip -->
+  <section class="demo-section">
+    <h2>Tooltip</h2>
+    <p class="demo-note">Na hover se zobrazí tooltip s názvem sekce a přesnou hodnotou. Ostatní sekce se potlačí (50% průhlednost).</p>
+    <div class="demo-card">
+      <co-stacked-bar-chart [data]="portfolioData" [showTooltip]="true" [compactValues]="true" [showLegend]="true" />
+      <markdown clipboard class="code-block" [data]="code.tooltipOn | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Minimální podíl -->
+  <section class="demo-section">
+    <h2>Zobrazení minimálního podílu a hodnoty</h2>
+    <p class="demo-note">
+      Graf zobrazuje pouze nenulové hodnoty. Extrémně malé hodnoty mají nastavenou minimální šířku,
+      aby byly ovladatelné — hodnota je viditelná i nad extrémně malým podílem.
+      (Krypto = 0,2 %, Komodity = 0 → skryto)
+    </p>
+    <div class="demo-card">
+      <co-stacked-bar-chart [data]="minShareData" [compactValues]="true" [showTooltip]="true" [showLegend]="true" />
+      <markdown clipboard class="code-block" [data]="code.minShare | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Interakce -->
+  <section class="demo-section">
+    <h2>Akce na sekci grafu</h2>
+    <p class="demo-note">Outputy (sectionClick), (sectionHover) lze volitelně využít. Pokud je napojený click handler, hover potlačí ostatní sekce a kurzor je pointer.</p>
+    <div class="demo-card">
+      <co-stacked-bar-chart
+        [data]="portfolioData"
+        [compactValues]="true"
+        [showLegend]="true"
+        (sectionClick)="onSectionClick($event)"
+        (sectionHover)="onSectionHover($event)"
+      />
+      <p class="demo-note">Poslední akce: <strong>{{ lastAction }}</strong></p>
+      <div class="demo-grid">
+        <div>
+          <h3>(sectionClick) payload</h3>
+          <pre class="code-block">{{ lastClickEvent ?? 'Klikni na sekci…' }}</pre>
+        </div>
+        <div>
+          <h3>(sectionHover) payload</h3>
+          <pre class="code-block">{{ lastHoverEvent ?? 'Najeď myší na sekci…' }}</pre>
+        </div>
+      </div>
+      <markdown clipboard class="code-block" [data]="code.interaction | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.interactionTs | language : 'typescript'"></markdown>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <section class="demo-section">
+    <h2>Loading</h2>
+    <div class="demo-card">
+      <co-stacked-bar-chart [data]="portfolioData" [loading]="true" [skeletonSectionCount]="3" [showLegend]="true" />
+      <markdown clipboard class="code-block" [data]="code.loading | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Legenda -->
+  <section class="demo-section">
+    <h2>Legenda</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>S legendou</h3>
+        <co-stacked-bar-chart [data]="portfolioData" [compactValues]="true" [showLegend]="true" />
+        <markdown clipboard class="code-block" [data]="code.legendOn | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Bez legendy (výchozí)</h3>
+        <co-stacked-bar-chart [data]="portfolioData" [compactValues]="true" [showLegend]="false" />
+        <markdown clipboard class="code-block" [data]="code.legendOff | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vlastní barvy -->
+  <section class="demo-section">
+    <h2>Vlastní barvy</h2>
+    <p class="demo-note">Všechny barvy musí pocházet z palety definované v design tokenech (ColorSemantic / Chart).</p>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>Výchozí pořadí palety</h3>
+        <co-stacked-bar-chart [data]="portfolioData" [compactValues]="true" [showLegend]="true" />
+      </div>
+      <div class="demo-card">
+        <h3>Vlastní výběr</h3>
+        <co-stacked-bar-chart
+          [data]="portfolioData"
+          [colors]="['chart-evaluation', 'chart-neon', 'chart-cool']"
+          [compactValues]="true"
+          [showLegend]="true"
+        />
+        <markdown clipboard class="code-block" [data]="code.colors | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Paleta barev -->
+  <section class="demo-section">
+    <h2>Paleta barev (ColorSemantic / Chart)</h2>
+    <div class="demo-card">
+      <div class="color-palette">
+        @for (color of availableColors; track color) {
+          <div class="color-palette__item">
+            <span class="color-palette__swatch" [style.background]="getColorHex(color)"></span>
+            <code>{{ color }}</code>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+</div>
