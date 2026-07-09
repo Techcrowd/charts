@@ -137,9 +137,10 @@ onSegmentClick(event: { item: DonutChartDataItem; index: number }) {
     return this.chartColorService.getColorHex(color);
   }
 
-  onSegmentClick(event: { item: DonutChartDataItem; index: number }): void {
-    this.lastAction = `Klik: ${event.item.label} (${event.item.value})`;
-    this.selectedCenterText = event.item.label;
+  onSegmentClick(event: any): void {
+    this.lastAction = `Klik: ${event.label} (${event.value})`;
+    this.selectedCenterText = event.label;
+    console.log('[segmentClick]', event);
   }
 
   onSegmentHover(event: { item: DonutChartDataItem; index: number } | null): void {

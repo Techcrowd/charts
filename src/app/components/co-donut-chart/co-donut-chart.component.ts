@@ -7,8 +7,10 @@ import {
   ElementRef,
   OnChanges,
   OnInit,
+  OnDestroy,
   ChangeDetectionStrategy,
   PLATFORM_ID,
+  NgZone,
   signal,
   computed,
   inject,
@@ -59,7 +61,7 @@ export interface DonutChartDataItem {
   styleUrls: ['./co-donut-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CoDonutChartComponent implements OnInit, OnChanges {
+export class CoDonutChartComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('chart') chartComponent?: ChartComponent;
 
   // ============ INJECTED ============
@@ -67,7 +69,9 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   private chartColorService = inject(ChartColorService);
   private dateTimeService = inject(DateTimeService);
   private platformId = inject(PLATFORM_ID);
+  private ngZone = inject(NgZone);
   private isBrowser = isPlatformBrowser(this.platformId);
+  private boundClickHandler = this.handleChartClick.bind(this);
 
   // ============ INPUTS ============
 
@@ -118,10 +122,52 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   // ============ OUTPUTS ============
 
   /** Emituje při kliknutí na segment */
-  @Output() segmentClick = new EventEmitter<{ item: DonutChartDataItem; index: number }>();
+  @Output() segmentClick = new EventEmitter<{
+    index: number;
+    label: string;
+    value: number;
+    percent: number;
+    total: number;
+    item: DonutChartDataItem;
+  }>();
 
   /** Emituje při hoveru nad segmentem */
   @Output() segmentHover = new EventEmitter<{ item: DonutChartDataItem; index: number } | null>();
+
+  // ============ CLICK HANDLING ============
+
+  private handleChartClick(event: Event): void {
+    const me = event as MouseEvent;
+    let target = me.target as Element;
+
+    // If click hit an overlay (data label, foreignObject), find the pie area underneath
+    if (!target.classList.contains('apexcharts-pie-area')) {
+      const elements = document.elementsFromPoint(me.clientX, me.clientY);
+      const pie = elements.find(el => el.classList.contains('apexcharts-pie-area'));
+      if (!pie) return;
+      target = pie;
+    }
+
+    const index = parseInt(target.getAttribute('j') ?? '-1', 10);
+    if (index < 0) return;
+
+    const item = this.processedData()[index];
+    if (!item) return;
+
+    const total = this.total();
+    const percent = total > 0 ? (item.value / total) * 100 : 0;
+
+    this.ngZone.run(() => {
+      this.segmentClick.emit({
+        index,
+        label: item.label,
+        value: item.value,
+        percent: Math.round(percent * 10) / 10,
+        total,
+        item,
+      });
+    });
+  }
 
   // ============ INTERNAL STATE ============
 
@@ -195,7 +241,7 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   });
 
   // Size computed
-  computedDonutSize = '65%';
+  computedDonutSize = '74%';
 
   // Chart configs (dynamic)
   chartConfig!: ApexChart;
@@ -214,12 +260,21 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.syncSignals();
     this.updateChartConfigs();
+    if (this.isBrowser) {
+      this.ngZone.runOutsideAngular(() => {
+        this.elementRef.nativeElement.addEventListener('click', this.boundClickHandler, true);
+      });
+    }
   }
 
   ngOnChanges(): void {
     this.syncSignals();
     this.updateSizeValues();
     this.updateChartConfigs();
+  }
+
+  ngOnDestroy(): void {
+    this.elementRef.nativeElement.removeEventListener('click', this.boundClickHandler, true);
   }
 
   private syncSignals(): void {
@@ -231,7 +286,7 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
   // ============ PRIVATE METHODS ============
 
   private updateSizeValues(): void {
-    this.computedDonutSize = '65%';
+    this.computedDonutSize = '77%';
   }
 
   private updateChartConfigs(): void {
@@ -249,10 +304,6 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
         speed: 400,
       },
       events: {
-        dataPointSelection: (event: any, chartContext: any, config: any) => {
-          const item = self.processedData()[config.dataPointIndex];
-          self.segmentClick.emit({ item, index: config.dataPointIndex });
-        },
         dataPointMouseEnter: (event: any, chartContext: any, config: any) => {
           self.hoveredIndex.set(config.dataPointIndex);
           const item = self.processedData()[config.dataPointIndex];
@@ -354,7 +405,17 @@ export class CoDonutChartComponent implements OnInit, OnChanges {
 
   onLegendItemClick(index: number): void {
     const item = this.processedData()[index];
-    this.segmentClick.emit({ item, index });
+    if (!item) return;
+    const total = this.total();
+    const percent = total > 0 ? (item.value / total) * 100 : 0;
+    this.segmentClick.emit({
+      index,
+      label: item.label,
+      value: item.value,
+      percent: Math.round(percent * 10) / 10,
+      total,
+      item,
+    });
   }
 
   private highlightSegment(activeIndex: number): void {

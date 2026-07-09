@@ -85,6 +85,48 @@
   &--4 { stroke: color.adjust($color-background-border, $lightness: 3%); }
 }
 
+// ============ DARK MODE CHART OVERRIDES ============
+
+// Mixin for dark mode ApexCharts overrides (data labels, axes, grid)
+// Use inside :host-context(.detail--dark), :host-context(.sc-preview--dark), etc.
+@mixin chart-dark-mode-overrides {
+  ::ng-deep {
+    // Data label backgrounds
+    .apexcharts-datalabels-group rect,
+    .apexcharts-data-labels rect {
+      fill: $color-dark-surface-secondary !important;
+    }
+
+    // Data label text
+    .apexcharts-data-labels text,
+    .apexcharts-datalabel {
+      fill: $color-dark-content-tertiary !important;
+    }
+
+    // Axis labels
+    .apexcharts-xaxis-label,
+    .apexcharts-yaxis-label {
+      fill: $color-dark-content-tertiary !important;
+    }
+
+    // Axis title
+    .apexcharts-yaxis-title text,
+    .apexcharts-xaxis-title text {
+      fill: $color-dark-content-tertiary !important;
+    }
+
+    // Grid lines
+    .apexcharts-gridline {
+      stroke: $color-dark-border !important;
+    }
+
+    // Grid border
+    .apexcharts-grid-borders line {
+      stroke: $color-dark-border !important;
+    }
+  }
+}
+
 // ============ SHARED APEX CHART STYLES ============
 
 // Mixin for chart container with common ApexCharts overrides
@@ -99,6 +141,22 @@
     // Smooth opacity transitions for series
     .apexcharts-series {
       transition: opacity $transition-fast;
+    }
+
+    // Clickable chart elements
+    .apexcharts-bar-area,
+    .apexcharts-pie-area {
+      cursor: pointer;
+      pointer-events: all;
+    }
+
+    // Make overlay elements transparent to clicks (data labels, foreignObject)
+    .apexcharts-datalabels,
+    .apexcharts-data-labels,
+    .apexcharts-pie-label,
+    .apexcharts-datalabels-group,
+    foreignObject {
+      pointer-events: none;
     }
 
     // Data labels styling

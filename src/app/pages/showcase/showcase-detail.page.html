@@ -1,0 +1,222 @@
+<div class="sc-layout">
+  <!-- Sidebar -->
+  <aside class="sc-sidebar">
+    <div class="sc-sidebar__header">
+      <div class="sc-sidebar__logo">&#9653;</div>
+      <div>
+        <div class="sc-sidebar__title">Golem</div>
+        <div class="sc-sidebar__subtitle">Design system showcase</div>
+      </div>
+    </div>
+
+    <div class="sc-sidebar__search">
+      <input
+        type="text"
+        class="sc-sidebar__search-input"
+        placeholder="Search here"
+        [value]="sidebarSearch()"
+        (input)="onSidebarSearch($event)"
+      />
+    </div>
+
+    <nav class="sc-sidebar__nav">
+      @for (group of filteredGroups(); track group.category) {
+        <div class="sc-sidebar__category">{{ group.category }}</div>
+        @for (c of group.components; track c.name) {
+          <a
+            class="sc-sidebar__link"
+            [class.sc-sidebar__link--active]="comp()?.name === c.name"
+            [routerLink]="'/showcase/' + slugify(c.name)"
+          >
+            {{ c.name }}
+          </a>
+        }
+      }
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <div class="sc-main">
+    @if (comp(); as c) {
+      <!-- Top bar -->
+      <div class="sc-topbar">
+        <div class="sc-topbar__modes">
+          <span class="sc-topbar__mode-label">UI mode</span>
+          <label class="sc-topbar__radio">
+            <input type="radio" name="uimode" [checked]="!darkMode()" (change)="darkMode.set(false)" />
+            Light
+          </label>
+          <label class="sc-topbar__radio">
+            <input type="radio" name="uimode" [checked]="darkMode()" (change)="darkMode.set(true)" />
+            Dark
+          </label>
+        </div>
+      </div>
+
+      <!-- Component header -->
+      <div class="sc-header" [class.sc-content--dark]="darkMode()">
+        <h1 class="sc-header__title">
+          {{ c.name }}
+          @if (c.version) {
+            <span class="sc-header__version">{{ c.version }}</span>
+          }
+        </h1>
+
+        @if (c.description) {
+          <p class="sc-header__desc">{{ c.description }}</p>
+        }
+
+        <!-- Variant tabs -->
+        @if (c.variants?.length) {
+          <div class="sc-variant-tabs">
+            @for (v of c.variants; track v) {
+              <button
+                class="sc-variant-tabs__tab"
+                [class.sc-variant-tabs__tab--active]="activeVariant() === v"
+                (click)="setVariant(v)"
+              >
+                {{ v }}
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Preview (real Angular components) -->
+        <div class="sc-preview" [class.sc-preview--dark]="darkMode()">
+          @if (hasRealDemo()) {
+            <div class="sc-preview__badge">Interactive</div>
+          }
+          <ng-container
+            [ngComponentOutlet]="demoComponent()"
+            [ngComponentOutletInputs]="demoInputs()"
+          />
+        </div>
+
+        <!-- Code Examples -->
+        @if (c.codeExamples.length) {
+          @for (ex of c.codeExamples; track ex.label; let idx = $index) {
+            <div class="sc-code-section">
+              @if (c.codeExamples.length > 1) {
+                <h3 class="sc-code-section__label">{{ ex.label }}</h3>
+              }
+              <div class="sc-code-block">
+                <pre class="sc-code-block__pre"><code [innerHTML]="highlightHtml(ex.html)"></code></pre>
+                <button
+                  class="sc-code-block__copy"
+                  [class.sc-code-block__copy--copied]="copiedIndex() === idx * 2"
+                  (click)="copyCode(ex.html, idx * 2)"
+                >
+                  {{ copiedIndex() === idx * 2 ? 'Copied!' : 'Copy' }}
+                </button>
+              </div>
+              @if (ex.typescript) {
+                <div class="sc-code-block sc-code-block--ts">
+                  <pre class="sc-code-block__pre"><code [innerHTML]="highlightHtml(ex.typescript!)"></code></pre>
+                  <button
+                    class="sc-code-block__copy"
+                    [class.sc-code-block__copy--copied]="copiedIndex() === idx * 2 + 1"
+                    (click)="copyCode(ex.typescript!, idx * 2 + 1)"
+                  >
+                    {{ copiedIndex() === idx * 2 + 1 ? 'Copied!' : 'Copy' }}
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        }
+
+        <!-- Screenshots -->
+        @if (screenshots().length) {
+          <div class="sc-screenshots">
+            <h2 class="sc-section-title">Screenshots</h2>
+            <div class="sc-screenshots__row">
+              @for (img of screenshots(); track img) {
+                <img
+                  class="sc-screenshots__img"
+                  [src]="'assets/showcase/' + img"
+                  [alt]="c.name + ' screenshot'"
+                  loading="lazy"
+                  (click)="openLightbox(img)"
+                />
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Inputs table -->
+        @if (c.inputs.length) {
+          <div class="sc-api-section">
+            <h2 class="sc-section-title">Inputs</h2>
+            <div class="sc-table-wrap">
+              <table class="sc-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (inp of c.inputs; track inp.name) {
+                    <tr>
+                      <td><code>{{ inp.name }}</code></td>
+                      <td><code>{{ inp.type }}</code></td>
+                      <td>{{ inp.default || '—' }}</td>
+                      <td>{{ inp.description }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+
+        <!-- Outputs table -->
+        @if (c.outputs.length) {
+          <div class="sc-api-section">
+            <h2 class="sc-section-title">Outputs</h2>
+            <div class="sc-table-wrap">
+              <table class="sc-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (out of c.outputs; track out.name) {
+                    <tr>
+                      <td><code>{{ out.name }}</code></td>
+                      <td><code>{{ out.type }}</code></td>
+                      <td>{{ out.description }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="sc-not-found">
+        <h2>Component not found</h2>
+        <a routerLink="/showcase">&#8592; Back to Catalog</a>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Lightbox -->
+@if (lightboxImage()) {
+  <div class="showcase-lightbox" (click)="closeLightbox()">
+    <button class="showcase-lightbox__close">&times;</button>
+    <img
+      class="showcase-lightbox__img"
+      [src]="lightboxImage()"
+      alt="Screenshot detail"
+      (click)="$event.stopPropagation()"
+    />
+  </div>
+}

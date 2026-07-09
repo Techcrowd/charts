@@ -6,7 +6,7 @@
   <section class="demo-section">
     <h2>Základní použití</h2>
     <div class="demo-card">
-      <co-donut-chart [data]="fruitData" />
+      <co-donut-chart [data]="fruitData" (segmentClick)="onSegmentClick($event)" />
       <markdown clipboard class="code-block" [data]="code.basic | language : 'html'"></markdown>
       <markdown clipboard class="code-block" [data]="code.basicTs | language : 'typescript'"></markdown>
     </div>

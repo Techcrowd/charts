@@ -1,0 +1,92 @@
+<div class="catalog">
+  <div class="catalog__hero">
+    <h1 class="catalog__title">Golem Design System</h1>
+    <p class="catalog__subtitle">{{ totalCount }} components &mdash; UI library reference &amp; visual catalog</p>
+  </div>
+
+  <!-- Search -->
+  <div class="catalog__search">
+    <span class="catalog__search-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    </span>
+    <input
+      type="text"
+      class="catalog__search-input"
+      placeholder="Search components..."
+      [value]="searchQuery()"
+      (input)="onSearch($event)"
+    />
+    @if (searchQuery()) {
+      <button class="catalog__search-clear" (click)="clearSearch()">&times;</button>
+    }
+  </div>
+
+  <!-- Result counter -->
+  @if (searchQuery() || activeCategory()) {
+    <div class="catalog__result-count">
+      {{ filteredComponents().length }} of {{ totalCount }} components
+    </div>
+  }
+
+  <!-- Category tabs -->
+  <div class="catalog__tabs">
+    <button
+      class="catalog__tab"
+      [class.catalog__tab--active]="activeCategory() === null"
+      (click)="setCategory(null)"
+    >
+      All <span class="catalog__tab-count">{{ totalCount }}</span>
+    </button>
+    @for (cat of categories; track cat.category) {
+      <button
+        class="catalog__tab"
+        [class.catalog__tab--active]="activeCategory() === cat.category"
+        (click)="setCategory(cat.category)"
+      >
+        {{ cat.category }} <span class="catalog__tab-count">{{ cat.count }}</span>
+      </button>
+    }
+  </div>
+
+  <!-- Component grid -->
+  <div class="catalog__grid">
+    @for (comp of filteredComponents(); track comp.name; let i = $index) {
+      <a class="catalog__card" [routerLink]="'/showcase/' + slugify(comp.name)" [style.--i]="i">
+        <div class="catalog__card-thumb">
+          @if (getThumb(comp.name)) {
+            <img [src]="getThumb(comp.name)" [alt]="comp.name" loading="lazy" />
+          } @else {
+            <div class="catalog__card-placeholder">
+              <span>{{ comp.name.substring(0, 2) }}</span>
+            </div>
+          }
+        </div>
+        <div class="catalog__card-body">
+          <h3 class="catalog__card-name">{{ comp.name }}</h3>
+          <div class="catalog__card-meta">
+            @if (comp.version) {
+              <span class="catalog__card-version">v{{ comp.version }}</span>
+            }
+            @if (comp.inputs.length) {
+              <span class="catalog__card-badge">{{ comp.inputs.length }} in</span>
+            }
+            @if (comp.outputs.length) {
+              <span class="catalog__card-badge">{{ comp.outputs.length }} out</span>
+            }
+            @if (comp.variants?.length) {
+              <span class="catalog__card-badge">{{ comp.variants!.length }} var</span>
+            }
+          </div>
+          @if (comp.description) {
+            <p class="catalog__card-desc">{{ comp.description }}</p>
+          }
+        </div>
+      </a>
+    } @empty {
+      <div class="catalog__empty">
+        <span class="catalog__empty-icon">&#128270;</span>
+        <p>No components match your search.</p>
+      </div>
+    }
+  </div>
+</div>

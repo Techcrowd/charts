@@ -21,6 +21,12 @@
     .apexcharts-bar-area {
       transition: opacity $transition-fast;
     }
+
+    // Skrýt spodní border linii (grid-borders = rámeček kolem plot area)
+    // Boční/levá linie pochází z yAxis.axisBorder a zůstává zachována
+    .apexcharts-grid-borders line {
+      display: none;
+    }
   }
 }
 
@@ -28,6 +34,15 @@
 .co-bar-chart--hovering {
   .co-bar-chart__chart-container {
     @include chart-hover-dimming;
+  }
+}
+
+// Dark mode overrides
+:host-context(.detail--dark),
+:host-context(.sc-preview--dark),
+:host-context(.sc-content--dark) {
+  .co-bar-chart__chart-container {
+    @include chart-dark-mode-overrides;
   }
 }
 

@@ -1,0 +1,152 @@
+@use 'tokens' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px;
+  background: $color-background-surface-secondary;
+  border-radius: $border-radius-lg;
+}
+
+.demo-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.demo-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: $color-content-tertiary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// ═══ Section Header layout ═══
+// Tailwind equivalent: flex items-start gap-3 p-3 border border-gray-300 rounded-lg bg-white
+.section-header {
+  display: flex;
+  align-items: flex-start;    // items-start — key to multi-line behavior
+  gap: 12px;                  // gap-3
+  padding: 12px 16px;         // px-4 py-3
+  border: 1px solid $color-background-border; // border border-gray-300
+  border-radius: $border-radius-lg;           // rounded-lg
+  background: $color-background-surface;      // bg-white
+  font-family: $font-family-base;
+}
+
+.narrow {
+  width: 40%;
+}
+
+// Tailwind: w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0 text-gray-500
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $color-background-surface-tertiary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: $color-content-secondary;
+  font-size: 16px;
+}
+
+.avatar-icon {
+  filter: grayscale(1);
+  font-size: 14px;
+}
+
+// Title: leading-8 (line-height: 32px) matches avatar height
+// Single line → 32px total = same as avatar → visually centered via items-start
+// Multi line → 64px+ → avatar stays at top, text grows down
+// Tailwind: flex-1 min-w-0 font-bold text-base leading-8 text-gray-900 break-words m-0
+.title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: $font-size-lg;      // text-base (16px)
+  font-weight: $font-weight-bold; // font-bold
+  line-height: 32px;              // leading-8 — THIS IS THE KEY
+  color: $color-content-primary;  // text-gray-900
+  word-break: break-word;         // break-words
+}
+
+// Tailwind: w-8 h-8 flex items-center justify-center rounded-full shrink-0
+//           text-gray-400 hover:text-gray-900 hover:bg-gray-100
+.microbutton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: $color-content-tertiary;
+  border-radius: $border-radius-full;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background $transition-fast, color $transition-fast;
+
+  &:hover {
+    background: $color-interactive-secondary-hover;
+    color: $color-content-primary;
+  }
+}
+
+// Tailwind: flex items-center gap-2 shrink-0
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+// Tailwind: h-8 px-4 text-sm font-semibold border border-gray-300 rounded-full
+//           inline-flex items-center hover:shadow whitespace-nowrap
+.btn-secondary {
+  height: 32px;                     // h-8 — matches avatar
+  padding: 0 16px;                  // px-4
+  font-size: $font-size-sm;        // text-sm
+  font-weight: $font-weight-semibold;
+  font-family: $font-family-base;
+  border: 1px solid $color-background-border;
+  border-radius: $border-radius-full;
+  background: transparent;
+  color: $color-content-primary;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  transition: box-shadow $transition-fast;
+
+  &:hover {
+    box-shadow: $shadow-sm;
+  }
+}
+
+// Tailwind: w-8 h-8 flex items-center justify-center text-sm font-semibold
+//           border border-gray-300 rounded-full hover:shadow
+.btn-menu {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-lg;
+  font-family: $font-family-base;
+  border: 1px solid $color-background-border;
+  border-radius: $border-radius-full;
+  background: transparent;
+  color: $color-content-primary;
+  cursor: pointer;
+  padding: 0;
+  transition: box-shadow $transition-fast;
+
+  &:hover {
+    box-shadow: $shadow-sm;
+  }
+}

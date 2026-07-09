@@ -7,8 +7,10 @@ import {
   ElementRef,
   OnChanges,
   OnInit,
+  OnDestroy,
   ChangeDetectionStrategy,
   PLATFORM_ID,
+  NgZone,
   signal,
   computed,
   inject,
@@ -24,6 +26,7 @@ import {
   ApexYAxis,
   ApexGrid,
   ApexStroke,
+  ApexFill,
   ApexResponsive,
   ChartComponent,
   NgApexchartsModule,
@@ -68,7 +71,7 @@ export interface BarChartData {
   styleUrls: ['./co-bar-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CoBarChartComponent implements OnInit, OnChanges {
+export class CoBarChartComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('chart') chartComponent?: ChartComponent;
 
   // ============ INJECTED ============
@@ -77,6 +80,8 @@ export class CoBarChartComponent implements OnInit, OnChanges {
   private dateTimeService = inject(DateTimeService);
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
+  private ngZone = inject(NgZone);
+  private boundClickHandler = this.handleChartClick.bind(this);
 
   // ============ INPUTS ============
 
@@ -141,6 +146,8 @@ export class CoBarChartComponent implements OnInit, OnChanges {
     value: number;
     category: string;
     seriesName: string;
+    x: number;
+    y: string;
   }>();
 
   /** Emituje při hoveru nad barem */
@@ -151,6 +158,43 @@ export class CoBarChartComponent implements OnInit, OnChanges {
     category: string;
     seriesName: string;
   } | null>();
+
+  // ============ CLICK HANDLING ============
+
+  private handleChartClick(event: Event): void {
+    const me = event as MouseEvent;
+    let target = me.target as Element;
+
+    // If click hit an overlay (data label, foreignObject), find the bar area underneath
+    if (!target.classList.contains('apexcharts-bar-area')) {
+      const elements = document.elementsFromPoint(me.clientX, me.clientY);
+      const bar = elements.find(el => el.classList.contains('apexcharts-bar-area'));
+      if (!bar) return;
+      target = bar;
+    }
+
+    const seriesIndex = parseInt(target.getAttribute('index') ?? '-1', 10);
+    const dataPointIndex = parseInt(target.getAttribute('j') ?? '-1', 10);
+    if (seriesIndex < 0 || dataPointIndex < 0) return;
+
+    const series = this.data.series[seriesIndex];
+    if (!series) return;
+
+    const value = series.data[dataPointIndex] ?? 0;
+    const category = this.data.categories[dataPointIndex] ?? '';
+
+    this.ngZone.run(() => {
+      this.barClick.emit({
+        seriesIndex,
+        dataPointIndex,
+        value,
+        category,
+        seriesName: series.name,
+        x: value,
+        y: category,
+      });
+    });
+  }
 
   // ============ INTERNAL STATE ============
 
@@ -208,6 +252,7 @@ export class CoBarChartComponent implements OnInit, OnChanges {
   yAxisConfig!: ApexYAxis;
   gridConfig!: ApexGrid;
   strokeConfig!: ApexStroke;
+  fillConfig: ApexFill = { opacity: 1 };
   responsiveConfig!: ApexResponsive[];
 
   // Chart configs (static) - use shared constants
@@ -219,11 +264,20 @@ export class CoBarChartComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.syncSignals();
     this.updateChartConfigs();
+    if (this.isBrowser) {
+      this.ngZone.runOutsideAngular(() => {
+        this.elementRef.nativeElement.addEventListener('click', this.boundClickHandler, true);
+      });
+    }
   }
 
   ngOnChanges(): void {
     this.syncSignals();
     this.updateChartConfigs();
+  }
+
+  ngOnDestroy(): void {
+    this.elementRef.nativeElement.removeEventListener('click', this.boundClickHandler, true);
   }
 
   private syncSignals(): void {
@@ -250,13 +304,6 @@ export class CoBarChartComponent implements OnInit, OnChanges {
         speed: 400,
       },
       events: {
-        dataPointSelection: (event: any, chartContext: any, config: any) => {
-          const { seriesIndex, dataPointIndex } = config;
-          const value = self.data.series[seriesIndex]?.data[dataPointIndex] ?? 0;
-          const category = self.data.categories[dataPointIndex] ?? '';
-          const seriesName = self.data.series[seriesIndex]?.name ?? '';
-          self.barClick.emit({ seriesIndex, dataPointIndex, value, category, seriesName });
-        },
         dataPointMouseEnter: (event: any, chartContext: any, config: any) => {
           const { seriesIndex, dataPointIndex } = config;
           self.hoveredSeriesIndex.set(seriesIndex);
@@ -272,10 +319,15 @@ export class CoBarChartComponent implements OnInit, OnChanges {
       },
     };
 
+    // Fixed bar height per series count: 1→32px, 2→14px, 3+→8px
+    const seriesCount = this.data.series.length || 1;
+    const barHeightMap: Record<number, number> = { 1: 32, 2: 14, 3: 8 };
+    const barHeight = barHeightMap[seriesCount] ?? 8;
+
     this.plotOptionsConfig = {
       bar: {
         horizontal: true,
-        barHeight: '32px',
+        barHeight: `${barHeight}px`,
         borderRadius: 2,
         borderRadiusApplication: 'end',
         dataLabels: {
@@ -331,6 +383,10 @@ export class CoBarChartComponent implements OnInit, OnChanges {
 
     // Y axis shows categories (horizontal bar chart)
     this.yAxisConfig = {
+      axisBorder: {
+        show: true,
+        color: CHART_COLORS.gridBorder,
+      },
       labels: {
         style: {
           colors: CHART_COLORS.contentTertiary,
@@ -385,8 +441,8 @@ export class CoBarChartComponent implements OnInit, OnChanges {
 
     this.strokeConfig = {
       show: true,
-      width: 2,
-      colors: ['transparent'],
+      width: 4,
+      colors: [CHART_COLORS.backgroundSurface],
     };
 
     this.responsiveConfig = [
@@ -444,6 +500,8 @@ export class CoBarChartComponent implements OnInit, OnChanges {
         value: total,
         category: '',
         seriesName: series.name,
+        x: total,
+        y: '',
       });
     }
   }

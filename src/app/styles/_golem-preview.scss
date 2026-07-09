@@ -1,0 +1,1677 @@
+// ============================================
+// GOLEM DS VISUAL PREVIEW STYLES
+// CSS mockups for showcase component previews
+// Uses actual Golem design tokens
+// ============================================
+
+@use 'tokens' as *;
+
+// ─── Preview Wrapper ─────────────────────────────────────────────────────────
+
+.gds-preview {
+  background: $color-background-surface-secondary;
+  border-radius: $border-radius-lg;
+  padding: 20px;
+  font-family: $font-family-base;
+  color: $color-content-primary;
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+  border: 1px solid $color-background-border;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+
+  // Phone-width simulation
+  &--phone {
+    max-width: 375px;
+    margin: 0 auto;
+    background: $color-background-surface;
+    border-radius: $border-radius-xl;
+    box-shadow:
+      0 2px 4px $shadow-panel-top,
+      0 4px 12px $shadow-panel-middle;
+    overflow: hidden;
+    border: none;
+  }
+}
+
+.gds-preview-label {
+  display: block;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: $color-content-tertiary;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.gds-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gds-preview-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gds-preview-spacer {
+  height: 16px;
+}
+
+// ─── Buttons ─────────────────────────────────────────────────────────────────
+
+.gds-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: $border-radius-full;
+  font-family: $font-family-base;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background 200ms ease-out, opacity 200ms ease-out, transform 200ms ease-out, box-shadow 200ms ease-out;
+  white-space: nowrap;
+
+  &:hover:not([disabled]) {
+    transform: translateY(-1px);
+    box-shadow: $shadow-md;
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(0);
+  }
+
+  &--primary {
+    background: $color-interactive-primary;
+    color: $color-interactive-on-primary;
+  }
+
+  &--secondary {
+    background: transparent;
+    color: $color-interactive-secondary;
+    border: 1.5px solid $color-background-border;
+  }
+
+  &--tertiary {
+    background: transparent;
+    color: $color-interactive-primary;
+    padding: 12px 16px;
+  }
+
+  &--full {
+    width: 100%;
+  }
+
+  &--sm {
+    padding: 8px 16px;
+    font-size: $font-size-sm;
+  }
+
+  &[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+// ─── Button Bar ──────────────────────────────────────────────────────────────
+
+.gds-btn-bar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: $color-background-surface;
+  border-top: 1px solid $color-background-border;
+
+  &--sticky {
+    position: relative;
+    box-shadow: 0 -2px 8px $shadow-panel-top;
+  }
+
+  .gds-btn {
+    flex: 1;
+  }
+}
+
+// ─── Card ────────────────────────────────────────────────────────────────────
+
+.gds-card {
+  background: $color-background-surface;
+  border-radius: $border-radius-lg;
+  padding: 16px;
+  box-shadow:
+    0 1px 2px $shadow-panel-top,
+    0 2px 8px $shadow-panel-middle;
+
+  &--highlight {
+    border-left: 3px solid $color-interactive-primary;
+  }
+
+  &--flat {
+    box-shadow: none;
+    border: 1px solid $color-background-border;
+  }
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-content-primary;
+    margin: 0 0 8px;
+  }
+
+  &__text {
+    font-size: $font-size-md;
+    color: $color-content-secondary;
+    margin: 0;
+    line-height: $line-height-relaxed;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid $color-background-border;
+  }
+}
+
+// ─── Inputs ──────────────────────────────────────────────────────────────────
+
+.gds-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gds-input-label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-content-secondary;
+}
+
+.gds-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid $color-background-border;
+  border-radius: $border-radius-lg;
+  font-family: $font-family-base;
+  font-size: $font-size-md;
+  color: $color-content-primary;
+  background: $color-background-surface;
+  outline: none;
+  transition: border-color $transition-fast;
+
+  &::placeholder {
+    color: $color-content-quaternary;
+  }
+
+  &:focus, &--focused {
+    border-color: $color-interactive-primary;
+    box-shadow: 0 0 0 3px rgba($color-interactive-primary, 0.1);
+  }
+
+  &--error {
+    border-color: $color-attention-alert;
+  }
+
+  &--mega {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    padding: 16px;
+    text-align: center;
+  }
+
+  &--disabled {
+    background: $color-background-surface-secondary;
+    color: $color-content-disabled;
+    cursor: not-allowed;
+  }
+}
+
+.gds-input-hint {
+  font-size: $font-size-xs;
+  color: $color-content-tertiary;
+}
+
+.gds-input-error {
+  font-size: $font-size-xs;
+  color: $color-attention-alert;
+}
+
+// ─── Search Bar ──────────────────────────────────────────────────────────────
+
+.gds-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: $color-background-surface-secondary;
+  border-radius: $border-radius-full;
+  color: $color-content-tertiary;
+
+  &__icon {
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  &__text {
+    font-size: $font-size-md;
+    color: $color-content-quaternary;
+  }
+}
+
+// ─── Item - Navigation ───────────────────────────────────────────────────────
+
+.gds-item-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: $color-background-surface;
+  border-bottom: 1px solid $color-background-surface-secondary;
+  cursor: pointer;
+
+  &__icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-content-secondary;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $color-content-primary;
+  }
+
+  &__caption {
+    font-size: $font-size-sm;
+    color: $color-content-tertiary;
+    margin-top: 2px;
+  }
+
+  &__chevron {
+    color: $color-content-quaternary;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: $color-interactive-primary;
+    color: $color-interactive-on-primary;
+    border-radius: $border-radius-full;
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// ─── Item - Transaction ──────────────────────────────────────────────────────
+
+.gds-item-tx {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: $color-background-surface;
+  border-bottom: 1px solid $color-background-surface-secondary;
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $color-content-primary;
+  }
+
+  &__caption {
+    font-size: $font-size-sm;
+    color: $color-content-tertiary;
+    margin-top: 2px;
+  }
+
+  &__value {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $color-content-primary;
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+
+    &--positive {
+      color: $color-attention-success;
+    }
+
+    &--negative {
+      color: $color-attention-alert;
+    }
+
+    &--processing {
+      color: $color-attention-processing;
+    }
+  }
+
+  &__secondary-value {
+    font-size: $font-size-xs;
+    color: $color-content-tertiary;
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  &__message {
+    font-size: $font-size-xs;
+    margin-top: 4px;
+    padding: 4px 8px;
+    border-radius: $border-radius-md;
+
+    &--success {
+      background: $color-attention-success-surface;
+      color: $color-attention-success;
+    }
+
+    &--error {
+      background: $color-attention-alert-surface;
+      color: $color-attention-alert;
+    }
+
+    &--processing {
+      background: $color-attention-processing-surface;
+      color: $color-attention-processing;
+    }
+  }
+}
+
+// ─── Item - Switch ───────────────────────────────────────────────────────────
+
+.gds-item-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: $color-background-surface;
+  border-bottom: 1px solid $color-background-surface-secondary;
+
+  &__label {
+    flex: 1;
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $color-content-primary;
+  }
+
+  &__caption {
+    font-size: $font-size-sm;
+    color: $color-content-tertiary;
+    margin-top: 2px;
+  }
+}
+
+.gds-switch {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  background: $color-background-border;
+  border-radius: 14px;
+  flex-shrink: 0;
+  transition: background $transition-fast;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background: $color-background-surface;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform $transition-fast;
+  }
+
+  &--on {
+    background: $color-interactive-primary;
+
+    &::after {
+      transform: translateX(20px);
+    }
+  }
+}
+
+// ─── Item - Checkbox ─────────────────────────────────────────────────────────
+
+.gds-item-check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: $color-background-surface;
+  border-bottom: 1px solid $color-background-surface-secondary;
+
+  &__label {
+    flex: 1;
+    font-size: $font-size-md;
+    color: $color-content-primary;
+  }
+}
+
+.gds-checkbox {
+  width: 22px;
+  height: 22px;
+  border: 2px solid $color-background-border;
+  border-radius: $border-radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &--checked {
+    background: $color-interactive-primary;
+    border-color: $color-interactive-primary;
+    color: $color-interactive-on-primary;
+    font-size: 14px;
+    font-weight: $font-weight-bold;
+  }
+}
+
+// ─── Item - Radio ────────────────────────────────────────────────────────────
+
+.gds-item-radio {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: $color-background-surface;
+  border-bottom: 1px solid $color-background-surface-secondary;
+
+  &__label {
+    flex: 1;
+    font-size: $font-size-md;
+    color: $color-content-primary;
+  }
+}
+
+.gds-radio {
+  width: 22px;
+  height: 22px;
+  border: 2px solid $color-background-border;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &--selected {
+    border-color: $color-interactive-primary;
+
+    &::after {
+      content: '';
+      width: 12px;
+      height: 12px;
+      background: $color-interactive-primary;
+      border-radius: 50%;
+    }
+  }
+}
+
+// ─── Avatar ──────────────────────────────────────────────────────────────────
+
+.gds-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: $font-weight-semibold;
+  flex-shrink: 0;
+  background: $color-background-surface-tertiary;
+  color: $color-content-secondary;
+
+  &--success {
+    background: $color-attention-success-surface;
+    color: $color-attention-success;
+  }
+
+  &--error {
+    background: $color-attention-alert-surface;
+    color: $color-attention-alert;
+  }
+
+  &--processing {
+    background: $color-attention-processing-surface;
+    color: $color-attention-processing;
+  }
+
+  &--primary {
+    background: $color-interactive-primary;
+    color: $color-interactive-on-primary;
+  }
+
+  &--sm {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  &--lg {
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+}
+
+// ─── Header ──────────────────────────────────────────────────────────────────
+
+.gds-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  min-height: 56px;
+  gap: 12px;
+
+  &--ground {
+    background: $color-interactive-secondary;
+    color: $color-interactive-on-primary;
+  }
+
+  &--nav {
+    background: $color-background-surface;
+    border-bottom: 1px solid $color-background-border;
+    color: $color-content-primary;
+  }
+
+  &--dialog {
+    background: $color-background-surface;
+    border-bottom: 1px solid $color-background-border;
+    color: $color-content-primary;
+  }
+
+  &__back {
+    font-size: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    flex: 1;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__action {
+    font-size: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+}
+
+// ─── Chip / Badge ────────────────────────────────────────────────────────────
+
+.gds-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: $border-radius-full;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  background: $color-background-surface-secondary;
+  color: $color-content-secondary;
+
+  &--active {
+    background: $color-interactive-primary;
+    color: $color-interactive-on-primary;
+  }
+
+  &--outline {
+    background: transparent;
+    border: 1px solid $color-background-border;
+  }
+}
+
+.gds-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: $border-radius-full;
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+
+  &--primary {
+    background: $color-interactive-primary;
+    color: $color-interactive-on-primary;
+  }
+
+  &--success {
+    background: $color-attention-success;
+    color: #fff;
+  }
+
+  &--error {
+    background: $color-attention-alert;
+    color: #fff;
+  }
+
+  &--processing {
+    background: $color-attention-processing;
+    color: #fff;
+  }
+}
+
+// ─── Divider ─────────────────────────────────────────────────────────────────
+
+.gds-divider {
+  height: 1px;
+  background: $color-background-border;
+  margin: 8px 0;
+  border: none;
+
+  &--thick {
+    height: 8px;
+    background: $color-background-surface-secondary;
+  }
+}
+
+// ─── Spinner ─────────────────────────────────────────────────────────────────
+
+.gds-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid $color-background-border;
+  border-top-color: $color-interactive-primary;
+  border-radius: 50%;
+  animation: gds-spin 0.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+
+  &--sm {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+  }
+
+  &--lg {
+    width: 48px;
+    height: 48px;
+    border-width: 4px;
+  }
+}
+
+@keyframes gds-spin {
+  to { transform: rotate(360deg); }
+}
+
+// ─── Snackbar ────────────────────────────────────────────────────────────────
+
+.gds-snackbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: $border-radius-lg;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+
+  &--success {
+    background: $color-attention-success;
+    color: #fff;
+  }
+
+  &--error {
+    background: $color-attention-alert;
+    color: #fff;
+  }
+
+  &--info {
+    background: $color-content-secondary;
+    color: #fff;
+  }
+
+  &--processing {
+    background: $color-attention-processing;
+    color: #fff;
+  }
+
+  &__icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  &__text {
+    flex: 1;
+  }
+
+  &__action {
+    font-weight: $font-weight-bold;
+    text-decoration: underline;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+}
+
+// ─── Product Card ────────────────────────────────────────────────────────────
+
+.gds-product {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: $color-background-surface;
+  border-radius: $border-radius-lg;
+  box-shadow:
+    0 1px 2px $shadow-panel-top,
+    0 2px 8px $shadow-panel-middle;
+  cursor: pointer;
+
+  &__name {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-content-secondary;
+  }
+
+  &__value {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: $color-content-primary;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__currency {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-medium;
+    color: $color-content-tertiary;
+    margin-left: 4px;
+  }
+
+  &__number {
+    font-size: $font-size-sm;
+    color: $color-content-tertiary;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__performance {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+
+    &--positive {
+      color: $color-attention-success;
+    }
+
+    &--negative {
+      color: $color-attention-alert;
+    }
+  }
+
+  &__message {
+    font-size: $font-size-xs;
+    padding: 6px 10px;
+    border-radius: $border-radius-md;
+    margin-top: 4px;
+
+    &--info {
+      background: $color-attention-information-surface;
+      color: $color-attention-information;
+    }
+
+    &--success {
+      background: $color-attention-success-surface;
+      color: $color-attention-success;
+    }
+  }
+
+  &--investment {
+    border-top: 3px solid $chart-evaluation;
+  }
+
+  &--savings {
+    border-top: 3px solid $color-attention-success;
+  }
+
+  &--loan {
+    border-top: 3px solid $color-attention-processing;
+  }
+
+  &--insurance {
+    border-top: 3px solid $chart-cool;
+  }
+}
+
+// ─── Tab / Segmented ─────────────────────────────────────────────────────────
+
+.gds-tabs {
+  display: flex;
+  border-bottom: 2px solid $color-background-surface-secondary;
+}
+
+.gds-tab {
+  padding: 12px 20px;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-content-tertiary;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color $transition-fast, border-color $transition-fast;
+  white-space: nowrap;
+
+  &--active {
+    color: $color-interactive-primary;
+    border-bottom-color: $color-interactive-primary;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.gds-segmented {
+  display: inline-flex;
+  background: $color-background-surface-secondary;
+  border-radius: $border-radius-lg;
+  padding: 3px;
+}
+
+.gds-segmented__item {
+  padding: 8px 20px;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-content-secondary;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all $transition-fast;
+  white-space: nowrap;
+
+  &--active {
+    background: $color-background-surface;
+    color: $color-content-primary;
+    font-weight: $font-weight-semibold;
+    box-shadow: 0 1px 3px $shadow-panel-top;
+  }
+}
+
+// ─── Color Swatches ──────────────────────────────────────────────────────────
+
+.gds-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.gds-color-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: $color-background-surface;
+  border-radius: $border-radius-md;
+
+  &__box {
+    width: 100%;
+    height: 40px;
+    border-radius: $border-radius-md;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  &__name {
+    font-size: 11px;
+    font-weight: $font-weight-medium;
+    color: $color-content-primary;
+  }
+
+  &__hex {
+    font-size: 10px;
+    color: $color-content-tertiary;
+    font-family: $font-family-mono;
+  }
+}
+
+// ─── Icon Grid ───────────────────────────────────────────────────────────────
+
+.gds-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+}
+
+.gds-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 4px;
+  background: $color-background-surface;
+  border-radius: $border-radius-md;
+
+  &__icon {
+    font-size: 24px;
+    color: $color-content-primary;
+  }
+
+  &__name {
+    font-size: 10px;
+    color: $color-content-tertiary;
+    text-align: center;
+    word-break: break-all;
+  }
+}
+
+// ─── Typography Sample ───────────────────────────────────────────────────────
+
+.gds-typo-sample {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0;
+
+  &__row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 6px 0;
+    border-bottom: 1px solid $color-background-surface-secondary;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__label {
+    min-width: 130px;
+    font-size: $font-size-xs;
+    color: $color-content-tertiary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  &__text {
+    color: $color-content-primary;
+  }
+}
+
+// ─── Section Header ──────────────────────────────────────────────────────────
+
+.gds-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-content-primary;
+    flex: 1;
+  }
+
+  &__action {
+    font-size: $font-size-sm;
+    color: $color-interactive-primary;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+  }
+}
+
+// ─── Inline Message ──────────────────────────────────────────────────────────
+
+.gds-inline-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: $border-radius-lg;
+  font-size: $font-size-sm;
+
+  &--info {
+    background: $color-attention-information-surface;
+    color: $color-attention-information;
+  }
+
+  &--success {
+    background: $color-attention-success-surface;
+    color: $color-attention-success;
+  }
+
+  &--error {
+    background: $color-attention-alert-surface;
+    color: $color-attention-alert;
+  }
+
+  &--warning {
+    background: $color-attention-processing-surface;
+    color: $color-attention-processing;
+  }
+
+  &__icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &__text {
+    flex: 1;
+    line-height: $line-height-relaxed;
+  }
+}
+
+// ─── Illustrated Message ─────────────────────────────────────────────────────
+
+.gds-illustrated-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 24px;
+  gap: 16px;
+
+  &__illustration {
+    width: 120px;
+    height: 120px;
+    background: $color-background-surface-secondary;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: $color-content-quaternary;
+  }
+
+  &__heading {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-content-primary;
+  }
+
+  &__text {
+    font-size: $font-size-md;
+    color: $color-content-tertiary;
+    max-width: 280px;
+    line-height: $line-height-relaxed;
+  }
+}
+
+// ─── Modal / Alert ───────────────────────────────────────────────────────────
+
+.gds-modal {
+  background: $color-dialog-surface;
+  border-radius: $border-radius-xl;
+  padding: 24px;
+  box-shadow:
+    0 8px 16px $shadow-floating-middle,
+    0 16px 48px $shadow-floating-bottom;
+  max-width: 320px;
+  margin: 0 auto;
+
+  &__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-content-primary;
+    margin: 0 0 8px;
+  }
+
+  &__text {
+    font-size: $font-size-md;
+    color: $color-content-secondary;
+    margin: 0 0 20px;
+    line-height: $line-height-relaxed;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+}
+
+// ─── Panel Menu ──────────────────────────────────────────────────────────────
+
+.gds-panel-menu {
+  background: $color-background-surface;
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+}
+
+.gds-panel-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid $color-background-surface-secondary;
+  cursor: pointer;
+
+  &__icon {
+    width: 32px;
+    height: 32px;
+    border-radius: $border-radius-md;
+    background: $color-background-surface-secondary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $color-content-primary;
+  }
+
+  &__caption {
+    font-size: $font-size-sm;
+    color: $color-content-tertiary;
+    margin-top: 2px;
+  }
+
+  &__chevron {
+    color: $color-content-quaternary;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  &__fav {
+    color: $color-attention-processing;
+    font-size: 16px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+}
+
+// ─── Accordion ───────────────────────────────────────────────────────────────
+
+.gds-accordion {
+  background: $color-background-surface;
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+}
+
+.gds-accordion-item {
+  border-bottom: 1px solid $color-background-surface-secondary;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $color-content-primary;
+  }
+
+  &__arrow {
+    font-size: 12px;
+    color: $color-content-tertiary;
+    transition: transform $transition-fast;
+    flex-shrink: 0;
+
+    &--open {
+      transform: rotate(90deg);
+    }
+  }
+
+  &__body {
+    padding: 0 16px 14px;
+    font-size: $font-size-sm;
+    color: $color-content-secondary;
+    line-height: $line-height-relaxed;
+  }
+}
+
+// ─── Rating ──────────────────────────────────────────────────────────────────
+
+.gds-rating {
+  display: flex;
+  gap: 4px;
+
+  &__star {
+    font-size: 24px;
+    color: $color-background-border;
+
+    &--filled {
+      color: $color-attention-processing;
+    }
+  }
+}
+
+// ─── Datepicker ──────────────────────────────────────────────────────────────
+
+.gds-datepicker {
+  background: $color-background-surface;
+  border-radius: $border-radius-lg;
+  padding: 16px;
+  box-shadow:
+    0 2px 4px $shadow-panel-top,
+    0 4px 12px $shadow-panel-middle;
+  max-width: 300px;
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  &__month {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $color-content-primary;
+  }
+
+  &__arrow {
+    font-size: 16px;
+    color: $color-content-tertiary;
+    cursor: pointer;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    text-align: center;
+  }
+
+  &__weekday {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: $color-content-tertiary;
+    padding: 4px;
+  }
+
+  &__day {
+    font-size: $font-size-sm;
+    padding: 8px 4px;
+    border-radius: 50%;
+    color: $color-content-primary;
+    cursor: pointer;
+
+    &--today {
+      font-weight: $font-weight-bold;
+      color: $color-interactive-primary;
+    }
+
+    &--selected {
+      background: $color-interactive-primary;
+      color: $color-interactive-on-primary;
+      font-weight: $font-weight-semibold;
+    }
+
+    &--disabled {
+      color: $color-content-quaternary;
+      cursor: default;
+    }
+
+    &--other-month {
+      color: $color-content-quaternary;
+    }
+  }
+}
+
+// ─── Account Display ─────────────────────────────────────────────────────────
+
+.gds-account-display {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: $color-background-surface;
+  border-radius: $border-radius-lg;
+  box-shadow:
+    0 1px 2px $shadow-panel-top,
+    0 2px 8px $shadow-panel-middle;
+
+  &__owner {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-content-secondary;
+  }
+
+  &__number {
+    font-size: $font-size-md;
+    color: $color-content-primary;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__balance-label {
+    font-size: $font-size-xs;
+    color: $color-content-tertiary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  &__balance {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $color-content-primary;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// ─── Navigation Bar ──────────────────────────────────────────────────────────
+
+.gds-nav-bar {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0 4px;
+  background: $color-background-surface;
+  border-top: 1px solid $color-background-border;
+}
+
+.gds-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  color: $color-content-tertiary;
+  font-size: 10px;
+  cursor: pointer;
+
+  &__icon {
+    font-size: 22px;
+  }
+
+  &--active {
+    color: $color-interactive-primary;
+  }
+}
+
+// ─── Digit Picker ────────────────────────────────────────────────────────────
+
+.gds-digit-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.gds-digit {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  background: $color-background-surface-secondary;
+  color: $color-content-primary;
+
+  &--selected {
+    background: $color-interactive-primary;
+    color: $color-interactive-on-primary;
+  }
+}
+
+// ─── Promo Card ──────────────────────────────────────────────────────────────
+
+.gds-promo-card {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: $color-background-surface;
+  border-radius: $border-radius-lg;
+  box-shadow:
+    0 1px 2px $shadow-panel-top,
+    0 2px 8px $shadow-panel-middle;
+  align-items: center;
+
+  &__image {
+    width: 64px;
+    height: 64px;
+    border-radius: $border-radius-lg;
+    background: $color-background-surface-secondary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $color-content-primary;
+    margin: 0 0 4px;
+  }
+
+  &__caption {
+    font-size: $font-size-sm;
+    color: $color-content-tertiary;
+    margin: 0;
+  }
+
+  &__close {
+    font-size: 18px;
+    color: $color-content-tertiary;
+    cursor: pointer;
+    flex-shrink: 0;
+    align-self: flex-start;
+  }
+}
+
+// ─── Information List ────────────────────────────────────────────────────────
+
+.gds-info-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.gds-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid $color-background-surface-secondary;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__label {
+    font-size: $font-size-md;
+    color: $color-content-tertiary;
+  }
+
+  &__value {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $color-content-primary;
+    text-align: right;
+  }
+}
+
+// ─── Dropdown ────────────────────────────────────────────────────────────────
+
+.gds-dropdown {
+  background: $color-background-surface;
+  border-radius: $border-radius-lg;
+  box-shadow:
+    0 4px 8px $shadow-floating-top,
+    0 8px 24px $shadow-floating-middle;
+  overflow: hidden;
+  min-width: 200px;
+}
+
+.gds-dropdown-item {
+  padding: 12px 16px;
+  font-size: $font-size-md;
+  color: $color-content-primary;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover, &--highlighted {
+    background: $color-background-surface-secondary;
+  }
+
+  &--selected {
+    color: $color-interactive-primary;
+    font-weight: $font-weight-medium;
+  }
+
+  &--destructive {
+    color: $color-attention-alert;
+  }
+}
+
+// ─── Paginator ───────────────────────────────────────────────────────────────
+
+.gds-paginator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.gds-paginator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $color-background-border;
+
+  &--active {
+    background: $color-interactive-primary;
+    width: 24px;
+    border-radius: 4px;
+  }
+}
+
+// ─── Tooltip ─────────────────────────────────────────────────────────────────
+
+.gds-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  &__bubble {
+    background: $color-content-secondary;
+    color: $color-interactive-on-primary;
+    padding: 8px 12px;
+    border-radius: $border-radius-md;
+    font-size: $font-size-sm;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px $shadow-floating-middle;
+  }
+}
+
+// ─── Placeholder / minimal preview ──────────────────────────────────────────
+
+.gds-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  background: $color-background-surface;
+  border: 2px dashed $color-background-border;
+  border-radius: $border-radius-lg;
+  color: $color-content-tertiary;
+  font-size: $font-size-sm;
+
+  &__icon {
+    font-size: 20px;
+  }
+}
+
+// ─── Surface Effect ──────────────────────────────────────────────────────────
+
+.gds-surface {
+  padding: 20px;
+  border-radius: $border-radius-lg;
+  background: $color-background-surface;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $color-content-secondary;
+
+  &--level-1 {
+    box-shadow: 0 1px 2px $shadow-panel-top;
+  }
+
+  &--level-2 {
+    box-shadow:
+      0 2px 4px $shadow-highlighted-top,
+      0 4px 12px $shadow-highlighted-middle;
+  }
+
+  &--level-3 {
+    box-shadow:
+      0 4px 8px $shadow-floating-top,
+      0 8px 24px $shadow-floating-middle,
+      0 16px 48px $shadow-floating-bottom;
+  }
+}
+
+// ─── Toolbar ─────────────────────────────────────────────────────────────────
+
+.gds-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  background: $color-background-surface;
+  border-bottom: 1px solid $color-background-border;
+
+  &__item {
+    font-size: 20px;
+    color: $color-content-secondary;
+    cursor: pointer;
+
+    &--active {
+      color: $color-interactive-primary;
+    }
+  }
+}
+
+// ─── Flag ────────────────────────────────────────────────────────────────────
+
+.gds-flag {
+  width: 24px;
+  height: 16px;
+  border-radius: 2px;
+  display: inline-block;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}

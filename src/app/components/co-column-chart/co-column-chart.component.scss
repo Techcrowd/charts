@@ -31,6 +31,15 @@
   }
 }
 
+// Dark mode overrides
+:host-context(.detail--dark),
+:host-context(.sc-preview--dark),
+:host-context(.sc-content--dark) {
+  .co-column-chart__chart-container {
+    @include chart-dark-mode-overrides;
+  }
+}
+
 // Skeleton Loading
 .co-column-chart__skeleton {
   @include skeleton-container;

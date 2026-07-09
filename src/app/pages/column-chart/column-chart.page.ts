@@ -133,13 +133,8 @@ onColumnHover(event) {
     return this.chartColorService.getColorHex(color);
   }
 
-  onColumnClick(event: {
-    seriesIndex: number;
-    dataPointIndex: number;
-    value: number;
-    category: string;
-    seriesName: string;
-  }): void {
+  onColumnClick(event: any): void {
+    console.log('[columnClick]', event);
     if (event.dataPointIndex >= 0) {
       this.lastAction = `Klik: ${event.seriesName} - ${event.category} (${event.value})`;
     } else {

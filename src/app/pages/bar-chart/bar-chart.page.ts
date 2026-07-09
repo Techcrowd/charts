@@ -79,13 +79,8 @@ onBarHover(event) {
     return this.chartColorService.getColorHex(color);
   }
 
-  onBarClick(event: {
-    seriesIndex: number;
-    dataPointIndex: number;
-    value: number;
-    category: string;
-    seriesName: string;
-  }): void {
+  onBarClick(event: any): void {
+    console.log('[barClick]', event);
     if (event.dataPointIndex >= 0) {
       this.lastAction = `Klik: ${event.seriesName} - ${event.category} (${event.value})`;
     } else {

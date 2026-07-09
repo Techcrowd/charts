@@ -7,8 +7,10 @@ import {
   ElementRef,
   OnChanges,
   OnInit,
+  OnDestroy,
   ChangeDetectionStrategy,
   PLATFORM_ID,
+  NgZone,
   signal,
   computed,
   inject,
@@ -24,6 +26,7 @@ import {
   ApexYAxis,
   ApexGrid,
   ApexStroke,
+  ApexFill,
   ApexResponsive,
   ChartComponent,
   NgApexchartsModule,
@@ -68,7 +71,7 @@ export interface ColumnChartData {
   styleUrls: ['./co-column-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CoColumnChartComponent implements OnInit, OnChanges {
+export class CoColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('chart') chartComponent?: ChartComponent;
 
   // ============ INJECTED ============
@@ -77,6 +80,8 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   private dateTimeService = inject(DateTimeService);
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
+  private ngZone = inject(NgZone);
+  private boundClickHandler = this.handleChartClick.bind(this);
 
   // ============ INPUTS ============
 
@@ -138,6 +143,8 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
     value: number;
     category: string;
     seriesName: string;
+    x: string;
+    y: number;
   }>();
 
   /** Emituje při hoveru nad sloupcem */
@@ -148,6 +155,43 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
     category: string;
     seriesName: string;
   } | null>();
+
+  // ============ CLICK HANDLING ============
+
+  private handleChartClick(event: Event): void {
+    const me = event as MouseEvent;
+    let target = me.target as Element;
+
+    // If click hit an overlay (data label, foreignObject), find the bar area underneath
+    if (!target.classList.contains('apexcharts-bar-area')) {
+      const elements = document.elementsFromPoint(me.clientX, me.clientY);
+      const bar = elements.find(el => el.classList.contains('apexcharts-bar-area'));
+      if (!bar) return;
+      target = bar;
+    }
+
+    const seriesIndex = parseInt(target.getAttribute('index') ?? '-1', 10);
+    const dataPointIndex = parseInt(target.getAttribute('j') ?? '-1', 10);
+    if (seriesIndex < 0 || dataPointIndex < 0) return;
+
+    const series = this.data.series[seriesIndex];
+    if (!series) return;
+
+    const value = series.data[dataPointIndex] ?? 0;
+    const category = this.data.categories[dataPointIndex] ?? '';
+
+    this.ngZone.run(() => {
+      this.columnClick.emit({
+        seriesIndex,
+        dataPointIndex,
+        value,
+        category,
+        seriesName: series.name,
+        x: category,
+        y: value,
+      });
+    });
+  }
 
   // ============ INTERNAL STATE ============
 
@@ -203,6 +247,7 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   yAxisConfig!: ApexYAxis;
   gridConfig!: ApexGrid;
   strokeConfig!: ApexStroke;
+  fillConfig: ApexFill = { opacity: 1 };
   responsiveConfig!: ApexResponsive[];
 
   // Chart configs (static) - use shared constants
@@ -214,11 +259,20 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.syncSignals();
     this.updateChartConfigs();
+    if (this.isBrowser) {
+      this.ngZone.runOutsideAngular(() => {
+        this.elementRef.nativeElement.addEventListener('click', this.boundClickHandler, true);
+      });
+    }
   }
 
   ngOnChanges(): void {
     this.syncSignals();
     this.updateChartConfigs();
+  }
+
+  ngOnDestroy(): void {
+    this.elementRef.nativeElement.removeEventListener('click', this.boundClickHandler, true);
   }
 
   private syncSignals(): void {
@@ -245,16 +299,10 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
         speed: 400,
       },
       events: {
-        dataPointSelection: (event: any, chartContext: any, config: any) => {
-          const { seriesIndex, dataPointIndex } = config;
-          const value = self.data.series[seriesIndex]?.data[dataPointIndex] ?? 0;
-          const category = self.data.categories[dataPointIndex] ?? '';
-          const seriesName = self.data.series[seriesIndex]?.name ?? '';
-          self.columnClick.emit({ seriesIndex, dataPointIndex, value, category, seriesName });
-        },
         dataPointMouseEnter: (event: any, chartContext: any, config: any) => {
           const { seriesIndex, dataPointIndex } = config;
           self.hoveredSeriesIndex.set(seriesIndex);
+          self.highlightBars(seriesIndex, dataPointIndex);
           const value = self.data.series[seriesIndex]?.data[dataPointIndex] ?? 0;
           const category = self.data.categories[dataPointIndex] ?? '';
           const seriesName = self.data.series[seriesIndex]?.name ?? '';
@@ -262,32 +310,21 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
         },
         dataPointMouseLeave: () => {
           self.hoveredSeriesIndex.set(-1);
+          self.highlightBars(-1, -1);
           self.columnHover.emit(null);
         },
       },
     };
 
-    // Calculate columnWidth to approximate max 32px per bar
-    // Based on typical chart width ~800px
-    const categoryCount = this.data.categories.length || 1;
+    // Fixed column width per series count: 1→32px, 2→14px, 3+→8px
     const seriesCount = this.data.series.length || 1;
-    const maxBarWidth = 32;
-    const estimatedChartWidth = 800;
-
-    // Calculate space per category and target percentage
-    const spacePerCategory = estimatedChartWidth / categoryCount;
-    const targetGroupWidth = maxBarWidth * seriesCount;
-    let targetPercent = (targetGroupWidth / spacePerCategory) * 100;
-
-    // Clamp between 15% and 85%
-    targetPercent = Math.max(15, Math.min(85, targetPercent));
-
-    const columnWidth = `${Math.round(targetPercent)}%`;
+    const colWidthMap: Record<number, number> = { 1: 32, 2: 14, 3: 8 };
+    const colWidthPx = colWidthMap[seriesCount] ?? 8;
 
     this.plotOptionsConfig = {
       bar: {
         horizontal: false,
-        columnWidth: columnWidth,
+        columnWidth: `${colWidthPx}px`,
         borderRadius: 2,
         borderRadiusApplication: 'end',
         dataLabels: {
@@ -393,8 +430,8 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
 
     this.strokeConfig = {
       show: true,
-      width: 2,
-      colors: ['transparent'],
+      width: 4,
+      colors: [CHART_COLORS.backgroundSurface],
     };
 
     this.responsiveConfig = [
@@ -437,6 +474,8 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
         value: total,
         category: '',
         seriesName: series.name,
+        x: '',
+        y: total,
       });
     }
   }
@@ -444,5 +483,28 @@ export class CoColumnChartComponent implements OnInit, OnChanges {
   private highlightSeries(activeIndex: number): void {
     if (!this.isBrowser) return;
     highlightChartSeries(this.elementRef.nativeElement, activeIndex);
+  }
+
+  /**
+   * Dimuje ostatní sloupce ve stejné sérii při hoveru.
+   * Sloupce z jiných sérií zůstávají nedotčeny.
+   */
+  private highlightBars(activeSeriesIndex: number, activeDataPoint: number): void {
+    if (!this.isBrowser) return;
+    const bars = this.elementRef.nativeElement
+      .querySelectorAll('.apexcharts-bar-area') as NodeListOf<SVGElement>;
+    bars.forEach(bar => {
+      if (activeDataPoint === -1) {
+        bar.style.removeProperty('opacity');
+      } else {
+        const seriesIdx = parseInt(bar.getAttribute('index') ?? '-1', 10);
+        const j = parseInt(bar.getAttribute('j') ?? '-1', 10);
+        if (j === activeDataPoint) {
+          // stejná skupina: hovered bar plný, ostatní bary skupiny ztmaví
+          bar.style.opacity = seriesIdx === activeSeriesIndex ? '1' : '0.35';
+        }
+        // jiná skupina (j !== activeDataPoint): nedotýkat se
+      }
+    });
   }
 }

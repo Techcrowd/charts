@@ -130,6 +130,22 @@
     display: none !important;
   }
 
+  // Point annotation labels (max/min values)
+  .apexcharts-point-annotation-label {
+    @include caption-secondary;
+    fill: $color-content-tertiary !important;
+    font-family: inherit !important;
+  }
+
+  .apexcharts-point-annotations {
+    rect {
+      fill: $color-background-surface !important;
+      stroke: $color-background-border !important;
+      rx: $border-radius-sm !important;
+      ry: $border-radius-sm !important;
+    }
+  }
+
   .apexcharts-annotation-label {
     font-family: inherit !important;
   }
@@ -138,6 +154,17 @@
   .apexcharts-canvas {
     max-width: 100%;
     overflow: visible;
+  }
+
+  // Instant marker response (no CSS transition delay)
+  .apexcharts-marker {
+    transition: none !important;
+  }
+
+  // Show hover marker only on the first series
+  .apexcharts-series-markers-wrap:not(:first-of-type) .apexcharts-marker {
+    opacity: 0 !important;
+    r: 0 !important;
   }
 
   // Smoother line rendering

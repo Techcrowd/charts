@@ -329,6 +329,9 @@ export class CoValuePerformanceChartComponent implements OnInit, OnChanges {
         enabled: true,
         easing: 'easeinout',
         speed: 400,
+        dynamicAnimation: {
+          enabled: false,
+        },
       },
       events: {
         dataPointSelection: (event: any, chartContext: any, config: any) => {

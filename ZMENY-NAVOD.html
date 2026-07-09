@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Návod na úpravy – Donut & Broker Chart</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; line-height: 1.6; }
+    h1 { border-bottom: 2px solid #e5e7eb; padding-bottom: 12px; }
+    h2 { color: #374151; margin-top: 32px; }
+    .file-path { background: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 14px; color: #6366f1; }
+    .change-block { background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
+    .change-block h3 { margin: 0 0 8px; font-size: 14px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+    pre { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 13px; line-height: 1.5; }
+    .old { color: #f38ba8; }
+    .new { color: #a6e3a1; }
+    .comment { color: #6c7086; font-style: italic; }
+    .line-ref { color: #89b4fa; }
+  </style>
+</head>
+<body>
+
+<h1>Návod na úpravy – Donut & Broker Chart</h1>
+
+<!-- ============ ZMENA 1 ============ -->
+
+<h2>1. Donut chart – šířka prstence +4px</h2>
+
+<p>
+  Soubor: <span class="file-path">src/app/components/co-donut-chart/co-donut-chart.component.ts</span><br>
+  Řádek: <span class="line-ref">~244</span>
+</p>
+
+<p>
+  Vlastnost <code>computedDonutSize</code> určuje velikost vnitřní díry donutu (v % z poloměru).
+  Menší procento = širší prstenec. Při height 280px: poloměr ~140px, ring = 140 &times; (1 - 0.77) = 32.2px &rarr;
+  pro +4px: 36.2px &rarr; size = 1 - 36.2/140 &asymp; <strong>74%</strong>.
+</p>
+
+<div class="change-block">
+  <h3>Změnit</h3>
+<pre>
+<span class="old">computedDonutSize = '77%';</span>
+</pre>
+</div>
+
+<div class="change-block">
+  <h3>Na</h3>
+<pre>
+<span class="new">computedDonutSize = '74%';</span>
+</pre>
+</div>
+
+<p>Celková velikost (height) zůstává beze změny na 280px. Mění se jen poměr díry, čímž se prstenec rozšíří o ~4px.</p>
+
+<!-- ============ ZMENA 2 ============ -->
+
+<h2>2. Broker chart – hover puntík jen u jedné křivky</h2>
+
+<p>
+  Soubor: <span class="file-path">src/app/components/co-value-performance-chart/co-value-performance-chart.component.scss</span><br>
+  Řádek: <span class="line-ref">~163</span> (za existující pravidlo <code>.apexcharts-marker { transition: none; }</code>)
+</p>
+
+<div class="change-block">
+  <h3>Přidat za existující pravidlo</h3>
+<pre>
+<span class="comment">// Existující pravidlo (NEMĚNIT):</span>
+.apexcharts-marker {
+  transition: none !important;
+}
+
+<span class="new"><span class="comment">// NOVÉ – zobrazit hover marker jen u první křivky</span>
+.apexcharts-series-markers-wrap:not(:first-of-type) .apexcharts-marker {
+  opacity: 0 !important;
+  r: 0 !important;
+}</span>
+</pre>
+</div>
+
+<p>
+  Toto pravidlo patří dovnitř bloku <code>:host ::ng-deep { ... }</code>, který už v souboru existuje (řádek 121).
+  Tooltip se stále zobrazí s hodnotami obou křivek, ale vizuální puntík na grafu bude jen u první (hlavní) křivky.
+</p>
+
+</body>
+</html>

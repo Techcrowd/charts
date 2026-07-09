@@ -1,0 +1,57 @@
+@use 'tokens' as *;
+
+:host {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  min-height: 56px;
+  font-family: $font-family-base;
+  box-sizing: border-box;
+  border: 1px solid $color-background-border;
+  border-radius: $border-radius-lg;
+  background: $color-background-surface;
+}
+
+:host(.multi-line) {
+  align-items: flex-start;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  line-height: 24px;
+  color: $color-content-primary;
+  word-break: break-word;
+}
+
+.microbutton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: $color-content-tertiary;
+  border-radius: $border-radius-full;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background $transition-fast, color $transition-fast;
+
+  &:hover {
+    background: $color-interactive-secondary-hover;
+    color: $color-content-primary;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}

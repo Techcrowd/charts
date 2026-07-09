@@ -39,9 +39,20 @@
       max-height: 100%;
     }
 
-    // Pie segments - smooth opacity transition
+    // Pie segments - smooth opacity transition + clickable
     .apexcharts-pie-area {
       transition: opacity $transition-fast;
+      cursor: pointer;
+      pointer-events: all;
+    }
+
+    // Make overlay elements transparent to clicks
+    .apexcharts-datalabels,
+    .apexcharts-data-labels,
+    .apexcharts-pie-label,
+    .apexcharts-datalabels-group,
+    foreignObject {
+      pointer-events: none;
     }
 
     // Data labels - white background, gray text
@@ -106,6 +117,24 @@
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+}
+
+// Dark mode overrides
+:host-context(.detail--dark),
+:host-context(.sc-preview--dark),
+:host-context(.sc-content--dark) {
+  .co-donut-chart__chart-container {
+    @include chart-dark-mode-overrides;
+
+    // Donut-specific: stroke between segments matches dark surface
+    ::ng-deep .apexcharts-pie-area {
+      stroke: $color-dark-surface !important;
+    }
+  }
+
+  .co-donut-chart__center-text {
+    color: $color-dark-content-primary;
+  }
 }
 
 // Skeleton Loading
