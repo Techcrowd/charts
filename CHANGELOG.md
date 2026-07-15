@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-07-16
+
+### Changed
+- `co-column-chart-v2` — odsazení popisků os dle specu, změřeno v DOM: osa Y 4 px od linie (`offsetX: -6`), osa X 12 px od osy (8 px odsazení + 4 px top padding labelu, `offsetY: -1.25`; offsetY se promítá ~2×)
+- `ZMENY-NAVOD.html` bod 4 — postup pro produkci: offsety os + měřicí DevTools skript + varování před CSS transform na `.apexcharts-xaxis-texts-g` (přepíše SVG transform atribut)
+
 ## 2026-07-15
 
 ### Added

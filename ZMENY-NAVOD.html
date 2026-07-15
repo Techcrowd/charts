@@ -257,5 +257,116 @@ private highlightBars(activeSeriesIndex: number, activeDataPoint: number): void 
   <code>V2-ROZDILY-OPROTI-PRODUKCI.html</code>.
 </p>
 
+<!-- ============ ZMENA 4 ============ -->
+
+<h2>4. Column chart V2 – odsazení popisků os (Y: 4&nbsp;px, X: 8&nbsp;px + 4&nbsp;px top padding)</h2>
+
+<p>
+  Soubor: <span class="file-path">libs/golem-ng/src/lib/co/chart-v2/column-chart/column-chart.component.ts</span>,
+  metoda <code>updateChartConfigs()</code>
+</p>
+
+<p>
+  <strong>Cíl:</strong> popisky osy Y mají být 4&nbsp;px od linie osy (pravý okraj textu → linie).
+  Popisky osy X mají být 8&nbsp;px pod osou + 4&nbsp;px top padding labelu =
+  <strong>celkem 12&nbsp;px</strong> mezi osou a horním okrajem textu.
+</p>
+
+<p>
+  <strong>Důležité:</strong> u SVG <code>&lt;text&gt;</code> elementů padding nefunguje —
+  jediná cesta je <code>offsetX</code>/<code>offsetY</code> v Apex konfiguraci (top padding se
+  započítá do offsetu). Hodnoty offsetů jsou <strong>empirické</strong>: ApexCharts má u popisků X
+  vestavěné odsazení a offsetY se do výsledné pozice promítá cca 2&times;. Proto po nasazení vždy
+  přeměřit skriptem v kroku 3.
+</p>
+
+<h3 style="margin-top:24px;">Krok 1 – Osa Y: offsetX</h3>
+
+<div class="change-block">
+  <h3>V this.yAxisConfig → labels změnit</h3>
+<pre>
+labels: {
+  show: this.showYAxisLabels,
+<span class="old">  offsetX: 0,</span>
+<span class="new">  // -6 = výsledná mezera 4px mezi pravým okrajem textu a linií osy Y
+  offsetX: -6,</span>
+  ...
+},
+</pre>
+</div>
+
+<p>
+  Pozn.: default (<code>offsetX: 0</code>) dává jen ~2&nbsp;px; posun je 1:1
+  (každý -1 offsetu = +1&nbsp;px mezery).
+</p>
+
+<h3 style="margin-top:24px;">Krok 2 – Osa X: offsetY</h3>
+
+<div class="change-block">
+  <h3>V this.xAxisConfig → labels změnit</h3>
+<pre>
+labels: {
+<span class="old">  offsetY: 4,</span>
+<span class="new">  // Výsledná mezera 12px mezi osou X a horním okrajem textu:
+  // 8px odsazení od osy + 4px top padding labelu.
+  // POZOR: offsetY se promítá ~2x, hodnota je empirická — ověřit krokem 3
+  // (-3.25 = 8px, -1.25 = 12px)
+  offsetY: -1.25,</span>
+  ...
+},
+</pre>
+</div>
+
+<p>
+  Pozn.: s původním <code>offsetY: 4</code> je mezera ~22&nbsp;px. Posun se promítá ~2:1
+  (každý -1 offsetu = -2&nbsp;px mezery). <strong>Nezvětšovat offsetY do plusu</strong> —
+  popisky by se posunuly pod spodní hranu SVG a ořízly (SVG má <code>overflow: hidden</code>).
+</p>
+
+<h3 style="margin-top:24px;">Krok 3 – Ověření měřením v DOM</h3>
+
+<p>
+  Otevřít stránku s grafem, DevTools konzoli a spustit (měří všechny column charty na stránce;
+  cíl: <code>xGap ≈ 8</code>, <code>yGap ≈ 4</code>):
+</p>
+
+<div class="change-block">
+  <h3>Měřicí skript (DevTools konzole)</h3>
+<pre>
+[...document.querySelectorAll('co-column-chart .apexcharts-canvas')].map((chart, ci) =&gt; {
+  const horiz = [...chart.querySelectorAll('line')]
+    .filter(l =&gt; l.getAttribute('y1') === l.getAttribute('y2'));
+  const axisY = horiz.reduce((a, b) =&gt;
+    b.getBoundingClientRect().top &gt; a.getBoundingClientRect().top ? b : a
+  ).getBoundingClientRect().bottom;
+  const xTop = Math.min(...[...chart.querySelectorAll('.apexcharts-xaxis-texts-g text')]
+    .map(t =&gt; t.getBoundingClientRect().top));
+  const yRight = Math.max(...[...chart.querySelectorAll('.apexcharts-yaxis-texts-g text')]
+    .map(t =&gt; t.getBoundingClientRect().right));
+  const plotLeft = Math.min(...[...chart.querySelectorAll('.apexcharts-gridlines-horizontal line')]
+    .map(l =&gt; l.getBoundingClientRect().left));
+  return { chart: ci,
+    xGap: Math.round((xTop - axisY) * 10) / 10,
+    yGap: Math.round((plotLeft - yRight) * 10) / 10 };
+})
+</pre>
+</div>
+
+<p>
+  Pokud hodnoty nesedí (jiná verze ApexCharts, jiný font): doladit offsety podle naměřené
+  odchylky — Y osa 1:1, X osa 2:1.
+</p>
+
+<h3 style="margin-top:24px;">⚠️ Slepá ulička – CSS transform NEPOUŽÍVAT</h3>
+
+<p>
+  Nabízí se doladit pozici popisků X přes SCSS
+  (<code>.apexcharts-xaxis-texts-g { transform: translateY(4px); }</code>) —
+  <strong>nefunguje</strong>. Skupina popisků má vlastní SVG atribut
+  <code>transform="translate(0, ...)"</code>, do kterého ApexCharts promítá offsetY,
+  a CSS transform tento atribut <strong>celý přepíše</strong> (nepřičte se) — popisky
+  skočí na úplně jinou pozici. Ověřeno v demu. Vše řešit přes <code>offsetY</code> v TS konfiguraci.
+</p>
+
 </body>
 </html>

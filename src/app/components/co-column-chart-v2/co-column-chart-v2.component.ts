@@ -426,7 +426,11 @@ export class CoColumnChartV2Component implements OnInit, OnChanges, OnDestroy {
     this.xAxisConfig = {
       categories: this.data.categories,
       labels: {
-        offsetY: 4,
+        // Výsledná mezera 12px mezi osou X a horním okrajem textu:
+        // 8px odsazení od osy + 4px top padding labelu.
+        // POZOR: offsetY se do pozice promítá ~2x, hodnota je empirická
+        // (ověřeno měřením v DOM; -3.25 = 8px, -1.25 = 12px)
+        offsetY: -1.25,
         style: {
           colors: CHART_COLORS.contentTertiary,
           fontSize: '10px',
@@ -453,7 +457,8 @@ export class CoColumnChartV2Component implements OnInit, OnChanges, OnDestroy {
       },
       labels: {
         show: this.showYAxisLabels,
-        offsetX: 0,
+        // -6 = výsledná mezera 4px mezi pravým okrajem textu a linií osy Y
+        offsetX: -6,
         style: {
           colors: CHART_COLORS.contentTertiary,
           fontSize: '10px',
