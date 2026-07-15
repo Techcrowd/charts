@@ -24,13 +24,6 @@
   }
 }
 
-// Hover state - dim non-hovered series (chart hover via CSS)
-.co-column-chart--hovering {
-  .co-column-chart__chart-container {
-    @include chart-hover-dimming;
-  }
-}
-
 // Dark mode overrides
 :host-context(.detail--dark),
 :host-context(.sc-preview--dark),

@@ -18,6 +18,7 @@ export class LayoutComponent {
   menuItems: MenuItem[] = [
     { label: 'Donut Chart', path: '/donut-chart', ready: true },
     { label: 'Column Chart', path: '/column-chart', ready: true },
+    { label: 'Column Chart V2', path: '/column-chart-v2', ready: true },
     { label: 'Bar Chart', path: '/bar-chart', ready: true },
     { label: 'Stacked Bar', path: '/stacked-bar-chart', ready: true },
     { label: 'Line Basic', path: '/line-basic-chart', ready: true },

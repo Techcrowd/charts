@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Column Chart V2 – rozdíly demo repliky oproti produkci (golem-ng)</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; line-height: 1.6; }
+    h1 { border-bottom: 2px solid #e5e7eb; padding-bottom: 12px; }
+    h2 { color: #374151; margin-top: 40px; }
+    .file-path { background: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 14px; color: #6366f1; }
+    .change-block { background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
+    .change-block h3 { margin: 0 0 8px; font-size: 14px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+    pre { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 13px; line-height: 1.5; }
+    .old { color: #f38ba8; }
+    .new { color: #a6e3a1; }
+    .comment { color: #6c7086; font-style: italic; }
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
+    .tag--zamer { background: #dcfce7; color: #166534; }
+    .tag--nahrada { background: #dbeafe; color: #1e40af; }
+    .tag--vynechano { background: #fef3c7; color: #92400e; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 14px; }
+    th, td { border: 1px solid #e5e7eb; padding: 8px 12px; text-align: left; vertical-align: top; }
+    th { background: #f9fafb; }
+    code { background: #f3f4f6; padding: 1px 5px; border-radius: 3px; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<h1>Column Chart V2 – rozdíly demo repliky oproti produkci</h1>
+
+<p>
+  Demo replika: <span class="file-path">apps/donut-demo/src/app/components/co-column-chart-v2/</span><br>
+  Produkční originál (z fotek): <span class="file-path">libs/golem-ng/src/lib/co/chart-v2/column-chart/</span> +
+  <span class="file-path">libs/golem-ng/src/lib/co/chart-v2/utils/chart-shared.ts</span>
+</p>
+
+<p>
+  Vše ostatní, co zde není uvedeno, je přeneseno 1:1 — <code>applyColumnGap()</code> (mezera 4&nbsp;px přes translateX),
+  šířky sloupců (1→32, 2→14, 3→8, default 14), transparentní stroke šířky 0, grid padding 0, axisBorder na ose X,
+  tooltip vlevo se šipkou, inputy <code>showLegendValues</code> / <code>showYAxisLabels</code> / <code>legendValues</code> /
+  <code>legendInteractive</code>, skeleton loading i konfigurace data labels.
+</p>
+
+<!-- ============ 1 ============ -->
+
+<h2>1. Hover — aktivace jen dané skupiny <span class="tag tag--zamer">záměrná změna</span></h2>
+
+<p>
+  Jediná <strong>funkční</strong> odchylka. Produkce při hoveru na sloupec přidává třídu
+  <code>co-column-chart--hovering</code>, která přes CSS ztmaví všechny série v celém grafu.
+  V replice je celoplošné ztmavení odstraněno a nahrazeno JS metodou <code>highlightBars()</code>,
+  která pracuje jen se sloupci v hoverované skupině. Tohle je úprava, kterou chceme přenést do produkce
+  (návod pro produkci: <code>ZMENY-NAVOD.html</code>, bod 3).
+</p>
+
+<div class="change-block">
+  <h3>Produkce (originál z fotek)</h3>
+<pre>
+<span class="comment">// column-chart.component.html — root element</span>
+<span class="old">[class.co-column-chart--hovering]="hoveredSeriesIndex() !== -1 &amp;&amp; !isLegendHover()"</span>
+
+<span class="comment">// column-chart.component.scss, ř. 147–157</span>
+<span class="old">// Hover state - dim non-hovered series (chart hover via CSS)
+.co-column-chart--hovering {
+  .co-column-chart__chart-container ::ng-deep {
+    .apexcharts-series { opacity: 0.35; }
+    .apexcharts-series:hover { opacity: 1; }
+  }
+}</span>
+
+<span class="comment">// createAxisHoverHandlers onEnter — pouze nastaví index a emitne event</span>
+<span class="old">onEnter: ({ seriesIndex, dataPointIndex }) =&gt; {
+  this.hoveredSeriesIndex.set(seriesIndex);
+  ...
+  this.columnHover.emit({ ... });
+},</span>
+</pre>
+</div>
+
+<div class="change-block">
+  <h3>Demo replika</h3>
+<pre>
+<span class="comment">// HTML — class binding odstraněn, SCSS blok odstraněn</span>
+
+<span class="comment">// dataPointMouseEnter — navíc volá highlightBars()</span>
+<span class="new">dataPointMouseEnter: (event, chartContext, config) =&gt; {
+  const { seriesIndex, dataPointIndex } = config;
+  self.hoveredSeriesIndex.set(seriesIndex);
+  self.highlightBars(seriesIndex, dataPointIndex);   // &lt;-- NOVÉ
+  ...
+},
+dataPointMouseLeave: () =&gt; {
+  self.hoveredSeriesIndex.set(-1);
+  self.highlightBars(-1, -1);                        // &lt;-- NOVÉ
+  self.columnHover.emit(null);
+},</span>
+
+<span class="new">/**
+ * Dimuje ostatní sloupce ve stejné skupině při hoveru.
+ * Sloupce z jiných skupin zůstávají nedotčeny.
+ */
+private highlightBars(activeSeriesIndex: number, activeDataPoint: number): void {
+  if (!this.isBrowser) return;
+  const bars = this.elementRef.nativeElement
+    .querySelectorAll('.apexcharts-bar-area') as NodeListOf&lt;SVGElement&gt;;
+  bars.forEach(bar =&gt; {
+    if (activeDataPoint === -1) {
+      bar.style.removeProperty('opacity');
+    } else {
+      const seriesIdx = parseInt(bar.getAttribute('index') ?? '-1', 10);
+      const j = parseInt(bar.getAttribute('j') ?? '-1', 10);
+      if (j === activeDataPoint) {
+        // stejná skupina: hovered bar plný, ostatní bary skupiny ztmaví
+        bar.style.opacity = seriesIdx === activeSeriesIndex ? '1' : '0.35';
+      }
+      // jiná skupina (j !== activeDataPoint): nedotýkat se
+    }
+  });
+}</span>
+</pre>
+</div>
+
+<!-- ============ 2 ============ -->
+
+<h2>2. DsContextService / graphColorsSync$ <span class="tag tag--vynechano">vynecháno</span></h2>
+
+<p>
+  Produkce synchronizuje barvy grafu do aplikačního kontextu. Demo žádný <code>DsContextService</code> nemá
+  a na vizuál ani chování grafu to nemá vliv — celý mechanismus je vynechán.
+</p>
+
+<div class="change-block">
+  <h3>Produkce (originál z fotek) — v replice není</h3>
+<pre>
+<span class="old">private dsContextService = inject(DsContextService);
+private readonly graphColorsSync$ = new Subject&lt;string[]&gt;();
+private graphColorsSyncSub?: Subscription;
+
+// ngOnInit:
+this.graphColorsSyncSub = this.graphColorsSync$
+  .pipe(
+    filter(colors =&gt; colors.length &gt; 0),
+    distinctUntilChanged((prev, curr) =&gt; this.areColorArraysEqual(prev, curr)),
+  )
+  .subscribe(colors =&gt; {
+    this.dsContextService.setGraphColors(colors);
+  });
+
+// + syncGraphColors(), areColorArraysEqual(), ngOnDestroy unsubscribe/complete</span>
+</pre>
+</div>
+
+<!-- ============ 3 ============ -->
+
+<h2>3. Helpery z chart-shared.ts inlinovány <span class="tag tag--nahrada">náhrada 1:1</span></h2>
+
+<p>
+  Produkce má sdílené utility v <span class="file-path">chart-v2/utils/chart-shared.ts</span>.
+  Demo je nemá — jejich logika je přenesena přímo do komponenty, chování je totožné:
+</p>
+
+<table>
+  <thead>
+    <tr><th>Produkce (chart-shared.ts)</th><th>Demo replika</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>createAxisHoverHandlers({onEnter, onLeave})</code></td>
+      <td>inline <code>dataPointMouseEnter</code> / <code>dataPointMouseLeave</code> v <code>chartConfig.events</code></td>
+    </tr>
+    <tr>
+      <td><code>resolveAxisChartClickPoint()</code> + <code>resolveApexBarAreaTarget()</code> + <code>readApexBarAreaIndexes()</code></td>
+      <td>privátní metoda <code>handleChartClick()</code> — stejná logika (přímý target nebo <code>elementsFromPoint</code>, atributy <code>index</code>/<code>j</code>)</td>
+    </tr>
+    <tr>
+      <td><code>createBarColumnTooltipConfig()</code> + <code>renderBarColumnTooltip()</code></td>
+      <td>inline <code>tooltipConfig</code> s <code>custom</code> funkcí — stejné options (<code>shared:false, intersect:true, followCursor:false, fixed:{enabled:false}, x:{show:false}</code>) i markup</td>
+    </tr>
+    <tr>
+      <td><code>getLegendItems(data, colors, legendValues)</code></td>
+      <td>computed <code>legendItems</code> — stejný výstup vč. <code>displayValue</code></td>
+    </tr>
+    <tr>
+      <td><code>highlightApexSeries(hostEl, activeIndex)</code></td>
+      <td><code>highlightChartSeries()</code> z demo <span class="file-path">shared/chart-types.ts</span> — identická implementace (opacity 1 / 0.35 / reset)</td>
+    </tr>
+    <tr>
+      <td><code>formatChartNumber(value, 'cs-CZ')</code></td>
+      <td><code>dateTimeService.formatNumber(value, 0)</code> — ekvivalent (cs-CZ locale formátování)</td>
+    </tr>
+    <tr>
+      <td><code>APEX_STATES_NO_FILTER</code>, <code>APEX_LEGEND_HIDDEN</code></td>
+      <td><code>CHART_STATES_CONFIG</code>, <code>CHART_LEGEND_CONFIG</code> z demo <span class="file-path">shared/chart-types.ts</span> — stejný obsah, jiný název</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ============ 4 ============ -->
+
+<h2>4. Přejmenování tříd a selektoru <span class="tag tag--nahrada">kvůli kolizím v demu</span></h2>
+
+<table>
+  <thead>
+    <tr><th>Produkce</th><th>Demo replika</th><th>Důvod</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>co-column-chart</code> (selector <code>CoColumnChartV2Component</code>)</td>
+      <td><code>co-column-chart-v2</code></td>
+      <td>V demu už existuje V1 komponenta se stejným selektorem</td>
+    </tr>
+    <tr>
+      <td>CSS třídy <code>.co-column-chart__*</code></td>
+      <td><code>.co-column-chart-v2__*</code></td>
+      <td>dtto</td>
+    </tr>
+    <tr>
+      <td>tooltip <code>.co-column-tooltip</code></td>
+      <td><code>.co-column-tooltip-v2</code></td>
+      <td>Demo má globální styly <code>.co-column-tooltip</code> (V1, relativní pozice, min-width 120px) — kolidovaly by s absolutním pozicováním V2 tooltipu vlevo</td>
+    </tr>
+    <tr>
+      <td>typy <code>ColumnChartData</code>, <code>ColumnChartSeries</code></td>
+      <td><code>ColumnChartV2Data</code>, <code>ColumnChartV2Series</code></td>
+      <td>Kolize exportů s V1</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ============ 5 ============ -->
+
+<h2>5. CSP nonce — podmíněný spread <span class="tag tag--nahrada">workaround typů</span></h2>
+
+<p>
+  Verze <code>ng-apexcharts</code> v demu nezná property <code>nonce</code> v typu <code>ApexChart</code>
+  (TS2353 při kompilaci). Runtime chování je stejné — když meta tag neexistuje, property se nepošle.
+</p>
+
+<div class="change-block">
+  <h3>Produkce</h3>
+<pre>
+<span class="old">this.chartConfig = {
+  nonce: document.querySelector('head meta[name="csp-nonce"]')?.getAttribute('content') ?? '',
+  ...</span>
+</pre>
+</div>
+
+<div class="change-block">
+  <h3>Demo replika</h3>
+<pre>
+<span class="new">const nonce = this.isBrowser
+  ? document.querySelector('head meta[name="csp-nonce"]')?.getAttribute('content') ?? ''
+  : '';
+
+this.chartConfig = {
+  ...(nonce &amp;&amp; { nonce }),
+  ...</span>
+</pre>
+</div>
+
+<!-- ============ 6 ============ -->
+
+<h2>6. displayValue přidán do sdílené demo legendy <span class="tag tag--nahrada">doplnění demo infrastruktury</span></h2>
+
+<p>
+  Produkční <code>ChartLegendItem</code> (v <span class="file-path">chart-legend/co-chart-legend.component</span>)
+  pole <code>displayValue</code> už má — demo legenda ho neměla. Doplněno zpětně kompatibilně
+  (optional pole, ostatní grafy v demu nedotčeny). Formátování: string se zobrazí tak, jak je,
+  číslo se formátuje na celé (produkční legend komponenta nebyla ve fotkách — při odchylce dodat fotku).
+</p>
+
+<div class="change-block">
+  <h3>Demo — co-chart-legend.component.ts</h3>
+<pre>
+export interface ChartLegendItem {
+  label: string;
+  value: number;
+  color: string;
+  percent: number;
+<span class="new">  /** Vlastní zobrazená hodnota — přebije value/percent formátování */
+  displayValue?: number | string;</span>
+}
+
+formatValue(item: ChartLegendItem): string {
+<span class="new">  if (item.displayValue !== undefined &amp;&amp; item.displayValue !== null) {
+    return typeof item.displayValue === 'number'
+      ? this.dateTimeService.formatNumber(item.displayValue, 0)
+      : item.displayValue;
+  }</span>
+  if (this.valueFormat === 'percent') { ... }
+  ...
+}
+</pre>
+</div>
+
+<!-- ============ 7 ============ -->
+
+<h2>7. SCSS tokeny — přemapování na demo tokens <span class="tag tag--nahrada">náhrada 1:1</span></h2>
+
+<p>
+  Produkce importuje <code>essential-styles/colors.g</code>, <code>sizes.g</code>, <code>texts.g</code>.
+  Demo používá vlastní <span class="file-path">src/app/styles/_tokens.scss</span> se stejnými hodnotami:
+</p>
+
+<table>
+  <thead>
+    <tr><th>Produkce (essential-styles)</th><th>Demo (_tokens.scss)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>$size-padding-md</code>, <code>$size-padding-lg</code>, …</td><td><code>$spacing-md</code>, <code>$spacing-lg</code>, …</td></tr>
+    <tr><td><code>$size-border-radius-md</code>, <code>-sm</code>, <code>-full</code></td><td><code>$border-radius-md</code>, <code>-sm</code>, <code>-full</code></td></tr>
+    <tr><td><code>@include content-caption-primary-bold</code> apod.</td><td><code>@include caption-primary-bold</code> apod.</td></tr>
+    <tr><td><code>$color-background-border-fallback</code> + <code>var(--border-secondary)</code></td><td><code>$color-background-border</code> (demo nemá CSS custom properties fallbacky)</td></tr>
+    <tr><td>skeleton styly psané ručně v komponentě</td><td>sdílené mixiny z <span class="file-path">styles/_chart-skeleton.scss</span> (<code>skeleton-container</code>, <code>skeleton-label</code>, <code>skeleton-bar-colors</code>) — vizuálně shodné</td></tr>
+  </tbody>
+</table>
+
+<p style="margin-top: 40px; color: #6b7280; font-size: 14px;">
+  Demo stránka: <code>http://localhost:4260/column-chart-v2</code> · Vygenerováno 15.&nbsp;7.&nbsp;2026 podle 21 fotek produkčního kódu (složky <code>colchart</code> + <code>chartshared</code>).
+</p>
+
+</body>
+</html>

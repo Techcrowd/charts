@@ -1,25 +1,25 @@
 <div
-  class="co-column-chart"
-  [class.co-column-chart--loading]="loading"
+  class="co-column-chart-v2"
+  [class.co-column-chart-v2--loading]="loading"
 >
   <!-- Chart Container -->
-  <div class="co-column-chart__chart-wrapper">
+  <div class="co-column-chart-v2__chart-wrapper">
     @if (loading) {
-      <div class="co-column-chart__skeleton" [style.height.px]="height">
+      <div class="co-column-chart-v2__skeleton" [style.height.px]="height">
         <!-- Y Axis skeleton -->
-        <div class="co-column-chart__skeleton-yaxis">
-          <span class="co-column-chart__skeleton-yaxis-label"></span>
-          <span class="co-column-chart__skeleton-yaxis-label"></span>
-          <span class="co-column-chart__skeleton-yaxis-label"></span>
-          <span class="co-column-chart__skeleton-yaxis-label"></span>
+        <div class="co-column-chart-v2__skeleton-yaxis">
+          <span class="co-column-chart-v2__skeleton-yaxis-label"></span>
+          <span class="co-column-chart-v2__skeleton-yaxis-label"></span>
+          <span class="co-column-chart-v2__skeleton-yaxis-label"></span>
+          <span class="co-column-chart-v2__skeleton-yaxis-label"></span>
         </div>
         <!-- Columns skeleton -->
-        <div class="co-column-chart__skeleton-columns">
+        <div class="co-column-chart-v2__skeleton-columns">
           @for (col of skeletonColumns; track col) {
-            <div class="co-column-chart__skeleton-column-group">
+            <div class="co-column-chart-v2__skeleton-column-group">
               @for (s of skeletonSeriesItems; track s) {
                 <div
-                  class="co-column-chart__skeleton-bar"
+                  class="co-column-chart-v2__skeleton-bar"
                   [style.height.%]="30 + (s * 20) + (col * 5) % 40"
                 ></div>
               }
@@ -28,7 +28,7 @@
         </div>
       </div>
     } @else {
-      <div class="co-column-chart__chart-container">
+      <div class="co-column-chart-v2__chart-container">
         <apx-chart
           #chart
           [series]="chartSeries()"
@@ -64,8 +64,9 @@
     } @else {
       <co-chart-legend
         [items]="legendItems()"
-        [showValues]="false"
+        [showValues]="showLegendValues"
         [valueFormat]="valueFormat"
+        [interactive]="legendInteractive"
         (itemHover)="onLegendItemHover($event)"
         (itemLeave)="onLegendItemLeave()"
         (itemClick)="onLegendItemClick($event.index)"

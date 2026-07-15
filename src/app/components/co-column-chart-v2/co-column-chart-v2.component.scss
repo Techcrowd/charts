@@ -1,0 +1,188 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/chart-skeleton' as *;
+
+.co-column-chart-v2 {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  width: 100%;
+}
+
+.co-column-chart-v2__chart-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.co-column-chart-v2__chart-container {
+  width: 100%;
+  overflow: visible;
+
+  ::ng-deep {
+    .apexcharts-canvas {
+      width: 100% !important;
+      overflow: visible !important;
+    }
+
+    // Smooth opacity transitions for series
+    .apexcharts-series {
+      transition: opacity $transition-fast;
+      cursor: pointer;
+      pointer-events: all;
+    }
+
+    // Make overlay elements transparent to clicks (data labels, foreignObject)
+    .apexcharts-datalabels,
+    .apexcharts-data-labels,
+    .apexcharts-pie-label,
+    .apexcharts-datalabels-group,
+    foreignObject {
+      pointer-events: none;
+    }
+
+    .apexcharts-datalabels {
+      rect {
+        fill: $color-background-surface !important;
+      }
+      text {
+        @include caption-secondary;
+        fill: $color-content-secondary !important;
+      }
+    }
+
+    .apexcharts-slices {
+      .apexcharts-bar-series {
+        .apexcharts-bar-area {
+          stroke: $color-background-surface;
+        }
+      }
+    }
+
+    // Bar border radius
+    .apexcharts-bar-area {
+      transition: opacity $transition-fast;
+    }
+
+    .apexcharts-xaxis {
+      .apexcharts-xaxis-texts-g {
+        text {
+          tspan, title {
+            @include caption-secondary-bold;
+            color: $color-content-tertiary !important;
+          }
+        }
+      }
+    }
+
+    .apexcharts-yaxis {
+      .apexcharts-yaxis-texts-g {
+        text {
+          tspan, title {
+            @include caption-secondary-bold;
+            color: $color-content-tertiary !important;
+          }
+        }
+      }
+    }
+
+    .apexcharts-tooltip {
+      transform: none !important;
+      margin-bottom: 0 !important;
+      overflow: visible !important;
+      padding: 0 !important;
+    }
+
+    .co-column-tooltip-v2 {
+      position: absolute;
+      top: 95%;
+      right: calc(100% + 21px);
+      left: auto;
+      bottom: auto;
+      transform: translateY(-20%);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: auto;
+      padding: $spacing-md;
+      border-radius: $border-radius-md;
+      background: $color-content-secondary;
+      background-clip: padding-box;
+      color: $color-interactive-on-primary;
+      text-align: left;
+      align-items: flex-start;
+      @include caption-primary-bold;
+
+      &__label {
+        width: 100%;
+        text-align: left;
+        @include caption-primary-bold;
+      }
+
+      &__value {
+        width: 100%;
+        text-align: left;
+        @include caption-primary;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: -7px;
+        left: auto;
+        transform: translateY(-50%);
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 8px solid $color-content-secondary;
+      }
+    }
+  }
+}
+
+// Dark mode overrides
+:host-context(.detail--dark),
+:host-context(.sc-preview--dark),
+:host-context(.sc-content--dark) {
+  .co-column-chart-v2__chart-container {
+    @include chart-dark-mode-overrides;
+  }
+}
+
+// Skeleton Loading
+.co-column-chart-v2__skeleton {
+  @include skeleton-container;
+}
+
+.co-column-chart-v2__skeleton-yaxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: $spacing-md 0;
+}
+
+.co-column-chart-v2__skeleton-yaxis-label {
+  @include skeleton-label;
+}
+
+.co-column-chart-v2__skeleton-columns {
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  gap: $spacing-lg;
+  padding-bottom: $spacing-xl;
+  border-bottom: 1px solid $color-background-border;
+}
+
+.co-column-chart-v2__skeleton-column-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 100%;
+}
+
+.co-column-chart-v2__skeleton-bar {
+  width: 20px;
+  border-radius: $border-radius-sm $border-radius-sm 0 0;
+  @include skeleton-bar-colors;
+}

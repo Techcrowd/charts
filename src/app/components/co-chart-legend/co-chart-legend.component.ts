@@ -15,6 +15,8 @@ export interface ChartLegendItem {
   value: number;
   color: string;
   percent: number;
+  /** Vlastní zobrazená hodnota — přebije value/percent formátování */
+  displayValue?: number | string;
 }
 
 // ============ COMPONENT ============
@@ -71,6 +73,11 @@ export class CoChartLegendComponent {
   // ============ METHODS ============
 
   formatValue(item: ChartLegendItem): string {
+    if (item.displayValue !== undefined && item.displayValue !== null) {
+      return typeof item.displayValue === 'number'
+        ? this.dateTimeService.formatNumber(item.displayValue, 0)
+        : item.displayValue;
+    }
     if (this.valueFormat === 'percent') {
       return `${item.percent.toFixed(1)}%`;
     }

@@ -1,0 +1,123 @@
+<div class="page">
+  <h1 class="page__title">Column Chart V2</h1>
+  <p class="page__subtitle">co-column-chart-v2 component — replika produkční CoColumnChartV2Component (golem-ng)</p>
+
+  <section class="demo-section">
+    <h2>Rozdíly oproti V1</h2>
+    <div class="demo-card">
+      <ul>
+        <li><strong>applyColumnGap()</strong> — pevná mezera 4 px mezi sloupci ve skupině (translateX skupin sérií + data labels), místo bílého stroke 4 px</li>
+        <li><strong>Stroke</strong> — transparentní, šířka 0</li>
+        <li><strong>Tooltip</strong> — vlastní panel vlevo od sloupce se šipkou</li>
+        <li><strong>Osa X</strong> — viditelná axisBorder, labels offsetY 4</li>
+        <li><strong>Osa Y</strong> — vypínatelné labels přes <code>showYAxisLabels</code></li>
+        <li><strong>Grid</strong> — padding 0 ze všech stran</li>
+        <li><strong>Legenda</strong> — <code>showLegendValues</code>, <code>legendValues</code> (vlastní hodnoty), <code>legendInteractive</code></li>
+        <li><strong>Hover</strong> — aktivuje jen danou skupinu, ne celý graf (aplikovaná úprava z dnešního zadání)</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Základní použití -->
+  <section class="demo-section">
+    <h2>Základní použití</h2>
+    <div class="demo-card">
+      <co-column-chart-v2 [data]="simpleData" />
+      <markdown clipboard class="code-block" [data]="code.basic | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Více sérií + gap -->
+  <section class="demo-section">
+    <h2>Více sérií — mezera 4 px ve skupině</h2>
+    <p class="demo-note">Najeď myší na sloupec — aktivuje se jen daná skupina</p>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>2 série</h3>
+        <co-column-chart-v2 [data]="twoSeriesData" />
+      </div>
+      <div class="demo-card">
+        <h3>3 série (měny)</h3>
+        <co-column-chart-v2 [data]="currencyData" />
+        <markdown clipboard class="code-block" [data]="code.multiSeries | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tooltip -->
+  <section class="demo-section">
+    <h2>Tooltip vlevo od sloupce</h2>
+    <div class="demo-card">
+      <co-column-chart-v2 [data]="currencyData" [showTooltip]="true" valueUnit="mil. Kč" />
+      <markdown clipboard class="code-block" [data]="code.tooltipOn | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Y axis -->
+  <section class="demo-section">
+    <h2>Osa Y</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>S labels (výchozí)</h3>
+        <co-column-chart-v2 [data]="simpleData" yAxisTitle="Miliony CZK" />
+      </div>
+      <div class="demo-card">
+        <h3>Bez labels</h3>
+        <co-column-chart-v2 [data]="simpleData" [showYAxisLabels]="false" />
+        <markdown clipboard class="code-block" [data]="code.yAxisOff | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Legenda -->
+  <section class="demo-section">
+    <h2>Legenda</h2>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>S vlastními hodnotami (legendValues)</h3>
+        <co-column-chart-v2
+          [data]="currencyData"
+          [showLegend]="true"
+          [showLegendValues]="true"
+          [legendValues]="legendValues"
+        />
+        <markdown clipboard class="code-block" [data]="code.legendValues | language : 'html'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Neinteraktivní legenda</h3>
+        <co-column-chart-v2
+          [data]="currencyData"
+          [showLegend]="true"
+          [legendInteractive]="false"
+        />
+        <markdown clipboard class="code-block" [data]="code.legendStatic | language : 'html'"></markdown>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interakce -->
+  <section class="demo-section">
+    <h2>Interakce</h2>
+    <p class="demo-note">Najeď myší na sloupec, klikni pro výběr</p>
+    <div class="demo-card">
+      <co-column-chart-v2
+        [data]="currencyData"
+        (columnClick)="onColumnClick($event)"
+        (columnHover)="onColumnHover($event)"
+      />
+      <div class="event-log">
+        <strong>Akce:</strong> {{ lastAction }}
+      </div>
+      <markdown clipboard class="code-block" [data]="code.interaction | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <section class="demo-section">
+    <h2>Loading stav</h2>
+    <div class="demo-card">
+      <co-column-chart-v2 [data]="currencyData" [loading]="true" />
+      <markdown clipboard class="code-block" [data]="code.loading | language : 'html'"></markdown>
+    </div>
+  </section>
+</div>

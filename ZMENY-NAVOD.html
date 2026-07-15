@@ -82,5 +82,180 @@
   Tooltip se stále zobrazí s hodnotami obou křivek, ale vizuální puntík na grafu bude jen u první (hlavní) křivky.
 </p>
 
+<!-- ============ ZMENA 3 ============ -->
+
+<h2>3. Column chart V2 – hover aktivuje jen danou skupinu, ne celý graf</h2>
+
+<p>
+  Komponenta: <span class="file-path">libs/golem-ng/src/lib/co/chart-v2/column-chart/</span>
+  (<code>CoColumnChartV2Component</code>)
+</p>
+
+<p>
+  <strong>Současné chování:</strong> při najetí myší na sloupec se ztmaví celý graf — všechny série
+  ve všech skupinách dostanou <code>opacity: 0.35</code>, plná zůstane jen celá hoverovaná série.
+  Dělá to CSS třída <code>co-column-chart--hovering</code>, která se přidává na root element při
+  každém hoveru na datapoint.
+</p>
+
+<p>
+  <strong>Cílové chování:</strong> reaguje jen hoverovaná skupina — hoverovaný sloupec zůstane plný,
+  ostatní sloupce <em>téže skupiny</em> se ztmaví na 0.35, všechny ostatní skupiny zůstanou nedotčené.
+  Hover z legendy (zvýraznění celé série přes <code>highlightApexSeries()</code>) zůstává beze změny.
+</p>
+
+<p>Úprava má 3 kroky: smazat CSS ztmavení (HTML + SCSS) a přidat JS zvýraznění skupiny (TS).</p>
+
+<h3 style="margin-top:24px;">Krok 1 – HTML: smazat class binding</h3>
+
+<p>
+  Soubor: <span class="file-path">column-chart.component.html</span><br>
+  Řádek: <span class="line-ref">~1–4</span> (root element)
+</p>
+
+<div class="change-block">
+  <h3>Smazat řádek s bindingem --hovering</h3>
+<pre>
+&lt;div
+  class="co-column-chart"
+  [class.co-column-chart--loading]="loading"
+<span class="old">  [class.co-column-chart--hovering]="hoveredSeriesIndex() !== -1 &amp;&amp; !isLegendHover()"</span>
+&gt;
+</pre>
+</div>
+
+<p>
+  Signály <code>hoveredSeriesIndex</code> a <code>isLegendHover</code> v TS zůstávají — používá je legenda.
+</p>
+
+<h3 style="margin-top:24px;">Krok 2 – SCSS: smazat celoplošné ztmavení</h3>
+
+<p>
+  Soubor: <span class="file-path">column-chart.component.scss</span><br>
+  Řádek: <span class="line-ref">~147–157</span>
+</p>
+
+<div class="change-block">
+  <h3>Smazat celý blok</h3>
+<pre>
+<span class="old">// Hover state - dim non-hovered series (chart hover via CSS)
+.co-column-chart--hovering {
+  .co-column-chart__chart-container ::ng-deep {
+    .apexcharts-series {
+      opacity: 0.35;
+    }
+    .apexcharts-series:hover {
+      opacity: 1;
+    }
+  }
+}</span>
+</pre>
+</div>
+
+<p>
+  Pozn.: pravidlo <code>.apexcharts-series { transition: opacity ... }</code> výše v souboru
+  (ř. ~34) <strong>ponechat</strong> — plynulý přechod se hodí i pro nové chování. Kvůli plynulému
+  přechodu na jednotlivých sloupcích přidej ještě transition na bar-area (pokud tam už není):
+</p>
+
+<div class="change-block">
+  <h3>Přidat do bloku <code>::ng-deep</code> (u ř. ~66 „Bar border radius")</h3>
+<pre>
+.apexcharts-bar-area {
+<span class="new">  transition: opacity 150ms ease;</span>
+}
+</pre>
+</div>
+
+<h3 style="margin-top:24px;">Krok 3 – TS: přidat zvýraznění skupiny</h3>
+
+<p>
+  Soubor: <span class="file-path">column-chart.component.ts</span>
+</p>
+
+<p>
+  <strong>3a)</strong> V <code>updateChartConfigs()</code> → <code>chartConfig.events</code> →
+  <code>createAxisHoverHandlers</code> (ř. <span class="line-ref">~250–262</span>) doplnit volání
+  <code>highlightBars()</code> do obou handlerů:
+</p>
+
+<div class="change-block">
+  <h3>Upravit onEnter / onLeave</h3>
+<pre>
+...createAxisHoverHandlers({
+  onEnter: ({ seriesIndex, dataPointIndex }) =&gt; {
+    this.hoveredSeriesIndex.set(seriesIndex);
+<span class="new">    this.highlightBars(seriesIndex, dataPointIndex);</span>
+    const value = this.data.series[seriesIndex]?.data[dataPointIndex] ?? 0;
+    const category = this.data.categories[dataPointIndex] ?? '';
+    const seriesName = this.data.series[seriesIndex]?.name ?? '';
+    this.columnHover.emit({ seriesIndex, dataPointIndex, value, category, seriesName });
+  },
+  onLeave: () =&gt; {
+    this.hoveredSeriesIndex.set(-1);
+<span class="new">    this.highlightBars(-1, -1);</span>
+    this.columnHover.emit(null);
+  },
+}),
+</pre>
+</div>
+
+<p>
+  <strong>3b)</strong> Přidat novou privátní metodu — např. hned za <code>highlightSeries()</code>
+  (ř. <span class="line-ref">~443–446</span>):
+</p>
+
+<div class="change-block">
+  <h3>Přidat metodu highlightBars()</h3>
+<pre>
+<span class="new">/**
+ * Dimuje ostatní sloupce ve stejné skupině při hoveru.
+ * Sloupce z jiných skupin zůstávají nedotčeny.
+ */
+private highlightBars(activeSeriesIndex: number, activeDataPoint: number): void {
+  if (!this.isBrowser) return;
+  const bars = (this.elementRef.nativeElement as HTMLElement)
+    .querySelectorAll('.apexcharts-bar-area') as NodeListOf&lt;SVGElement&gt;;
+  bars.forEach(bar =&gt; {
+    if (activeDataPoint === -1) {
+      bar.style.removeProperty('opacity');
+    } else {
+      const seriesIndex = Number.parseInt(bar.getAttribute('index') ?? '-1', 10);
+      const dataPointIndex = Number.parseInt(bar.getAttribute('j') ?? '-1', 10);
+      if (dataPointIndex === activeDataPoint) {
+        // stejná skupina: hovered bar plný, ostatní bary skupiny ztmavit
+        bar.style.opacity = seriesIndex === activeSeriesIndex ? '1' : '0.35';
+      }
+      // jiná skupina (dataPointIndex !== activeDataPoint): nedotýkat se
+    }
+  });
+}</span>
+</pre>
+</div>
+
+<p>
+  ApexCharts renderuje každý sloupec jako <code>path.apexcharts-bar-area</code> s atributy
+  <code>index</code> (série) a <code>j</code> (datapoint = skupina) — stejné atributy, které už čte
+  <code>readApexBarAreaIndexes()</code> v <span class="file-path">utils/chart-shared.ts</span>.
+  Metoda proto funguje i po <code>applyColumnGap()</code> (transform skupin na opacity nemá vliv).
+</p>
+
+<h3 style="margin-top:24px;">Ověření</h3>
+
+<ol>
+  <li>Hover na sloupec ve skupině se 3 sériemi → plný zůstane jen hoverovaný sloupec, dva sousední ve skupině ztmavnou, ostatní skupiny beze změny.</li>
+  <li>Odjetí myší → vše zpět na plnou opacity.</li>
+  <li>Hover na položku legendy → dál ztmaví celé ostatní série napříč grafem (beze změny).</li>
+  <li>Graf s 1 sérií → hover nesmí nic ztmavit (ve skupině je jediný sloupec).</li>
+  <li>SSR build projde — metoda má guard <code>isBrowser</code>.</li>
+</ol>
+
+<p>
+  Funkční referenční implementace: demo
+  <span class="file-path">apps/donut-demo/src/app/components/co-column-chart-v2/</span>
+  (stránka <code>http://localhost:4260/column-chart-v2</code>); přehled odchylek demo repliky:
+  <code>V2-ROZDILY-OPROTI-PRODUKCI.html</code>.
+</p>
+
 </body>
 </html>

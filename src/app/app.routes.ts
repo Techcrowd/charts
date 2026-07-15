@@ -33,6 +33,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/column-chart/column-chart.page').then(m => m.ColumnChartPage),
       },
       {
+        path: 'column-chart-v2',
+        loadComponent: () => import('./pages/column-chart-v2/column-chart-v2.page').then(m => m.ColumnChartV2Page),
+      },
+      {
         path: 'value-performance-chart',
         loadComponent: () => import('./pages/value-performance-chart/value-performance-chart-page.component').then(m => m.ValuePerformanceChartPageComponent),
       },
