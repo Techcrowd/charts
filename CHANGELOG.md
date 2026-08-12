@@ -10,6 +10,7 @@
 - Showcase: katalogová položka `CO Chart V4 Horizontal` (inputs, code examples) + živé demo `HorizontalChartDemoComponent` v DEMO_REGISTRY
 
 ### Changed
+- `co-horizontal-chart` account/savings — celková výška řádku včetně labelu je dle specu přesně 36 px (bar 8 px + meta řádek, `justify-content: space-between`); Apex +6 px vnitřní padding ořezává wrapper s `height: 8px; overflow: hidden`. Skeleton má stejnou geometrii. Ověřeno měřením v renderu (bar 8 px, pitch řádků 36 + 24 px gap).
 - `co-horizontal-chart` — přepsán z čistého CSS na ApexCharts (parita s produkčním golem-ng): account/savings = jednořadý horizontal bar s šedým trackem přes `backgroundBarColors`/`backgroundBarRadius` (pill 4 px), investments = stacked horizontal bar (`borderRadiusWhenStacked: 'all'`, bílý stroke 2 px mezi segmenty jako u stacked-bar). Hover u investments řeší CSS nad Apex SVG: `scaleY(1.5)` na `.apexcharts-bar-area` (16 → 24 px, slot má výšku 24 px) + potlačení ostatních sérií na 50 %. Veřejné API komponenty beze změny.
 
 ### Fixed

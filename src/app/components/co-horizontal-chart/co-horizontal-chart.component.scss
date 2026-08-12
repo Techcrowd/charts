@@ -17,6 +17,13 @@
   }
 }
 
+// Viditelná výška tenkého baru je přesně 8 px — Apex canvas má +6 px vnitřní
+// padding (pod barem), který ořízne overflow
+.co-horizontal-chart__thin-chart {
+  height: 8px;
+  overflow: hidden;
+}
+
 // ============ ACCOUNT ============
 
 .co-horizontal-chart__account {
@@ -25,10 +32,13 @@
   gap: $spacing-xl;
 }
 
+// Celková výška řádku včetně labelu je dle specifikace 36 px
+// (8 px bar + mezera + 24 px meta řádek s ikonou)
 .co-horizontal-chart__account-row {
   display: flex;
   flex-direction: column;
-  gap: $spacing-sm;
+  justify-content: space-between;
+  height: 36px;
 }
 
 .co-horizontal-chart__account-meta {
@@ -60,10 +70,12 @@
 
 // ============ SAVINGS ============
 
+// Celková výška včetně labelu je dle specifikace 36 px (8 px bar + 20 px text)
 .co-horizontal-chart__savings {
   display: flex;
   flex-direction: column;
-  gap: $spacing-sm;
+  justify-content: space-between;
+  height: 36px;
 }
 
 .co-horizontal-chart__savings-meta {
@@ -129,10 +141,12 @@
   animation: co-skeleton-pulse 1.5s ease-in-out infinite;
 }
 
+// Stejná geometrie jako loaded stav — 36 px včetně meta řádku
 .co-horizontal-chart__skeleton-row {
   display: flex;
   flex-direction: column;
-  gap: $spacing-sm;
+  justify-content: space-between;
+  height: 36px;
 }
 
 .co-horizontal-chart__skeleton-bar {
