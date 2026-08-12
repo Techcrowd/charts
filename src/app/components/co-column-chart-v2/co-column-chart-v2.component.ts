@@ -311,6 +311,10 @@ export class CoColumnChartV2Component implements OnInit, OnChanges, OnDestroy {
       type: 'bar',
       height: this.height,
       fontFamily: 'inherit',
+      // Výšku rezervuje CSS min-height na containeru (viz šablona) — bez toho
+      // se legenda vykreslí první a po async mountu grafu odskočí (layout shift).
+      // Apex default 15px nahrazuje padding-bottom containeru.
+      parentHeightOffset: 0,
       ...(nonce && { nonce }),
       toolbar: {
         show: false,

@@ -28,7 +28,7 @@
         </div>
       </div>
     } @else {
-      <div class="co-column-chart-v2__chart-container">
+      <div class="co-column-chart-v2__chart-container" [style.minHeight.px]="height">
         <apx-chart
           #chart
           [series]="chartSeries()"

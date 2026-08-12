@@ -17,6 +17,9 @@
 .co-column-chart-v2__chart-container {
   width: 100%;
   overflow: visible;
+  // Náhrada za Apex parentHeightOffset (15px), který je vypnutý kvůli
+  // rezervaci výšky přes min-height (prevence layout shiftu při mountu)
+  padding-bottom: 15px;
 
   ::ng-deep {
     .apexcharts-canvas {

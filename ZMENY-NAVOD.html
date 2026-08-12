@@ -357,6 +357,102 @@ labels: {
   odchylky — Y osa 1:1, X osa 2:1.
 </p>
 
+<!-- ============ ZMENA 5 ============ -->
+
+<h2>5. Column chart V2 – legenda odskakuje při načtení grafu (layout shift)</h2>
+
+<p>
+  Komponenta: <span class="file-path">libs/golem-ng/src/lib/co/chart-v2/column-chart/</span>
+</p>
+
+<p>
+  <strong>Projev:</strong> při hodně hodnotách se nejdřív vykreslí legenda, pak „odskočí" dolů
+  a donačte se graf.
+</p>
+
+<p>
+  <strong>Příčina:</strong> legenda (<code>co-chart-legend</code>) je běžné Angular DOM a vykreslí
+  se okamžitě. ApexCharts se ale mountuje asynchronně — do té doby má
+  <code>.co-column-chart__chart-container</code> výšku ~0, takže legenda sedí hned pod nadpisem
+  a po vykreslení grafu ji jeho výška (height + 15&nbsp;px Apex <code>parentHeightOffset</code>)
+  odstrčí dolů. Čím víc dat, tím déle render trvá a tím viditelnější skok je.
+</p>
+
+<p>
+  <strong>Oprava:</strong> rezervovat výšku containeru dopředu přes <code>min-height</code>.
+  Aby rezervace seděla na pixel, vypne se Apex default <code>parentHeightOffset</code> (15&nbsp;px)
+  a nahradí se stejně velkým <code>padding-bottom</code> containeru — finální layout se nezmění.
+</p>
+
+<h3 style="margin-top:24px;">Krok 1 – TS: vypnout parentHeightOffset</h3>
+
+<div class="change-block">
+  <h3>V updateChartConfigs() → this.chartConfig přidat</h3>
+<pre>
+this.chartConfig = {
+  type: 'bar',
+  height: this.height,
+  fontFamily: 'inherit',
+<span class="new">  // Výšku rezervuje CSS min-height na containeru (viz šablona) — bez toho
+  // se legenda vykreslí první a po async mountu grafu odskočí (layout shift).
+  // Apex default 15px nahrazuje padding-bottom containeru.
+  parentHeightOffset: 0,</span>
+  ...
+};
+</pre>
+</div>
+
+<h3 style="margin-top:24px;">Krok 2 – HTML: rezervovat min-height</h3>
+
+<div class="change-block">
+  <h3>V column-chart.component.html na chart-container přidat binding</h3>
+<pre>
+<span class="old">&lt;div class="co-column-chart__chart-container"&gt;</span>
+<span class="new">&lt;div class="co-column-chart__chart-container" [style.minHeight.px]="height"&gt;</span>
+</pre>
+</div>
+
+<h3 style="margin-top:24px;">Krok 3 – SCSS: nahradit 15px offset paddingem</h3>
+
+<div class="change-block">
+  <h3>V column-chart.component.scss do .co-column-chart__chart-container přidat</h3>
+<pre>
+.co-column-chart__chart-container {
+  width: 100%;
+  overflow: visible;
+<span class="new">  // Náhrada za Apex parentHeightOffset (15px), který je vypnutý kvůli
+  // rezervaci výšky přes min-height (prevence layout shiftu při mountu)
+  padding-bottom: 15px;</span>
+  ...
+}
+</pre>
+</div>
+
+<h3 style="margin-top:24px;">Ověření</h3>
+
+<p>
+  V DevTools konzoli — výška containeru musí být stejná s grafem i bez něj:
+</p>
+
+<div class="change-block">
+  <h3>Ověřovací skript (DevTools konzole)</h3>
+<pre>
+const el = document.querySelector('.co-column-chart__chart-container');
+const canvas = el.querySelector('.apexcharts-canvas');
+const withChart = el.getBoundingClientRect().height;
+canvas.style.display = 'none';
+const withoutChart = el.getBoundingClientRect().height;
+canvas.style.display = '';
+console.log({ withChart, withoutChart, ok: withChart === withoutChart });
+</pre>
+</div>
+
+<p>
+  Vizuálně: otevřít stránku s grafem s hodně hodnotami (případně DevTools → Performance →
+  CPU throttling 6x) — legenda musí od prvního vykreslení sedět na finální pozici a graf se
+  „donačíst" do rezervovaného místa nad ní.
+</p>
+
 <h3 style="margin-top:24px;">⚠️ Slepá ulička – CSS transform NEPOUŽÍVAT</h3>
 
 <p>
