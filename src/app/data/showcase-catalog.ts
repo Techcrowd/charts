@@ -465,6 +465,55 @@ export const SHOWCASE_CATALOG: ShowcaseComponent[] = [
     ],
   },
   {
+    name: 'CO Chart V4 Horizontal',
+    version: '4.0',
+    category: ComponentCategory.CO_COMPONENTS,
+    description: 'Horizontal chart (v4) — account flows, savings progress and investments allocation variants with skeleton loading states.',
+    variants: ['HorizontalAccount', 'HorizontalSavings', 'HorizontalInvestments'],
+    inputs: [
+      { name: '[variant]', type: `'account' | 'savings' | 'investments'`, description: 'Chart variant (required)' },
+      { name: '[accountItems]', type: 'HorizontalAccountItem[]', default: '[]', description: 'Rows for the account variant (label, value, direction in/out)' },
+      { name: '[savingsData]', type: 'HorizontalSavingsData', description: 'Data for the savings variant (label, value, maxLabel, maxValue)' },
+      { name: '[sections]', type: 'HorizontalInvestmentsSection[]', default: '[]', description: 'Sections for the investments variant (name, value)' },
+      { name: '[colors]', type: 'ChartColor[]', description: 'Custom section colors for investments (allowed palette only)' },
+      { name: '[valueUnit]', type: 'string', description: `Unit appended to values (e.g. 'Kč', '%')` },
+      { name: '[compactValues]', type: 'boolean', default: 'false', description: 'Shorten values (1 215 211 → 1,2M)' },
+      { name: '[minSectionPercent]', type: 'number', default: '3', description: 'Minimum investments section width in % of bar' },
+      { name: '[loading]', type: 'boolean', default: 'false', description: 'Show skeleton loading state' },
+      { name: '[skeletonRowCount]', type: 'number', default: '2', description: 'Skeleton row count for the account variant' },
+    ],
+    outputs: [],
+    codeExamples: [
+      {
+        label: 'Account',
+        html: `<co-horizontal-chart variant="account" [accountItems]="items" [valueUnit]="'Kč'" />`,
+        typescript: `items: HorizontalAccountItem[] = [
+  { label: 'Odchozí platby', value: 42350, direction: 'out' },
+  { label: 'Příchozí platby', value: 78500, direction: 'in' },
+];`,
+      },
+      {
+        label: 'Savings',
+        html: `<co-horizontal-chart variant="savings" [savingsData]="savings" [valueUnit]="'Kč'" [compactValues]="true" />`,
+        typescript: `savings: HorizontalSavingsData = {
+  label: 'Naspořeno',
+  value: 125000,
+  maxLabel: 'Cíl',
+  maxValue: 300000,
+};`,
+      },
+      {
+        label: 'Investments',
+        html: `<co-horizontal-chart variant="investments" [sections]="sections" />`,
+        typescript: `sections: HorizontalInvestmentsSection[] = [
+  { name: 'Akcie', value: 1215211 },
+  { name: 'Fondy', value: 845000 },
+  { name: 'Dluhopisy', value: 620500 },
+];`,
+      },
+    ],
+  },
+  {
     name: 'CO Illustrated Message',
     version: '1.0',
     category: ComponentCategory.CO_COMPONENTS,

@@ -1,0 +1,198 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/chart-skeleton' as *;
+
+.co-horizontal-chart {
+  display: block;
+  width: 100%;
+}
+
+// ============ SHARED BAR (account + savings) ============
+
+.co-horizontal-chart__track {
+  width: 100%;
+  height: 8px;
+  border-radius: $border-radius-full;
+  background-color: $color-background-border;
+  overflow: hidden;
+}
+
+.co-horizontal-chart__fill {
+  height: 100%;
+  border-radius: $border-radius-full;
+  transition: width $transition-fast;
+}
+
+// ============ ACCOUNT ============
+
+.co-horizontal-chart__account {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+.co-horizontal-chart__account-row {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.co-horizontal-chart__account-meta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.co-horizontal-chart__account-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: $border-radius-full;
+  color: $color-background-surface;
+  flex-shrink: 0;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.co-horizontal-chart__account-label {
+  @include body-secondary;
+}
+
+.co-horizontal-chart__account-value {
+  @include body-secondary-bold;
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+// ============ SAVINGS ============
+
+.co-horizontal-chart__savings {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.co-horizontal-chart__savings-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $spacing-lg;
+}
+
+.co-horizontal-chart__savings-current {
+  @include body-secondary;
+  color: $color-content-primary;
+}
+
+.co-horizontal-chart__savings-max {
+  @include body-secondary;
+  color: $color-content-secondary;
+}
+
+// Hodnota — dle specu font body-secondary-bold
+.co-horizontal-chart__value {
+  @include body-secondary-bold;
+  font-variant-numeric: tabular-nums;
+}
+
+// ============ INVESTMENTS ============
+
+// Výška segmentu 16 px (bez labelů), kontejner 24 px = prostor pro hover zvětšení
+.co-horizontal-chart__investments {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  height: 24px;
+}
+
+.co-horizontal-chart__segment {
+  height: 16px;
+  border-radius: $border-radius-sm;
+  min-width: 4px;
+  transition: height $transition-fast, opacity $transition-fast;
+
+  &:first-child {
+    border-top-left-radius: $border-radius-lg;
+    border-bottom-left-radius: $border-radius-lg;
+  }
+
+  &:last-child {
+    border-top-right-radius: $border-radius-lg;
+    border-bottom-right-radius: $border-radius-lg;
+  }
+}
+
+// Hover — aktivní segment se zvětší na 24 px, ostatní se potlačí (50% průhlednost,
+// stejně jako u ostatních grafů)
+.co-horizontal-chart__investments:hover .co-horizontal-chart__segment {
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 1;
+    height: 24px;
+  }
+}
+
+// ============ SKELETON ============
+
+.co-horizontal-chart__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+  animation: co-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.co-horizontal-chart__skeleton-row {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.co-horizontal-chart__skeleton-bar {
+  width: 100%;
+  background-color: $color-background-border;
+
+  &--thin {
+    height: 8px;
+    border-radius: $border-radius-full;
+  }
+
+  &--thick {
+    height: 16px;
+    border-radius: $border-radius-lg;
+  }
+}
+
+.co-horizontal-chart__skeleton-meta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.co-horizontal-chart__skeleton-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: $border-radius-full;
+  background-color: $color-background-border;
+  flex-shrink: 0;
+}
+
+.co-horizontal-chart__skeleton-line {
+  height: 12px;
+  border-radius: $border-radius-sm;
+  background-color: $color-background-border;
+
+  &--label {
+    width: 35%;
+  }
+
+  &--value {
+    width: 18%;
+    margin-left: auto;
+  }
+}

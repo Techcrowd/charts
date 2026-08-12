@@ -16,6 +16,7 @@ import { SnackbarDemoComponent } from './snackbar-demo.component';
 import { AvatarDemoComponent } from './avatar-demo.component';
 import { CheckboxDemoComponent } from './checkbox-demo.component';
 import { SectionHeaderDemoComponent } from './section-header-demo.component';
+import { HorizontalChartDemoComponent } from './horizontal-chart-demo.component';
 
 /**
  * Registry mapping showcase component names to their real Angular demo components.
@@ -39,4 +40,5 @@ export const DEMO_REGISTRY: Record<string, Type<unknown>> = {
   'Avatar': AvatarDemoComponent,
   'CO Item Checkbox': CheckboxDemoComponent,
   'TMPL Section Header': SectionHeaderDemoComponent,
+  'CO Chart V4 Horizontal': HorizontalChartDemoComponent,
 };

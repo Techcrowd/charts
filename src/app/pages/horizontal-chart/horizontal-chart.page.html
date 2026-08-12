@@ -1,0 +1,95 @@
+<div class="page">
+  <h1 class="page__title">Horizontal Chart</h1>
+  <p class="page__subtitle">co-horizontal-chart component (CO Chart v4.0 — varianty HorizontalAccount, HorizontalSavings, HorizontalInvestments)</p>
+
+  <!-- HorizontalAccount -->
+  <section class="demo-section">
+    <h2>HorizontalAccount</h2>
+    <p class="demo-note">Přehled toků na účtu — každý řádek má vlastní bar, ikonu směru (příchozí/odchozí), label a hodnotu. Příchozí platby zeleně (chart-in), odchozí tmavě (chart-out). Šířka výplně je relativní k nejvyšší hodnotě v seznamu.</p>
+    <div class="demo-card">
+      <co-horizontal-chart variant="account" [accountItems]="accountItems" [valueUnit]="'Kč'" />
+      <markdown clipboard class="code-block" [data]="code.account | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.accountTs | language : 'typescript'"></markdown>
+    </div>
+  </section>
+
+  <!-- HorizontalSavings -->
+  <section class="demo-section">
+    <h2>HorizontalSavings</h2>
+    <p class="demo-note">Průběh spoření vůči cíli — jeden bar, vlevo aktuální stav ($label $value), vpravo cíl ($maxLabel $maxValue).</p>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <h3>Průběžný stav</h3>
+        <co-horizontal-chart variant="savings" [savingsData]="savingsData" [valueUnit]="'Kč'" [compactValues]="true" />
+        <markdown clipboard class="code-block" [data]="code.savings | language : 'html'"></markdown>
+        <markdown clipboard class="code-block" [data]="code.savingsTs | language : 'typescript'"></markdown>
+      </div>
+      <div class="demo-card">
+        <h3>Téměř splněný cíl</h3>
+        <co-horizontal-chart variant="savings" [savingsData]="savingsAlmostDone" [valueUnit]="'Kč'" [compactValues]="true" />
+      </div>
+    </div>
+  </section>
+
+  <!-- HorizontalInvestments -->
+  <section class="demo-section">
+    <h2>HorizontalInvestments</h2>
+    <p class="demo-note">Rozložení portfolia — segmentovaný bar (výška 16 px, bez labelů), šířka segmentu odpovídá podílu na celku. Na hover se aktivní segment zvětší na 24 px a ostatní se potlačí (50% průhlednost). Extrémně malé sekce dostanou minimální šířku (minSectionPercent). Zobrazují se jen nenulové hodnoty.</p>
+    <div class="demo-card">
+      <co-horizontal-chart variant="investments" [sections]="investmentsThree" />
+      <markdown clipboard class="code-block" [data]="code.investments | language : 'html'"></markdown>
+      <markdown clipboard class="code-block" [data]="code.investmentsTs | language : 'typescript'"></markdown>
+    </div>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>3 sekce</h3>
+        <co-horizontal-chart variant="investments" [sections]="investmentsThree" />
+      </div>
+      <div class="demo-card">
+        <h3>4 sekce</h3>
+        <co-horizontal-chart variant="investments" [sections]="investmentsFour" />
+      </div>
+      <div class="demo-card">
+        <h3>5 sekcí</h3>
+        <co-horizontal-chart variant="investments" [sections]="investmentsFive" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Vlastní barvy -->
+  <section class="demo-section">
+    <h2>Vlastní barvy</h2>
+    <p class="demo-note">Pořadí barev segmentů lze přepsat inputem [colors] — pouze z povolené palety 10 barev.</p>
+    <div class="demo-card">
+      <co-horizontal-chart
+        variant="investments"
+        [sections]="investmentsFive"
+        [colors]="['chart-evaluation', 'chart-stocks', 'chart-bonds', 'chart-funds', 'chart-neon']"
+      />
+      <markdown clipboard class="code-block" [data]="code.investmentsColors | language : 'html'"></markdown>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <section class="demo-section">
+    <h2>Loading stav</h2>
+    <p class="demo-note">Každá varianta má vlastní skeleton dle specifikace — account: bar + ikona + label + hodnota, savings: bar + dva labely, investments: plný šedý bar.</p>
+    <div class="demo-grid demo-grid--three">
+      <div class="demo-card">
+        <h3>Account</h3>
+        <co-horizontal-chart variant="account" [loading]="true" [skeletonRowCount]="2" />
+      </div>
+      <div class="demo-card">
+        <h3>Savings</h3>
+        <co-horizontal-chart variant="savings" [loading]="true" />
+      </div>
+      <div class="demo-card">
+        <h3>Investments</h3>
+        <co-horizontal-chart variant="investments" [loading]="true" />
+      </div>
+    </div>
+    <div class="demo-card">
+      <markdown clipboard class="code-block" [data]="code.loading | language : 'html'"></markdown>
+    </div>
+  </section>
+</div>

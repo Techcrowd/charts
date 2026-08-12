@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-12
+
+### Added
+- `co-horizontal-chart` — nový typ grafu dle Figma specu CO Chart v4.0 se třemi variantami: **HorizontalAccount** (toky na účtu — bar 8 px + ikona směru in/out + label + hodnota, barvy chart-in/chart-out), **HorizontalSavings** (průběh spoření — bar 8 px + $label $value / $maxLabel $maxValue), **HorizontalInvestments** (segmentovaný bar 16 px bez labelů, šířka dle podílu na celku, minSectionPercent pro malé sekce). Hodnoty fontem body-secondary-bold. Každá varianta má vlastní skeleton loading stav. Čisté CSS bez ApexCharts.
+- `co-icon` — nová komponenta ikon dle Golem DS (zatím arrow-left, arrow-right); použitá pro směrové šipky v co-horizontal-chart (14×14 px)
+- `co-horizontal-chart` investments — hover efekt: aktivní segment se zvětší na 24 px, ostatní se potlačí (50% průhlednost, stejně jako u ostatních grafů)
+- Stránka `/horizontal-chart` s ukázkami všech variant, loading stavů a vlastních barev
+- Showcase: katalogová položka `CO Chart V4 Horizontal` (inputs, code examples) + živé demo `HorizontalChartDemoComponent` v DEMO_REGISTRY
+
 ## 2026-07-16
 
 ### Changed

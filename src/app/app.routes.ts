@@ -37,6 +37,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/column-chart-v2/column-chart-v2.page').then(m => m.ColumnChartV2Page),
       },
       {
+        path: 'horizontal-chart',
+        loadComponent: () => import('./pages/horizontal-chart/horizontal-chart.page').then(m => m.HorizontalChartPage),
+      },
+      {
         path: 'value-performance-chart',
         loadComponent: () => import('./pages/value-performance-chart/value-performance-chart-page.component').then(m => m.ValuePerformanceChartPageComponent),
       },

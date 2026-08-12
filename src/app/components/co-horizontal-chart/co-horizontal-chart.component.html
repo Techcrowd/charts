@@ -1,0 +1,100 @@
+<div class="co-horizontal-chart" [class.co-horizontal-chart--loading]="loading">
+  @switch (variant) {
+    <!-- ============ ACCOUNT ============ -->
+    @case ('account') {
+      @if (loading) {
+        <div class="co-horizontal-chart__skeleton">
+          @for (row of skeletonRows; track row) {
+            <div class="co-horizontal-chart__skeleton-row">
+              <div class="co-horizontal-chart__skeleton-bar co-horizontal-chart__skeleton-bar--thin"></div>
+              <div class="co-horizontal-chart__skeleton-meta">
+                <span class="co-horizontal-chart__skeleton-circle"></span>
+                <span class="co-horizontal-chart__skeleton-line co-horizontal-chart__skeleton-line--label"></span>
+                <span class="co-horizontal-chart__skeleton-line co-horizontal-chart__skeleton-line--value"></span>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="co-horizontal-chart__account">
+          @for (row of accountRows(); track row.label) {
+            <div class="co-horizontal-chart__account-row">
+              <div class="co-horizontal-chart__track">
+                <div
+                  class="co-horizontal-chart__fill"
+                  [style.width.%]="row.fillPercent"
+                  [style.background-color]="row.colorHex"
+                ></div>
+              </div>
+              <div class="co-horizontal-chart__account-meta" [style.color]="row.colorHex">
+                <span
+                  class="co-horizontal-chart__account-icon"
+                  [style.background-color]="row.colorHex"
+                >
+                  <co-icon [name]="row.direction === 'in' ? 'arrow-left' : 'arrow-right'" [size]="14" />
+                </span>
+                <span class="co-horizontal-chart__account-label">{{ row.label }}</span>
+                <span class="co-horizontal-chart__account-value">{{ formatValue(row.value) }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- ============ SAVINGS ============ -->
+    @case ('savings') {
+      @if (loading) {
+        <div class="co-horizontal-chart__skeleton">
+          <div class="co-horizontal-chart__skeleton-row">
+            <div class="co-horizontal-chart__skeleton-bar co-horizontal-chart__skeleton-bar--thin"></div>
+            <div class="co-horizontal-chart__skeleton-meta">
+              <span class="co-horizontal-chart__skeleton-line co-horizontal-chart__skeleton-line--label"></span>
+              <span class="co-horizontal-chart__skeleton-line co-horizontal-chart__skeleton-line--value"></span>
+            </div>
+          </div>
+        </div>
+      } @else if (savingsData) {
+        <div class="co-horizontal-chart__savings">
+          <div class="co-horizontal-chart__track">
+            <div
+              class="co-horizontal-chart__fill"
+              [style.width.%]="savingsFillPercent()"
+              [style.background-color]="savingsFillColor()"
+            ></div>
+          </div>
+          <div class="co-horizontal-chart__savings-meta">
+            <span class="co-horizontal-chart__savings-current">
+              {{ savingsData.label }}
+              <span class="co-horizontal-chart__value">{{ formatValue(savingsData.value) }}</span>
+            </span>
+            <span class="co-horizontal-chart__savings-max">
+              {{ savingsData.maxLabel }}
+              <span class="co-horizontal-chart__value">{{ formatValue(savingsData.maxValue) }}</span>
+            </span>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- ============ INVESTMENTS ============ -->
+    @case ('investments') {
+      @if (loading) {
+        <div class="co-horizontal-chart__skeleton">
+          <div class="co-horizontal-chart__skeleton-bar co-horizontal-chart__skeleton-bar--thick"></div>
+        </div>
+      } @else {
+        <div class="co-horizontal-chart__investments" role="img" [attr.aria-label]="'Rozložení investic'">
+          @for (segment of investmentSegments(); track segment.name) {
+            <div
+              class="co-horizontal-chart__segment"
+              [style.width.%]="segment.widthPercent"
+              [style.background-color]="segment.colorHex"
+              [attr.title]="segment.name + ': ' + formatValue(segment.value)"
+            ></div>
+          }
+        </div>
+      }
+    }
+  }
+</div>
