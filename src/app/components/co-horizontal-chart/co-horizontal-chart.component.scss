@@ -6,20 +6,15 @@
   width: 100%;
 }
 
-// ============ SHARED BAR (account + savings) ============
+// ============ SHARED APEX WRAPPER ============
 
-.co-horizontal-chart__track {
+.co-horizontal-chart__thin-chart,
+.co-horizontal-chart__investments {
   width: 100%;
-  height: 8px;
-  border-radius: $border-radius-full;
-  background-color: $color-background-border;
-  overflow: hidden;
-}
 
-.co-horizontal-chart__fill {
-  height: 100%;
-  border-radius: $border-radius-full;
-  transition: width $transition-fast;
+  ::ng-deep .apexcharts-canvas {
+    width: 100% !important;
+  }
 }
 
 // ============ ACCOUNT ============
@@ -51,11 +46,6 @@
   border-radius: $border-radius-full;
   color: $color-background-surface;
   flex-shrink: 0;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
 }
 
 .co-horizontal-chart__account-label {
@@ -99,42 +89,34 @@
   font-variant-numeric: tabular-nums;
 }
 
-// ============ INVESTMENTS ============
+// ============ INVESTMENTS — HOVER ============
 
-// Výška segmentu 16 px (bez labelů), kontejner 24 px = prostor pro hover zvětšení
+// Klidový segment 16 px sedí uprostřed slotu 24 px (viz barHeight v TS).
+// Na hover se aktivní segment zvětší na 24 px (scaleY kolem středu) a ostatní
+// se potlačí (50% průhlednost, stejně jako u ostatních grafů).
 .co-horizontal-chart__investments {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  width: 100%;
-  height: 24px;
-}
+  ::ng-deep {
+    .apexcharts-series {
+      transition: opacity $transition-fast;
+    }
 
-.co-horizontal-chart__segment {
-  height: 16px;
-  border-radius: $border-radius-sm;
-  min-width: 4px;
-  transition: height $transition-fast, opacity $transition-fast;
-
-  &:first-child {
-    border-top-left-radius: $border-radius-lg;
-    border-bottom-left-radius: $border-radius-lg;
+    .apexcharts-bar-area {
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform $transition-fast;
+    }
   }
 
-  &:last-child {
-    border-top-right-radius: $border-radius-lg;
-    border-bottom-right-radius: $border-radius-lg;
+  &:hover ::ng-deep .apexcharts-series {
+    opacity: 0.5;
   }
-}
 
-// Hover — aktivní segment se zvětší na 24 px, ostatní se potlačí (50% průhlednost,
-// stejně jako u ostatních grafů)
-.co-horizontal-chart__investments:hover .co-horizontal-chart__segment {
-  opacity: 0.5;
-
-  &:hover {
+  ::ng-deep .apexcharts-series:hover {
     opacity: 1;
-    height: 24px;
+
+    .apexcharts-bar-area {
+      transform: scaleY(1.5); // 16 px → 24 px
+    }
   }
 }
 

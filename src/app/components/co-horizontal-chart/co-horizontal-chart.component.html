@@ -17,14 +17,24 @@
         </div>
       } @else {
         <div class="co-horizontal-chart__account">
-          @for (row of accountRows(); track row.label) {
+          @for (row of accountCharts(); track row.label) {
             <div class="co-horizontal-chart__account-row">
-              <div class="co-horizontal-chart__track">
-                <div
-                  class="co-horizontal-chart__fill"
-                  [style.width.%]="row.fillPercent"
-                  [style.background-color]="row.colorHex"
-                ></div>
+              <div class="co-horizontal-chart__thin-chart">
+                <apx-chart
+                  [series]="row.series"
+                  [chart]="chartConfigThin"
+                  [colors]="row.colors"
+                  [plotOptions]="plotOptionsThin"
+                  [dataLabels]="dataLabelsConfig"
+                  [tooltip]="tooltipConfig"
+                  [states]="statesConfig"
+                  [legend]="legendConfig"
+                  [xaxis]="row.xaxis"
+                  [yaxis]="yAxisConfig"
+                  [grid]="gridConfig"
+                  [stroke]="strokeConfigThin"
+                  [fill]="fillConfig"
+                />
               </div>
               <div class="co-horizontal-chart__account-meta" [style.color]="row.colorHex">
                 <span
@@ -56,12 +66,22 @@
         </div>
       } @else if (savingsData) {
         <div class="co-horizontal-chart__savings">
-          <div class="co-horizontal-chart__track">
-            <div
-              class="co-horizontal-chart__fill"
-              [style.width.%]="savingsFillPercent()"
-              [style.background-color]="savingsFillColor()"
-            ></div>
+          <div class="co-horizontal-chart__thin-chart">
+            <apx-chart
+              [series]="savingsSeries()"
+              [chart]="chartConfigThin"
+              [colors]="savingsColors()"
+              [plotOptions]="plotOptionsThin"
+              [dataLabels]="dataLabelsConfig"
+              [tooltip]="tooltipConfig"
+              [states]="statesConfig"
+              [legend]="legendConfig"
+              [xaxis]="savingsXAxis()"
+              [yaxis]="yAxisConfig"
+              [grid]="gridConfig"
+              [stroke]="strokeConfigThin"
+              [fill]="fillConfig"
+            />
           </div>
           <div class="co-horizontal-chart__savings-meta">
             <span class="co-horizontal-chart__savings-current">
@@ -84,15 +104,22 @@
           <div class="co-horizontal-chart__skeleton-bar co-horizontal-chart__skeleton-bar--thick"></div>
         </div>
       } @else {
-        <div class="co-horizontal-chart__investments" role="img" [attr.aria-label]="'Rozložení investic'">
-          @for (segment of investmentSegments(); track segment.name) {
-            <div
-              class="co-horizontal-chart__segment"
-              [style.width.%]="segment.widthPercent"
-              [style.background-color]="segment.colorHex"
-              [attr.title]="segment.name + ': ' + formatValue(segment.value)"
-            ></div>
-          }
+        <div class="co-horizontal-chart__investments">
+          <apx-chart
+            [series]="investmentsSeries()"
+            [chart]="chartConfigInvestments"
+            [colors]="investmentsColors()"
+            [plotOptions]="plotOptionsInvestments"
+            [dataLabels]="dataLabelsConfig"
+            [tooltip]="tooltipConfig"
+            [states]="statesConfig"
+            [legend]="legendConfig"
+            [xaxis]="investmentsXAxis()"
+            [yaxis]="yAxisConfig"
+            [grid]="gridConfig"
+            [stroke]="strokeConfigInvestments"
+            [fill]="fillConfig"
+          />
         </div>
       }
     }

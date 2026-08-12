@@ -12,6 +12,7 @@ export const CHART_COLORS = {
   contentTertiary: '#717171',
   contentSecondary: '#454545',
   backgroundSurface: '#ffffff',
+  backgroundBorder: '#dadada',
   gridBorder: '#e5e7eb',
 } as const;
 

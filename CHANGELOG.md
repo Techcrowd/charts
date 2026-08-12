@@ -9,6 +9,9 @@
 - Stránka `/horizontal-chart` s ukázkami všech variant, loading stavů a vlastních barev
 - Showcase: katalogová položka `CO Chart V4 Horizontal` (inputs, code examples) + živé demo `HorizontalChartDemoComponent` v DEMO_REGISTRY
 
+### Changed
+- `co-horizontal-chart` — přepsán z čistého CSS na ApexCharts (parita s produkčním golem-ng): account/savings = jednořadý horizontal bar s šedým trackem přes `backgroundBarColors`/`backgroundBarRadius` (pill 4 px), investments = stacked horizontal bar (`borderRadiusWhenStacked: 'all'`, bílý stroke 2 px mezi segmenty jako u stacked-bar). Hover u investments řeší CSS nad Apex SVG: `scaleY(1.5)` na `.apexcharts-bar-area` (16 → 24 px, slot má výšku 24 px) + potlačení ostatních sérií na 50 %. Veřejné API komponenty beze změny.
+
 ### Fixed
 - `co-column-chart-v2` — legenda už neodskakuje při asynchronním mountu grafu (layout shift): výšku rezervuje CSS min-height na containeru, Apex `parentHeightOffset: 0` nahrazen padding-bottom 15 px; postup pro produkci jako bod 5 v `ZMENY-NAVOD.html`
 
