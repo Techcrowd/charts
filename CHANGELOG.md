@@ -9,6 +9,9 @@
 - Stránka `/horizontal-chart` s ukázkami všech variant, loading stavů a vlastních barev
 - Showcase: katalogová položka `CO Chart V4 Horizontal` (inputs, code examples) + živé demo `HorizontalChartDemoComponent` v DEMO_REGISTRY
 
+### Fixed
+- `co-column-chart-v2` — legenda už neodskakuje při asynchronním mountu grafu (layout shift): výšku rezervuje CSS min-height na containeru, Apex `parentHeightOffset: 0` nahrazen padding-bottom 15 px; postup pro produkci jako bod 5 v `ZMENY-NAVOD.html`
+
 ## 2026-07-16
 
 ### Changed
